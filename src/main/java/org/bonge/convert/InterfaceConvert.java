@@ -1,0 +1,59 @@
+package org.bonge.convert;
+
+import org.bonge.bukkit.entity.living.human.BongePlayer;
+import org.bonge.bukkit.server.source.ConsoleSource;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.ClickAction;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.serializer.TextSerializers;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+public class InterfaceConvert {
+
+    public static Text fromString(String message){
+        Text text = TextSerializers.FORMATTING_CODE.deserialize(message);
+        try{
+            URL url = new URL(ChatColor.stripColor(message));
+            return text.toBuilder().onClick(TextActions.openUrl(url)).build();
+        } catch (MalformedURLException e){
+            return text;
+        }
+    }
+
+    public static String toString(Text text){
+        if(text == null){
+            return null;
+        }
+        return TextSerializers.FORMATTING_CODE.serialize(text);
+    }
+
+    public static CommandSender getSender(org.spongepowered.api.command.CommandSource source){
+        if(source instanceof org.spongepowered.api.entity.living.player.Player){
+            return new BongePlayer((org.spongepowered.api.entity.living.player.Player)source);
+        }
+        if(source instanceof org.spongepowered.api.command.source.ConsoleSource){
+            return new ConsoleSource();
+        }
+        throw new IllegalArgumentException("Unknown source of " + source.getName());
+    }
+
+    public static CommandSource getSource(CommandSender sender){
+        if(sender instanceof Player){
+            return ((BongePlayer)sender).getSpongeValue();
+        }
+        if(sender instanceof ConsoleCommandSender){
+            return Sponge.getServer().getConsole();
+        }
+        throw new IllegalStateException("Unknown sender of " + sender.getName());
+    }
+}
