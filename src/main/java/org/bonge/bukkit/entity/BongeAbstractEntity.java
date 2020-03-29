@@ -165,10 +165,7 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
     @Override
     public String getName() {
         Optional<Text> opText = this.getSpongeValue().get(Keys.DISPLAY_NAME);
-        if (opText.isPresent()){
-            return TextSerializers.FORMATTING_CODE.serialize(opText.get());
-        }
-        return null;
+        return opText.map(TextSerializers.FORMATTING_CODE::serialize).orElse(null);
     }
 
     @Override
@@ -201,8 +198,13 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     @Override
     public List<Entity> getPassengers() {
-        WrappedArrayList<Entity> entities = new WrappedArrayList<>(e -> this.spongeValue.getPassengers().add(((BongeAbstractEntity<?>)e).spongeValue), e -> this.spongeValue.getPassengers().remove(((BongeAbstractEntity)e).spongeValue));
-        return entities;
+        return new WrappedArrayList<>(e -> {
+            assert e != null;
+            return this.spongeValue.getPassengers().add(((BongeAbstractEntity<?>)e).spongeValue);
+        }, e -> {
+            assert e != null;
+            return this.spongeValue.getPassengers().remove(((BongeAbstractEntity<?>)e).spongeValue);
+        });
     }
 
     @Override
@@ -275,7 +277,7 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     @Override
     public boolean isInsideVehicle() {
-        return getVehicle() == null ? false : true;
+        return getVehicle() != null;
     }
 
     @Override
@@ -286,10 +288,7 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
     @Override
     public Entity getVehicle() {
         Optional<org.spongepowered.api.entity.Entity> opVe = this.spongeValue.getVehicle();
-        if(!opVe.isPresent()){
-            return null;
-        }
-        return of(opVe.get());
+        return opVe.map(BongeAbstractEntity::of).orElse(null);
     }
 
     @Override
@@ -490,6 +489,9 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
         if(entity instanceof org.spongepowered.api.entity.living.animal.Chicken){
             return new BongeChicken((org.spongepowered.api.entity.living.animal.Chicken)entity);
         }
+        if(entity instanceof org.spongepowered.api.entity.living.monster.CaveSpider){
+            return new BongeCaveSpider((org.spongepowered.api.entity.living.monster.CaveSpider) entity);
+        }
         if(entity instanceof org.spongepowered.api.entity.living.monster.Spider){
             return new BongeTypicalSpider((org.spongepowered.api.entity.living.monster.Spider) entity);
         }
@@ -504,9 +506,6 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
         }
         if(entity instanceof org.spongepowered.api.entity.living.monster.Enderman){
             return new BongeEnderman((org.spongepowered.api.entity.living.monster.Enderman) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.CaveSpider){
-            return new BongeCaveSpider((org.spongepowered.api.entity.living.monster.CaveSpider) entity);
         }
         if(entity instanceof org.spongepowered.api.entity.living.Squid){
             return new BongeSquid((org.spongepowered.api.entity.living.Squid) entity);

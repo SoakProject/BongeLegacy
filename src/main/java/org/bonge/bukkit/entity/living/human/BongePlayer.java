@@ -3,8 +3,8 @@ package org.bonge.bukkit.entity.living.human;
 import org.bonge.bukkit.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.inventory.inventory.BongeAbstractInventory;
+import org.bonge.bukkit.scoreboard.BongeScoreboard;
 import org.bonge.convert.InterfaceConvert;
-import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -27,11 +27,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.item.inventory.crafting.CraftingInventory;
 import org.spongepowered.api.resourcepack.ResourcePack;
-import org.spongepowered.api.resourcepack.ResourcePackFactory;
 import org.spongepowered.api.resourcepack.ResourcePacks;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.title.Title;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -143,7 +142,7 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        this.spongeValue.sendMessages(ArrayUtils.convert(Text.class, t -> InterfaceConvert.fromString(t), messages));
+        this.spongeValue.sendMessages(ArrayUtils.convert(Text.class, InterfaceConvert::fromString, messages));
     }
 
     @Override
@@ -163,10 +162,7 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     @Override
     public boolean performCommand(@NotNull String command) {
         CommandResult result = Sponge.getCommandManager().process(this.spongeValue, command);
-        if(result.equals(CommandResult.empty())){
-            return false;
-        }
-        return true;
+        return !result.equals(CommandResult.empty());
     }
 
     @Override
@@ -492,12 +488,12 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public float getExhaustion() {
-        return 0;
+        return this.spongeValue.get(Keys.EXHAUSTION).get().floatValue();
     }
 
     @Override
     public void setExhaustion(float value) {
-
+        this.spongeValue.offer(Keys.EXHAUSTION, (double)value);
     }
 
     @Override
@@ -622,12 +618,12 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public @NotNull Scoreboard getScoreboard() {
-        return null;
+        return new BongeScoreboard(this.spongeValue.getScoreboard());
     }
 
     @Override
     public void setScoreboard(@NotNull Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException {
-
+        this.spongeValue.setScoreboard(((BongeScoreboard)scoreboard).getSpongeValue());
     }
 
     @Override
@@ -646,30 +642,36 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public double getHealthScale() {
-        return 0;
+        return this.spongeValue.get(Keys.HEALTH_SCALE).get();
     }
 
     @Override
     public @Nullable Entity getSpectatorTarget() {
         Optional<org.spongepowered.api.entity.Entity> opTarget = this.spongeValue.getSpectatorTarget();
-        if(opTarget.isPresent()){
-            return BongeAbstractEntity.of(opTarget.get());
-        }
-        return null;
+        return opTarget.map(BongeAbstractEntity::of).orElse(null);
     }
 
     @Override
     public void setSpectatorTarget(@Nullable Entity entity) {
-
+        assert entity != null;
+        this.spongeValue.setSpectatorTarget(((BongeAbstractEntity<?>)entity).getSpongeValue());
     }
 
     @Override
     public void sendTitle(@Nullable String title, @Nullable String subtitle) {
-
+        sendTitle(title, subtitle, -1, -1, -1);
     }
 
     @Override
     public void sendTitle(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
+        Title sTitle = Title.builder()
+                .fadeIn(((fadeIn == -1) ? null : fadeIn))
+                .fadeOut(((fadeOut == -1) ? null : fadeOut))
+                .stay(((stay == -1) ? null : stay))
+                .title(InterfaceConvert.fromString(title))
+                .subtitle(InterfaceConvert.fromString(subtitle))
+                .build();
+        this.spongeValue.sendTitle(sTitle);
 
     }
 

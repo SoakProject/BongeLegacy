@@ -59,12 +59,21 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             PluginDescriptionFile plugin1 = iBongePluginLoader.getPlugin().get().getDescription();
             PluginDescriptionFile plugin2 = t1.getPlugin().get().getDescription();
             if(plugin1.getDepend().contains(plugin2.getName())){
-                return -1;
+                return 1;
             }
             if(plugin1.getSoftDepend().contains(plugin2.getName())){
-                return -1;
+                return 1;
             }
             if(plugin1.getLoadBefore().contains(plugin2.getName())){
+                return -1;
+            }
+            if(plugin2.getDepend().contains(plugin1.getName())){
+                return -1;
+            }
+            if(plugin2.getSoftDepend().contains(plugin1.getName())){
+                return -1;
+            }
+            if(plugin2.getLoadBefore().contains(plugin1.getName())){
                 return 1;
             }
             return 0;
@@ -74,24 +83,24 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             JavaPlugin plugin = (JavaPlugin) p.getPlugin().get();
             Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
             if(commands != null){
-                commands.entrySet().forEach(e -> {
-                    PluginCommand command = new PluginCommand(e.getKey(), plugin);
-                    String description = (String)e.getValue().get("description");
-                    if(description != null){
+                commands.forEach((key, value) -> {
+                    PluginCommand command = new PluginCommand(key, plugin);
+                    String description = (String) value.get("description");
+                    if (description != null) {
                         command.setDescription(description);
                     }
-                    String usage = (String)e.getValue().get("usage");
-                    if(usage != null){
+                    String usage = (String) value.get("usage");
+                    if (usage != null) {
                         command.setUsage(usage);
                     }
-                    List<String> aliases = (List<String>)e.getValue().get("aliases");
-                    if(aliases != null){
+                    List<String> aliases = (List<String>) value.get("aliases");
+                    if (aliases != null) {
                         command.setAliases(aliases);
                     }
                     cmdManager.register(command);
                 });
             }
-            plugin.getDescription().getPermissions().forEach(perm -> this.addPermission(perm));
+            plugin.getDescription().getPermissions().forEach(this::addPermission);
             try {
                 plugin.onEnable();
                 if(p instanceof BongePluginLoader){
@@ -118,10 +127,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                     return name.equals(s);
                 })
                 .findAny();
-        if(!opLoader.isPresent()){
-            return null;
-        }
-        return opLoader.get().getPlugin().orElse(null);
+        return opLoader.flatMap(IBongePluginLoader::getPlugin).orElse(null);
     }
 
     @Override
@@ -146,7 +152,6 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     @Override
     public Plugin loadPlugin(File file) {
-        System.out.println("Loading file: " + file.getPath());
         BongePluginLoader loader = new BongePluginLoader(file, this.loader);
         try {
             this.plugins.add(loader);
@@ -193,7 +198,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     @Override
     public void disablePlugins() {
-        this.plugins.stream().forEach(p -> disablePlugin(p.getPlugin().get()));
+        this.plugins.forEach(p -> disablePlugin(p.getPlugin().get()));
         this.plugins.clear();
     }
 
@@ -204,8 +209,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     @Override
     public void callEvent(Event event) throws IllegalStateException {
-        List<EventData<?>> listeners = this.datas.stream().filter(e -> e.isValid(event)).collect(Collectors.toList());
-        listeners.sort(Comparator.comparingInt(eventData -> eventData.getPriority().getSlot()));
+        List<EventData<?>> listeners = this.datas.stream().filter(e -> e.isValid(event)).sorted(Comparator.comparingInt(eventData -> eventData.getPriority().getSlot())).collect(Collectors.toList());
         listeners.forEach(new Consumer<EventData<?>>() {
             @Override
             public void accept(EventData<?> eventData) {

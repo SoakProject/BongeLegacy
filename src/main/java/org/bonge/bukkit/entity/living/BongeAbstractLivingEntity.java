@@ -37,10 +37,7 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
                 return false;
             }
             Material material = Material.getMaterial(r.getLocation().getBlockType());
-            if (transparent.stream().anyMatch(m -> m.equals(material))){
-                return true;
-            }
-            return false;
+            return transparent.stream().anyMatch(m -> m.equals(material));
         }).build();
         while(ray.hasNext()){
             blocks.add(new BongeBlock(ray.next().getLocation()));
@@ -292,13 +289,13 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
 
     @NotNull
     @Override
-    public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> projectile) {
+    public <P extends Projectile> P launchProjectile(@NotNull Class<? extends P> projectile) {
         return null;
     }
 
     @NotNull
     @Override
-    public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> projectile, @Nullable Vector velocity) {
+    public <P extends Projectile> P launchProjectile(@NotNull Class<? extends P> projectile, @Nullable Vector velocity) {
         return null;
     }
 }

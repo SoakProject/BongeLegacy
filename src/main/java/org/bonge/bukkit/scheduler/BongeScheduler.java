@@ -17,13 +17,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class BongeScheduler implements BukkitScheduler {
 
-    private class BongeWrappedRunnable implements Runnable {
+    private static class BongeWrappedRunnable implements Runnable {
 
         private Runnable run;
         private BongeTaskData data;
@@ -69,8 +68,7 @@ public class BongeScheduler implements BukkitScheduler {
     }
 
     private int getRandomID(){
-        int id = this.tasks.size();
-        return id;
+        return this.tasks.size();
     }
 
     @Override
@@ -161,7 +159,7 @@ public class BongeScheduler implements BukkitScheduler {
 
     @Override
     public void cancelTasks(@NotNull Plugin plugin) {
-        get(b -> b.getOwner().equals(plugin)).stream().forEach(c -> {
+        get(b -> b.getOwner().equals(plugin)).forEach(c -> {
             c.getTask().cancel();
             this.tasks.remove(c);
         });

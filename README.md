@@ -2,11 +2,25 @@
 
 Bonge is an emulation layer to run Bukkit plugins on the Sponge platform. 
 
+**_Sponge API_**: 7.1.0
+
+**_Bukkit_**: 1.13.2
+
+**_Bonge_**: 1.0-SNAPSHOT
+
+##Sponge 1.12.2 running 1.13 bukkit? What gives?
+Yep, you read that right. Bukkit did some huge changes to make Bukkit more like minecraft's internal code which is a lot like what Sponge uses. Therefore the required Bukkit API to target needed to be 1.13 and as Sponge 1.14 is not out yet, Bonge targets 1.12. This will not be an ongoing thing, when 1.14 Sponge releases the Bukkit implementation will move to 1.14 and should stay in sync from then. These current builds are to give a good starting point for when Sponge does update. This is why there is very little development on Block and Item processing. 
+
+##Compatibility list?
+Yep, it does exist. https://docs.google.com/spreadsheets/d/1ZiDUcVUNO86vu0PpT4W2n0yEjbeNdvrkVjPkSxrMGbk 
+
 ## So … its pore?
 Bonge is set out to achieve what Pore did, however no code is shared between the two projects - not deliberately. Pore closed down due to some very valid reasons that you can read about here https://caseif.blog/post.php?id=41 while some points are present in Bonge, here is why Bonge is still going forward. 
 
 ### ~~There are only two of us~~ There is only one of me
-Yeah …. This is a issue, not going to lie …. Moving on
+Yeah … Moving on
+
+Sponge has accidently given this project a hand though. In the original post the Pore team take note that Minecraft's update cycle is too short for any real development for the team size they had. With minecraft announcing they wish to update minecraft multiple times per year, it  seemed like it would be even more impossible to keep up. However Sponge threw a bone stating Sponge will have LTS (Long Term Supported) releases, which Bonge will target with alpha releases for newer versions of minecraft allowing for stable releases of Bonge on LTS and unstable targeting the latest Sponge. 
 ### Sponge has become increasingly different to Bukkit
 This was true back in 2016, however with the release of Minecraft 1.13, Bukkit has moved towards what Minecraft is, which Sponge is based upon due to the support of Forge. Therefore Bonge targets Bukkit’s 1.13 implementation. While not every part of Bukkit has moved towards Sponge, some has
 

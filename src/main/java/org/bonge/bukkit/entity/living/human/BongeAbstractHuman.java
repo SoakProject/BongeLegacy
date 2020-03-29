@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Villager;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,12 +18,9 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandPreference;
 import org.spongepowered.api.data.type.HandPreferences;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.util.RespawnLocation;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.living.Humanoid> extends BongeAbstractLivingEntity<T> implements HumanEntity {
 
@@ -74,10 +70,7 @@ public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.
     @Override
     public @NotNull ItemStack getItemInHand() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getItemInHand(HandTypes.MAIN_HAND);
-        if(opItem.isPresent()){
-            return InventoryConvert.getItemStack(opItem.get());
-        }
-        return new ItemStack(Material.AIR);
+        return opItem.map(InventoryConvert::getItemStack).orElseGet(() -> new ItemStack(Material.AIR));
     }
 
     @Override

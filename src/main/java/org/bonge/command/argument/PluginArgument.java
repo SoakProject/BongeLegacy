@@ -2,6 +2,7 @@ package org.bonge.command.argument;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -23,7 +24,7 @@ public class PluginArgument extends CommandElement {
 
     @Nullable
     @Override
-    protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+    protected Object parseValue(@NotNull CommandSource source, CommandArgs args) throws ArgumentParseException {
         String peek = args.next();
         Optional<Plugin> opPlugin = Stream.of(Bukkit.getServer().getPluginManager().getPlugins()).filter(p -> p.getName().startsWith(peek)).findAny();
         if(opPlugin.isPresent()){
@@ -32,6 +33,7 @@ public class PluginArgument extends CommandElement {
         throw args.createError(Text.of("Unknown bukkit plugin"));
     }
 
+    @NotNull
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {

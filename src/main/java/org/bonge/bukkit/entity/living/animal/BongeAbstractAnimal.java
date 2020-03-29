@@ -350,12 +350,12 @@ public abstract class BongeAbstractAnimal<T extends org.spongepowered.api.entity
     }
 
     @Override
-    public <T extends Projectile> T launchProjectile(Class<? extends T> projectile) {
+    public <P extends Projectile> P launchProjectile(Class<? extends P> projectile) {
         return null;
     }
 
     @Override
-    public <T extends Projectile> T launchProjectile(Class<? extends T> projectile, Vector velocity) {
+    public <P extends Projectile> P launchProjectile(Class<? extends P> projectile, Vector velocity) {
         return null;
     }
 }

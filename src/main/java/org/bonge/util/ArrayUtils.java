@@ -2,12 +2,26 @@ package org.bonge.util;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collector;
 
 public class ArrayUtils {
 
+    public static <E, I, T extends Collection<I>> T build(T array, BiConsumer<T, E> consumer, Collection<E> collection){
+        collection.forEach(t -> consumer.accept(array, t));
+        return array;
+    }
+
+    public static <A, E, I, T extends Collection<E>> T convert(Collector<E, I, T> collector, Function<A, E> consumer, Collection<A> collection){
+        I supplier = collector.supplier().get();
+        collection.forEach(e -> collector.accumulator().accept(supplier, consumer.apply(e)));
+        return collector.finisher().apply(supplier);
+    }
+
+    @SafeVarargs
     public static <E, T> T[] convert(Class<T> clazz, Function<E, T> function, E... array){
         T[] array1 = (T[]) Array.newInstance(clazz, array.length);
         for(int A = 0; A < array.length; A++){
@@ -21,9 +35,7 @@ public class ArrayUtils {
     }
 
     public static <E, I, T extends Collection<I>> T convert(T array, Function<E, I> function, Collection<E> collection){
-        collection.forEach(c -> {
-            array.add(function.apply(c));
-        });
+        collection.forEach(c -> array.add(function.apply(c)));
         return array;
     }
 
@@ -35,6 +47,7 @@ public class ArrayUtils {
      * @param <T> The class type of the array
      * @return A string output
      */
+    @SafeVarargs
     public static <T> String toString(String split, Function<T, String> toString, T... array){
         return toString(split, toString, Arrays.asList(array));
     }
@@ -48,17 +61,19 @@ public class ArrayUtils {
      * @return A string output
      */
     public static <T> String toString(String split, Function<T, String> toString, Iterable<T> array){
-        String ret = null;
+        StringBuilder ret = null;
         for(T value : array){
             if(ret == null){
-                ret = toString.apply(value);
+                ret = new StringBuilder(toString.apply(value));
             }else{
-                ret = ret + split + toString.apply(value);
+                ret.append(split).append(toString.apply(value));
             }
         }
-        return ret;
+        assert ret != null;
+        return ret.toString();
     }
 
+    @SafeVarargs
     public static <T> Optional<T> getBest(Function<T, Integer> function, BiPredicate<Integer, Integer> compare, T... array){
         return getBest(function, compare, Arrays.asList(array));
     }
@@ -80,6 +95,7 @@ public class ArrayUtils {
         return Optional.ofNullable(value);
     }
 
+    @SafeVarargs
     public static <T, N extends Number> Set<T> getBests(Function<T, N> function, BiPredicate<N, N> compare, BiPredicate<N, N> equal, T... array){
         return getBests(function, compare, equal, Arrays.asList(array));
     }
@@ -106,9 +122,7 @@ public class ArrayUtils {
 
     public static String[] trim(int amount, String... array){
         String[] args = new String[array.length - amount];
-        for(int A = 0; A < args.length; A++){
-            args[A] = array[A];
-        }
+        System.arraycopy(array, 0, args, 0, args.length);
         return args;
     }
 
@@ -117,9 +131,7 @@ public class ArrayUtils {
             throw new IndexOutOfBoundsException("min (" + min + ") is greater then max (" + max + ")");
         }
         String[] arr = new String[(max + 1) - min];
-        for(int A = min; A <= max; A++){
-            arr[A - min] = array[A];
-        }
+        if (max + 1 - min >= 0) System.arraycopy(array, min, arr, 0, max + 1 - min);
         return arr;
     }
 
@@ -138,6 +150,7 @@ public class ArrayUtils {
         return arr;
     }
 
+    @SafeVarargs
     public static <X, T> T[] buildArray(Class<T> clazz, Function<X, T[]> function, X... array){
         return buildArray(clazz, function, Arrays.asList(array));
     }
@@ -150,6 +163,7 @@ public class ArrayUtils {
         return array;
     }
 
+    @SafeVarargs
     public static <T> T[] join(Class<T> clazz, T[]... arrays){
         T[] array = (T[])Array.newInstance(clazz, 0);
         for(T[] array1 : arrays){
@@ -172,26 +186,16 @@ public class ArrayUtils {
             char character = toSplit.charAt(A);
             if(splitBy.test(character)){
                 String[] newSplit = new String[split.length + 1];
-                for(int B = 0; B < split.length; B++){
-                    newSplit[B] = split[B];
-                }
+                System.arraycopy(split, 0, newSplit, 0, split.length);
                 newSplit[split.length] = toSplit.substring(previousSplit, A);
                 previousSplit = A;
                 split = newSplit;
             }
         }
         String[] newSplit = new String[split.length + 1];
-        for(int B = 0; B < split.length; B++){
-            newSplit[B] = split[B];
-        }
+        System.arraycopy(split, 0, newSplit, 0, split.length);
         newSplit[split.length] = toSplit.substring(previousSplit);
         split = newSplit;
-        if(split.length == 0 && combineStartWith){
-            return new String[]{toSplit};
-        }
-        if(split.length == 0){
-            return split;
-        }
         if(combineStartWith){
             split[0] = toSplit.substring(0, startWith + split[0].length());
         }
@@ -199,9 +203,7 @@ public class ArrayUtils {
             return split;
         }
         newSplit = new String[split.length];
-        for(int B = 0; B < split.length; B++){
-            newSplit[B + 1] = split[B];
-        }
+        System.arraycopy(split, 0, newSplit, 1, split.length);
         newSplit[0] = toSplit.substring(0, startWith);
         return newSplit;
     }

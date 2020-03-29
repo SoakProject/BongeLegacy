@@ -38,10 +38,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getHelmet() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getHelmet();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -56,10 +53,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getChestplate() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getChestplate();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -74,10 +68,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getLeggings() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getLeggings();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -92,10 +83,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getBoots() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getBoots();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -120,10 +108,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getItemInMainHand() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getItemInHand(HandTypes.MAIN_HAND);
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -138,10 +123,7 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public ItemStack getItemInOffHand() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.spongeValue.getItemInHand(HandTypes.OFF_HAND);
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override

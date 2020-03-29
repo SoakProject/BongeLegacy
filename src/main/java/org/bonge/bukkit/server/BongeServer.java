@@ -1,12 +1,14 @@
 package org.bonge.bukkit.server;
 
 import org.bonge.bukkit.block.BongeTag;
+import org.bonge.bukkit.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.boss.BongeServerBossBar;
 import org.bonge.bukkit.command.BongeCommandManager;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.entity.living.human.BongePlayer;
 import org.bonge.bukkit.inventory.item.BongeItemFactory;
 import org.bonge.bukkit.scheduler.BongeScheduler;
+import org.bonge.bukkit.scoreboard.BongeScoreboardManager;
 import org.bonge.bukkit.server.messager.BongeMessenger;
 import org.bonge.bukkit.server.plugin.BongePluginManager;
 import org.bonge.bukkit.server.service.BongeServiceManager;
@@ -16,12 +18,15 @@ import org.bonge.bukkit.world.BongeWorld;
 import org.bonge.convert.EnumConvert;
 import org.bonge.convert.InterfaceConvert;
 import org.bonge.launch.BongeLaunch;
-import org.bonge.util.WrappedArrayList;
+import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.boss.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.command.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,6 +43,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.CachedServerIcon;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -123,7 +130,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public Collection<? extends Player> getOnlinePlayers() {
-        return WrappedArrayList.ofImmutable(BongePlayer::new, this.spongeValue.getOnlinePlayers());
+        return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getOnlinePlayers());
     }
 
     @Override
@@ -574,7 +581,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public ScoreboardManager getScoreboardManager() {
-        return null;
+        return new BongeScoreboardManager();
     }
 
     @Override
@@ -583,12 +590,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     }
 
     @Override
-    public CachedServerIcon loadServerIcon(File file) throws IllegalArgumentException, Exception {
+    public CachedServerIcon loadServerIcon(File file) {
         return null;
     }
 
     @Override
-    public CachedServerIcon loadServerIcon(BufferedImage bufferedImage) throws IllegalArgumentException, Exception {
+    public CachedServerIcon loadServerIcon(BufferedImage bufferedImage) {
         return null;
     }
 
@@ -652,27 +659,30 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public BlockData createBlockData(Material material) {
-        return null;
+        return BongeAbstractBlockData.of(((BlockType)material.getSpongeValue().get()).getDefaultState());
     }
 
     @Override
     public BlockData createBlockData(Material material, Consumer<BlockData> consumer) {
-        return null;
+        BlockData data = createBlockData(material);
+        consumer.accept(data);
+        return data;
     }
 
     @Override
     public BlockData createBlockData(String s) throws IllegalArgumentException {
-        return null;
+        Optional<BlockState> opState = Sponge.getRegistry().getType(BlockState.class, s);
+        return opState.map(BongeAbstractBlockData::of).orElse(null);
     }
 
     @Override
     public BlockData createBlockData(Material material, String s) throws IllegalArgumentException {
-        return null;
+        return createBlockData(material.getKey().getNamespace() + "[" + s + "]");
     }
 
     @Override
     public <T extends Keyed> Tag<T> getTag(String s, NamespacedKey namespacedKey, Class<T> aClass) {
-        return new BongeTag<T>(namespacedKey, s);
+        return new BongeTag<>(namespacedKey, s);
         /*for (Tag<T> value : this.getTags(s, aClass)){
             if(value.getKey().equals(namespacedKey)){
                 return value;

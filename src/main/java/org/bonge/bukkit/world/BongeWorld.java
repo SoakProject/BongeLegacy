@@ -65,19 +65,13 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
     @Override
     public Chunk getChunkAt(int i, int i1) {
         Optional<org.spongepowered.api.world.Chunk> opChunk = this.spongeValue.getChunk(i, 0, i1);
-        if(!opChunk.isPresent()){
-            return null;
-        }
-        return new BongeChunk(opChunk.get());
+        return opChunk.map(BongeChunk::new).orElse(null);
     }
 
     @Override
     public Chunk getChunkAt(Location location) {
         Optional<org.spongepowered.api.world.Chunk> opChunk = this.spongeValue.getChunkAtBlock(new BongeLocation(location).getSpongeLocation().getBlockPosition());
-        if(!opChunk.isPresent()){
-            return null;
-        }
-        return new BongeChunk(opChunk.get());
+        return opChunk.map(BongeChunk::new).orElse(null);
     }
 
     @Override
@@ -231,7 +225,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
                 return null;
             }
           return (((BongeAbstractEntity<?>)e).getSpongeValue());
-        } , t -> BongeAbstractEntity.of(t), this.spongeValue.getEntities());
+        }, BongeAbstractEntity::of, this.spongeValue.getEntities());
     }
 
     @Override
@@ -239,8 +233,9 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
         return null;
     }
 
+    @SafeVarargs
     @Override
-    public <T extends Entity> Collection<T> getEntitiesByClass(Class<T>... classes) {
+    public final <T extends Entity> Collection<T> getEntitiesByClass(Class<T>... classes) {
         return null;
     }
 
@@ -256,7 +251,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public List<Player> getPlayers() {
-        return new WrappedArrayList.Direct<>(p -> (((BongePlayer)p).getSpongeValue()), t -> new BongePlayer(t), this.spongeValue.getPlayers());
+        return new WrappedArrayList.Direct<>(p -> (((BongePlayer)p).getSpongeValue()), BongePlayer::new, this.spongeValue.getPlayers());
     }
 
     @Override
@@ -335,10 +330,8 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
     public void setWeatherDuration(int i) {
         if(this.spongeValue.getWeather().equals(Weathers.THUNDER_STORM)){
             this.spongeValue.getProperties().setThunderTime(i);
-            return;
         }else if(this.spongeValue.getWeather().equals(Weathers.RAIN)){
             this.spongeValue.getProperties().setRainTime(i);
-            return;
         }
     }
 
@@ -437,6 +430,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
     }
 
     @Override
+    @Deprecated
     public FallingBlock spawnFallingBlock(Location location, MaterialData materialData) throws IllegalArgumentException {
         return null;
     }

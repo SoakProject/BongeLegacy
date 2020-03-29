@@ -2,7 +2,6 @@ package org.bonge.bukkit.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
-import org.spongepowered.api.command.spec.CommandSpec;
 
 public class CommandState {
 

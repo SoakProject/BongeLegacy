@@ -32,7 +32,7 @@ public class InventoryConvert {
         ItemStack stack2 = new ItemStack(Material.getMaterial(stack.getType()), stack.getQuantity());
         ItemMeta meta = new BongeItemMeta(stack);
         meta.setDisplayName(InterfaceConvert.toString(stack.get(Keys.DISPLAY_NAME).orElse(null)));
-        stack.get(Keys.UNBREAKABLE).ifPresent(v -> meta.setUnbreakable(v));
+        stack.get(Keys.UNBREAKABLE).ifPresent(meta::setUnbreakable);
         stack2.setItemMeta(meta);
         return stack2;
     }

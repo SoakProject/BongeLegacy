@@ -7,15 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandResult;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BongeCommandManager implements CommandMap {
 
@@ -28,9 +25,7 @@ public class BongeCommandManager implements CommandMap {
     }
 
     public void registerWithSponge(){
-        this.commands.stream().forEach(s -> {
-            registerWithSponge(s);
-        });
+        this.commands.forEach(this::registerWithSponge);
     }
 
     public void registerWithSponge(CommandState state){
@@ -42,12 +37,21 @@ public class BongeCommandManager implements CommandMap {
                 }
             }
             list.add(0, state.getLabel());
-            list.add(1, state.getPluginTag() + ":" + state.getLabel());
+            //list.add(1, state.getPluginTag() + ":" + state.getLabel());
             String[] commands = new String[list.size()];
             for(int A = 0; A < list.size(); A++){
-                commands[A] = list.get(A);
+                String command = list.get(A);
+                String modified = command.replaceAll("-", "");
+                if(command.length() != modified.length()){
+                    System.err.println("Bonge detected invalid command of '" + command + "'. This has been changed to '" + modified + "'");
+                }
+                commands[A] = modified;
             }
-            Sponge.getCommandManager().register(BongeLaunch.getInstance(), new SpongeCommandWrapping(state), commands);
+            try {
+                Sponge.getCommandManager().register(BongeLaunch.getInstance(), new SpongeCommandWrapping(state), commands);
+            }catch (IllegalArgumentException e){
+                System.err.println("Command could not be registered: " + state.getPluginTag() + ":" + state.getLabel() + " due to another command being registered with the same label");
+            }
         }
 
     public void register(PluginCommand command){
@@ -56,15 +60,12 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public void registerAll(@NotNull String fallbackPrefix, @NotNull List<Command> commands) {
-        commands.stream().forEach(c -> {
-            this.register(fallbackPrefix, c);
-        });
+        commands.forEach(c -> this.register(fallbackPrefix, c));
     }
 
     @Override
     public boolean register(@NotNull String label, @NotNull String fallbackPrefix, @NotNull Command command) {
-        boolean check = this.commands.add(new CommandState(label, fallbackPrefix, command));
-        return check;
+        return this.commands.add(new CommandState(label, fallbackPrefix, command));
     }
 
     @Override
@@ -75,16 +76,20 @@ public class BongeCommandManager implements CommandMap {
     @Override
     public boolean dispatch(@NotNull CommandSender sender, @NotNull String cmdLine) throws CommandException {
         CommandResult result = Sponge.getCommandManager().process(InterfaceConvert.getSource(sender), cmdLine);
-        return result.equals(CommandResult.empty()) ? false : true;
+        return !result.equals(CommandResult.empty());
     }
 
     @Override
     public void clearCommands() {
-        Sponge.getPluginManager().getPlugins().stream().forEach(p -> {
-            Sponge.getCommandManager().getOwnedBy(p).stream().forEach(m -> {
-                Sponge.getCommandManager().removeMapping(m);
-            });
-        });
+        Sponge
+                .getPluginManager()
+                .getPlugins()
+                .forEach(p -> Sponge
+                        .getCommandManager()
+                        .getOwnedBy(p)
+                        .forEach(m -> Sponge
+                                .getCommandManager()
+                                .removeMapping(m)));
         this.commands.clear();
     }
 
@@ -95,10 +100,7 @@ public class BongeCommandManager implements CommandMap {
             return opcmd.get().getCmd();
         }
         Optional<CommandState> opAlis = this.commands.stream().filter(c -> c.getCmd().getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
-        if(opAlis.isPresent()){
-            return opAlis.get().getCmd();
-        }
-        return null;
+        return opAlis.map(CommandState::getCmd).orElse(null);
     }
 
     @Override
@@ -108,6 +110,7 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull String cmdLine, @Nullable Location location) throws IllegalArgumentException {
+        assert location != null;
         return Sponge.getCommandManager().getSuggestions(InterfaceConvert.getSource(sender), cmdLine,  new BongeLocation(location).getSpongeLocation());
     }
 }

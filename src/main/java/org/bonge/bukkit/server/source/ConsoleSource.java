@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Set;
 
@@ -27,7 +26,7 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        Sponge.getServer().getConsole().sendMessages(ArrayUtils.convert(Text.class, t -> InterfaceConvert.fromString(t), messages));
+        Sponge.getServer().getConsole().sendMessages(ArrayUtils.convert(Text.class, InterfaceConvert::fromString, messages));
     }
 
     @Override

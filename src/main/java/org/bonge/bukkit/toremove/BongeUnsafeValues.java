@@ -48,7 +48,7 @@ public class BongeUnsafeValues implements UnsafeValues {
     }
 
     @Override
-    public void checkSupported(PluginDescriptionFile pluginDescriptionFile) throws InvalidPluginException {
+    public void checkSupported(PluginDescriptionFile pluginDescriptionFile) {
 
     }
 

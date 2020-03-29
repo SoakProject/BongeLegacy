@@ -23,10 +23,7 @@ public abstract class BongeAbstractMonster<T extends org.spongepowered.api.entit
     @Override
     public LivingEntity getTarget() {
         Optional<Entity> opEntity = this.getSpongeValue().getTarget();
-        if(!opEntity.isPresent()){
-            return null;
-        }
-        return (LivingEntity) BongeAbstractEntity.of(opEntity.get());
+        return opEntity.map(entity -> (LivingEntity) BongeAbstractEntity.of(entity)).orElse(null);
     }
 
     @Override

@@ -15,7 +15,6 @@ import org.spongepowered.api.plugin.Plugin;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.logging.Logger;
 
 @Plugin(id = BongeLaunch.PLUGIN_ID, name = BongeLaunch.PLUGIN_NAME, version = BongeLaunch.PLUGIN_VERSION)

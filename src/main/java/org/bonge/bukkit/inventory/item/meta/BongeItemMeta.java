@@ -2,7 +2,6 @@ package org.bonge.bukkit.inventory.item.meta;
 
 import com.google.common.collect.Multimap;
 import org.bonge.convert.InterfaceConvert;
-import org.bonge.convert.InventoryConvert;
 import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.attribute.Attribute;
@@ -64,12 +63,12 @@ public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inven
 
     @Override
     public List<String> getLore() {
-        return ArrayUtils.convert((t) -> InterfaceConvert.toString(t), this.spongeValue.get(Keys.ITEM_LORE).get());
+        return ArrayUtils.convert(InterfaceConvert::toString, this.spongeValue.get(Keys.ITEM_LORE).get());
     }
 
     @Override
     public void setLore(List<String> lore) {
-        this.spongeValue.offer(Keys.ITEM_LORE, ArrayUtils.convert((s) -> InterfaceConvert.fromString(s), lore));
+        this.spongeValue.offer(Keys.ITEM_LORE, ArrayUtils.convert(InterfaceConvert::fromString, lore));
     }
 
     @Override

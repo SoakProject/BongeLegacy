@@ -12,7 +12,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.Chunk> implements Chunk {
 
@@ -55,9 +54,8 @@ public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.Chunk> 
         Collection<org.spongepowered.api.entity.Entity> sEntities = this.spongeValue.getEntities();
         Entity[] entities = new Entity[sEntities.size()];
         int count = 0;
-        Iterator<org.spongepowered.api.entity.Entity> iEntities = sEntities.iterator();
-        while(iEntities.hasNext()){
-            entities[count] = BongeAbstractEntity.of(iEntities.next());
+        for (org.spongepowered.api.entity.Entity sEntity : sEntities) {
+            entities[count] = BongeAbstractEntity.of(sEntity);
             count++;
         }
         return entities;

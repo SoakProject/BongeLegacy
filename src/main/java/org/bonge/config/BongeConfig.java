@@ -3,11 +3,9 @@ package org.bonge.config;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import org.bukkit.configuration.Configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -79,11 +77,11 @@ public class BongeConfig {
         System.out.println("PATH_PLUGINS_FILE: " + this.get(PATH_PLUGINS_FILE).isPresent());
 
         if (!this.get(PATH_PLUGINS_CONFIG).isPresent()){
-            this.write(f -> f.getPath(), PATH_PLUGINS_CONFIG);
+            this.write(File::getPath, PATH_PLUGINS_CONFIG);
             this.writeComment("Where all the config files for plugins should go. Note that some plugins do not respect this. Those files will be in '/plugins'", PATH_PLUGINS_CONFIG.getPath());
         }
         if (!this.get(PATH_PLUGINS_FILE).isPresent()){
-            this.write(f -> f.getPath(), PATH_PLUGINS_FILE);
+            this.write(File::getPath, PATH_PLUGINS_FILE);
             this.writeComment("Where all the bukkit files should be loaded from", PATH_PLUGINS_FILE.getPath());
         }
     }

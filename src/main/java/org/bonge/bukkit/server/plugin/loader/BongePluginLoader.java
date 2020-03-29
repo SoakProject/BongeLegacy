@@ -120,7 +120,7 @@ public class BongePluginLoader implements IBongePluginLoader {
 
     @Override
     @Deprecated
-    public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
+    public PluginDescriptionFile getPluginDescription(File file) {
         return null;
     }
 

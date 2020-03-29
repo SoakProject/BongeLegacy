@@ -2,7 +2,6 @@ package org.bonge.bukkit.inventory.inventory.entity;
 
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.convert.InventoryConvert;
-import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -12,16 +11,12 @@ import java.util.Optional;
 
 public interface BongeEntityInventory<T extends org.spongepowered.api.entity.ArmorEquipable & org.spongepowered.api.entity.Entity> extends EntityEquipment {
 
-
     T getSpongeValue();
 
     @Override
     default ItemStack getItemInMainHand() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getItemInHand(HandTypes.MAIN_HAND);
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -36,10 +31,7 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
     @Override
     default ItemStack getItemInOffHand() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getItemInHand(HandTypes.OFF_HAND);
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -66,10 +58,7 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
     @Override
     default ItemStack getHelmet() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getHelmet();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -84,10 +73,7 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
     @Override
     default ItemStack getChestplate() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getChestplate();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -102,10 +88,7 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
     @Override
     default ItemStack getLeggings() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getLeggings();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override
@@ -120,10 +103,7 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
     @Override
     default ItemStack getBoots() {
         Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSpongeValue().getBoots();
-        if(!opItem.isPresent()){
-            return null;
-        }
-        return InventoryConvert.getItemStack(opItem.get());
+        return opItem.map(InventoryConvert::getItemStack).orElse(null);
     }
 
     @Override

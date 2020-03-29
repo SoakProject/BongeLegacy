@@ -1,7 +1,6 @@
 package org.bonge.bukkit.entity.other.item;
 
 import org.bonge.bukkit.entity.BongeAbstractEntity;
-import org.bonge.convert.InterfaceConvert;
 import org.bonge.convert.InventoryConvert;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;

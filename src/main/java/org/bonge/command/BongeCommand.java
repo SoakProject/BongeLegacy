@@ -5,9 +5,8 @@ import org.bonge.bukkit.server.plugin.loader.BongePluginLoader;
 import org.bonge.command.argument.PluginArgument;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import org.spongepowered.api.command.CommandException;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,13 +24,12 @@ public class BongeCommand {
 
     private static class DumpCMD implements CommandExecutor {
 
+        @NotNull
         @Override
-        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        public CommandResult execute(@NotNull CommandSource src, @NotNull CommandContext args) {
             ((BongeServer) Bukkit.getServer()).getPluginManager().getBongePlugins().stream().filter(l -> l instanceof BongePluginLoader).forEach(l -> {
                 src.sendMessage(Text.of(((BongePluginLoader) l).getYaml().getFullName()));
-                ((BongePluginLoader) l).getClasses().stream().forEach(c -> {
-                    src.sendMessage(Text.of(" - " + c.getName()));
-                });
+                ((BongePluginLoader) l).getClasses().forEach(c -> src.sendMessage(Text.of(" - " + c.getName())));
             });
             return CommandResult.success();
         }
@@ -41,12 +39,11 @@ public class BongeCommand {
 
         class ShowCMD implements CommandExecutor {
 
+            @NotNull
             @Override
-            public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+            public CommandResult execute(@NotNull CommandSource src, CommandContext args) {
                 Plugin plugin = args.<Plugin>getOne(PLUGIN).get();
-                ((BongeServer) Bukkit.getServer()).getCommandManager().getCommands(plugin).stream().forEach(c -> {
-                    src.sendMessage(Text.join(Text.builder("Command: " + c.getName() + " ").color(TextColors.AQUA).build(), Text.builder(c.getDescription()).build()));
-                });
+                ((BongeServer) Bukkit.getServer()).getCommandManager().getCommands(plugin).forEach(c -> src.sendMessage(Text.join(Text.builder("Command: " + c.getName() + " ").color(TextColors.AQUA).build(), Text.builder(c.getDescription()).build())));
                 return CommandResult.success();
             }
         }
@@ -55,8 +52,9 @@ public class BongeCommand {
 
     private static class InfoCMD implements CommandExecutor {
 
+        @NotNull
         @Override
-        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        public CommandResult execute(CommandSource src, @NotNull CommandContext args) {
             src.sendMessage(Text.join(Text.builder("version: ").build(), Text.builder(Bukkit.getServer().getVersion()).build()));
             return CommandResult.success();
         }
@@ -64,8 +62,9 @@ public class BongeCommand {
 
     private static class PluginsCMD implements CommandExecutor {
 
+        @NotNull
         @Override
-        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        public CommandResult execute(@NotNull CommandSource src, CommandContext args) {
             Optional<Plugin> opPlugin = args.getOne(PLUGIN);
             if (opPlugin.isPresent()) {
                 String api = opPlugin.get().getDescription().getAPIVersion();
@@ -85,7 +84,7 @@ public class BongeCommand {
             }
 
             List<Plugin> plugins = Arrays.asList(Bukkit.getPluginManager().getPlugins());
-            plugins.sort(Comparator.comparing(c -> c.getName(), Comparator.naturalOrder()));
+            plugins.sort(Comparator.comparing(Plugin::getName, Comparator.naturalOrder()));
             Text text = Text.of("Plugins(" + plugins.size() + "): ");
             for (int A = 0; A < plugins.size(); A++) {
                 Plugin plugin = plugins.get(A);

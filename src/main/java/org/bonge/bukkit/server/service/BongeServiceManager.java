@@ -36,7 +36,7 @@ public class BongeServiceManager implements ServicesManager {
     public <T> T load(Class<T> service) {
         RegisteredServiceProvider<T> service1 = getRegistration(service);
         if(service1 != null){
-            return (T)service1.getProvider();
+            return service1.getProvider();
         }
         return null;
     }

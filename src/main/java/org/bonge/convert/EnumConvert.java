@@ -1,19 +1,41 @@
 package org.bonge.convert;
 
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.spongepowered.api.block.BlockType;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.spongepowered.api.boss.BossBarColor;
 import org.spongepowered.api.boss.BossBarColors;
 import org.spongepowered.api.boss.BossBarOverlay;
 import org.spongepowered.api.boss.BossBarOverlays;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.util.Direction;
 
 public class EnumConvert {
+
+    public static DisplaySlot getDisplaySlot(org.spongepowered.api.scoreboard.displayslot.DisplaySlot slot){
+        if(slot.equals(DisplaySlots.BELOW_NAME)){
+            return DisplaySlot.BELOW_NAME;
+        }
+        if(slot.equals(DisplaySlots.LIST)){
+            return DisplaySlot.PLAYER_LIST;
+        }
+        if(slot.equals(DisplaySlots.SIDEBAR)){
+            return DisplaySlot.SIDEBAR;
+        }
+        throw new IllegalStateException("Unknown Display Slot of " + slot.getId());
+    }
+
+    public static org.spongepowered.api.scoreboard.displayslot.DisplaySlot getDisplaySlot(DisplaySlot slot){
+        switch (slot){
+            case BELOW_NAME: return DisplaySlots.BELOW_NAME;
+            case PLAYER_LIST: return DisplaySlots.LIST;
+            case SIDEBAR: return DisplaySlots.SIDEBAR;
+            default: throw new IllegalStateException("Unknown Display Slot of " + slot.name());
+        }
+    }
 
     public static BossBarOverlay getStyle(BarStyle style){
         switch (style){

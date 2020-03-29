@@ -20,12 +20,12 @@ public class BongeFakePluginLoader implements IBongePluginLoader {
 
     @Deprecated
     @Override
-    public Plugin loadPlugin(File file) throws InvalidPluginException, UnknownDependencyException {
+    public Plugin loadPlugin(File file) throws UnknownDependencyException {
         return this.plugin;
     }
 
     @Override
-    public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
+    public PluginDescriptionFile getPluginDescription(File file) {
         return this.plugin.getDescription();
     }
 

@@ -3,7 +3,7 @@ package org.bonge.bukkit.boss;
 import org.bonge.bukkit.entity.living.human.BongePlayer;
 import org.bonge.convert.EnumConvert;
 import org.bonge.convert.InterfaceConvert;
-import org.bonge.util.WrappedArrayList;
+import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -96,7 +96,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
 
     @Override
     public List<Player> getPlayers() {
-        return WrappedArrayList.ofImmutable(p -> new BongePlayer(p), this.spongeValue.getPlayers());
+        return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getPlayers());
     }
 
     @Override

@@ -8,17 +8,50 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.scoreboard.critieria.Criteria;
+import org.spongepowered.api.scoreboard.critieria.Criterion;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 public class InterfaceConvert {
+
+    public static Criterion getCriteria(String criteria){
+        switch (criteria){
+            case "dummy": return Criteria.DUMMY;
+            case "deathCount": return Criteria.DEATHS;
+            case "playerKillCount": return Criteria.PLAYER_KILLS;
+            case "totalKillCount": return Criteria.TOTAL_KILLS;
+            case "health": return Criteria.HEALTH;
+            case "trigger": return Criteria.TRIGGER;
+            default: throw new IllegalStateException("Unknown criteria of '" + criteria + "'");
+        }
+    }
+
+    public static String getCriteria(Criterion criterion){
+        if(criterion.equals(Criteria.DEATHS)){
+            return "deathCount";
+        }
+        if(criterion.equals(Criteria.DUMMY)){
+            return "dummy";
+        }
+        if(criterion.equals(Criteria.HEALTH)){
+            return "health";
+        }
+        if(criterion.equals(Criteria.PLAYER_KILLS)){
+            return "playerKillCount";
+        }
+        if(criterion.equals(Criteria.TOTAL_KILLS)){
+            return "totalKillCount";
+        }
+        if(criterion.equals(Criteria.TRIGGER)){
+            return "trigger";
+        }
+        throw new IllegalStateException("Unknown criteria of " + criterion.getId());
+    }
 
     public static Text fromString(String message){
         Text text = TextSerializers.FORMATTING_CODE.deserialize(message);
