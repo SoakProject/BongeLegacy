@@ -3,6 +3,7 @@ package org.bonge.bukkit.entity.living.human;
 import org.bonge.bukkit.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.inventory.inventory.BongeAbstractInventory;
+import org.bonge.bukkit.inventory.inventory.BongeInventoryView;
 import org.bonge.bukkit.scoreboard.BongeScoreboard;
 import org.bonge.convert.InterfaceConvert;
 import org.bonge.util.ArrayUtils;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
@@ -35,11 +37,17 @@ import org.spongepowered.api.text.title.Title;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity.living.player.Player> implements Player {
+
+    private static Set<BongePlayer> PLAYERS = new HashSet<>();
+
+    private BongeInventoryView view;
 
     public BongePlayer(org.spongepowered.api.entity.living.player.Player entity) {
         super(entity);
@@ -811,14 +819,18 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     }
 
     @Override
-    public InventoryView getOpenInventory() {
+    public BongeInventoryView getOpenInventory() {
+        if(this.spongeValue.getOpenInventory().isPresent()){
+            return this.view;
+        }
         return null;
     }
 
     @Override
     public InventoryView openInventory(Inventory inventory) {
+        this.view = new BongeInventoryView(this, inventory);
         this.spongeValue.openInventory(((BongeAbstractInventory<?>)inventory).getSpongeInventoryValue());
-        return null;
+        return this.view;
     }
 
     @Override
@@ -848,5 +860,19 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     @Override
     public void closeInventory() {
         this.spongeValue.closeInventory();
+    }
+
+    private static void updatePlayerList(){
+        PLAYERS = PLAYERS.stream().filter(p -> Sponge.getServer().getPlayer(p.getUniqueId()).isPresent()).collect(Collectors.toSet());
+    }
+
+    public static BongePlayer getPlayer(org.spongepowered.api.entity.living.player.Player player){
+        Optional<BongePlayer> opPlayer = PLAYERS.stream().filter(p -> p.getSpongeValue().equals(player)).findAny();
+        if(opPlayer.isPresent()){
+            return opPlayer.get();
+        }
+        BongePlayer player2 = new BongePlayer(player);
+        PLAYERS.add(player2);
+        return player2;
     }
 }

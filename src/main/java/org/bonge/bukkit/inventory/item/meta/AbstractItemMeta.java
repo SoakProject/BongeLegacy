@@ -1,9 +1,7 @@
 package org.bonge.bukkit.inventory.item.meta;
 
 import com.google.common.collect.Multimap;
-import org.bonge.convert.InterfaceConvert;
-import org.bonge.util.ArrayUtils;
-import org.bonge.wrapper.BongeWrapper;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -11,34 +9,43 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.*;
 
-public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inventory.ItemStack> implements ItemMeta, Damageable {
+public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
-    public BongeItemMeta(ItemStack value) {
-        super(value);
+    protected String displayName;
+    protected List<String> lore = new ArrayList<>();
+    protected Integer damage;
+    protected Material[] acceptable;
+
+    public AbstractItemMeta(Material... material){
+        this.acceptable = material;
+    }
+
+    public boolean isAcceptableMaterial(Material material){
+        for(Material ma : this.acceptable){
+            System.out.println("Comparing: " + ma.name() + " | " + material.name());
+            if(ma.equals(material)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean hasDisplayName() {
-        return this.spongeValue.get(Keys.DISPLAY_NAME).isPresent();
+        return this.displayName != null;
     }
 
     @Override
     public String getDisplayName() {
-        return InterfaceConvert.toString(this.spongeValue.get(Keys.DISPLAY_NAME).get());
+        return this.displayName;
     }
 
     @Override
     public void setDisplayName(String name) {
-        if(name == null){
-            this.spongeValue.remove(Keys.DISPLAY_NAME);
-            return;
-        }
-        this.spongeValue.offer(Keys.DISPLAY_NAME, InterfaceConvert.fromString(name));
+        this.displayName = name;
     }
 
     @Override
@@ -58,17 +65,18 @@ public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inven
 
     @Override
     public boolean hasLore() {
-        return !this.spongeValue.get(Keys.ITEM_LORE).get().isEmpty();
+        return !this.lore.isEmpty();
     }
 
     @Override
     public List<String> getLore() {
-        return ArrayUtils.convert(InterfaceConvert::toString, this.spongeValue.get(Keys.ITEM_LORE).get());
+        return this.lore;
     }
 
     @Override
     public void setLore(List<String> lore) {
-        this.spongeValue.offer(Keys.ITEM_LORE, ArrayUtils.convert(InterfaceConvert::fromString, lore));
+        this.lore.clear();
+        this.lore.addAll(lore);
     }
 
     @Override
@@ -88,7 +96,7 @@ public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inven
 
     @Override
     public Map<Enchantment, Integer> getEnchants() {
-        return new HashMap<>();
+        return null;
     }
 
     @Override
@@ -118,7 +126,7 @@ public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inven
 
     @Override
     public Set<ItemFlag> getItemFlags() {
-        return new HashSet<>();
+        return null;
     }
 
     @Override
@@ -182,27 +190,27 @@ public class BongeItemMeta extends BongeWrapper<org.spongepowered.api.item.inven
     }
 
     @Override
-    public BongeItemMeta clone() {
-        return new BongeItemMeta(this.spongeValue.copy());
-    }
-
-    @Override
     public boolean hasDamage() {
-        return this.spongeValue.get(Keys.ITEM_DURABILITY).isPresent();
+        return this.damage != null;
     }
 
     @Override
     public int getDamage() {
-        return this.spongeValue.get(Keys.ITEM_DURABILITY).orElse(0);
+        return this.damage;
     }
 
     @Override
     public void setDamage(int damage) {
-        this.spongeValue.offer(Keys.ITEM_DURABILITY, damage);
+        this.damage = damage;
     }
 
     @Override
     public Map<String, Object> serialize() {
         return null;
+    }
+
+    @Override
+    public AbstractItemMeta clone(){
+        throw new IllegalArgumentException("Not implemented");
     }
 }

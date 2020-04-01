@@ -39,6 +39,10 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         return this.plugins;
     }
 
+    public BongeURLClassLoader getLoader(){
+        return this.loader;
+    }
+
     public Optional<IBongePluginLoader> getPluginLoader(Plugin plugin){
         System.out.println("PluginLoaders: " + plugins.size());
         return this.plugins.stream().filter(pl -> {

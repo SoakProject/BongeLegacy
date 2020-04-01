@@ -14,6 +14,9 @@ Yep, you read that right. Bukkit did some huge changes to make Bukkit more like 
 ##Compatibility list?
 Yep, it does exist. https://docs.google.com/spreadsheets/d/1ZiDUcVUNO86vu0PpT4W2n0yEjbeNdvrkVjPkSxrMGbk 
 
+Add to the list here.
+https://forms.gle/qDfx1JW1PJeY2Xad6
+
 ## So … its pore?
 Bonge is set out to achieve what Pore did, however no code is shared between the two projects - not deliberately. Pore closed down due to some very valid reasons that you can read about here https://caseif.blog/post.php?id=41 while some points are present in Bonge, here is why Bonge is still going forward. 
 

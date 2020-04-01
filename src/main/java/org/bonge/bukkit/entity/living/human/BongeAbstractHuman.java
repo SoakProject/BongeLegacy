@@ -1,6 +1,7 @@
 package org.bonge.bukkit.entity.living.human;
 
 import org.bonge.bukkit.entity.living.BongeAbstractLivingEntity;
+import org.bonge.bukkit.inventory.inventory.BongeInventoryView;
 import org.bonge.bukkit.inventory.inventory.entity.living.human.BongePlayerInventory;
 import org.bonge.bukkit.world.BongeLocation;
 import org.bonge.convert.EnumConvert;
@@ -80,12 +81,20 @@ public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.
 
     @Override
     public @NotNull ItemStack getItemOnCursor() {
-        return null;
+        InventoryView view = getOpenInventory();
+        if(view == null){
+            throw new IllegalArgumentException("Inventory is not open");
+        }
+        return ((BongeInventoryView)view).getCursorO();
     }
 
     @Override
     public void setItemOnCursor(@Nullable ItemStack item) {
-
+        InventoryView view = getOpenInventory();
+        if(view == null){
+            return;
+        }
+        ((BongeInventoryView)view).setCursorO(item);
     }
 
     @Override

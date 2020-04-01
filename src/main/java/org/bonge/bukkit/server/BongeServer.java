@@ -6,6 +6,7 @@ import org.bonge.bukkit.boss.BongeServerBossBar;
 import org.bonge.bukkit.command.BongeCommandManager;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.entity.living.human.BongePlayer;
+import org.bonge.bukkit.inventory.inventory.BongeCustomInventory;
 import org.bonge.bukkit.inventory.item.BongeItemFactory;
 import org.bonge.bukkit.scheduler.BongeScheduler;
 import org.bonge.bukkit.scoreboard.BongeScoreboardManager;
@@ -17,6 +18,7 @@ import org.bonge.bukkit.toremove.BongeUnsafeValues;
 import org.bonge.bukkit.world.BongeWorld;
 import org.bonge.convert.EnumConvert;
 import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.InventoryConvert;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
@@ -47,6 +49,10 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.item.inventory.InventoryArchetypes;
+import org.spongepowered.api.item.inventory.property.InventoryDimension;
+import org.spongepowered.api.item.inventory.property.InventoryTitle;
+import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.awt.image.BufferedImage;
@@ -511,6 +517,15 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public Inventory createInventory(InventoryHolder inventoryHolder, InventoryType inventoryType) {
+        org.spongepowered.api.item.inventory.Inventory inventory = org.spongepowered.api.item.inventory.Inventory
+                .builder()
+                .of(InventoryConvert.getInventoryType(inventoryType))
+                .build(BongeLaunch.getInstance());
+        if(inventory.getArchetype().equals(InventoryArchetypes.CHEST) || inventory.getArchetype().equals(InventoryArchetypes.DOUBLE_CHEST)){
+            BongeCustomInventory bci = new BongeCustomInventory(inventory);
+            bci.setHolder(inventoryHolder);
+            return bci;
+        }
         return null;
     }
 
@@ -521,12 +536,27 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public Inventory createInventory(InventoryHolder inventoryHolder, int i) throws IllegalArgumentException {
-        return null;
+        org.spongepowered.api.item.inventory.Inventory inventory = org.spongepowered.api.item.inventory.Inventory
+                .builder()
+                .of(InventoryArchetypes.CHEST)
+                .property(InventoryDimension.of(9, i / 9))
+                .build(BongeLaunch.getInstance());
+        BongeCustomInventory bci = new BongeCustomInventory(inventory);
+        bci.setHolder(inventoryHolder);
+        return bci;
     }
 
     @Override
     public Inventory createInventory(InventoryHolder inventoryHolder, int i, String s) throws IllegalArgumentException {
-        return null;
+        org.spongepowered.api.item.inventory.Inventory inventory = org.spongepowered.api.item.inventory.Inventory
+                .builder()
+                .of(InventoryArchetypes.CHEST)
+                .property(InventoryDimension.of(9, i/9))
+                .property(InventoryTitle.of(InterfaceConvert.fromString(s)))
+                .build(BongeLaunch.getInstance());
+        BongeCustomInventory bci = new BongeCustomInventory(inventory);
+        bci.setHolder(inventoryHolder);
+        return bci;
     }
 
     @Override
@@ -659,7 +689,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public BlockData createBlockData(Material material) {
-        return BongeAbstractBlockData.of(((BlockType)material.getSpongeValue().get()).getDefaultState());
+        return BongeAbstractBlockData.of((material.getSpongeBlockValue().get()).getDefaultState());
     }
 
     @Override

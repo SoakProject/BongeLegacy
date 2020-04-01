@@ -27,7 +27,7 @@ public class BongeLaunch {
     @Inject
     private Logger logger;
 
-    private BongeConfig config;
+    BongeConfig config;
 
     private static BongeLaunch instance;
 
@@ -37,35 +37,17 @@ public class BongeLaunch {
 
     @Listener
     public void onLoad(GamePostInitializationEvent event){
-        BongeServer server = new BongeServer(Sponge.getServer());
-        Bukkit.setServer(server);
-        File file = new File("config/bonge/config.json");
-        file.getParentFile().mkdirs();
-        if(!file.exists()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        this.config = new BongeConfig(file);
-        File pluginsFile = this.config.getOrElse(BongeConfig.PATH_PLUGINS_FILE);
-        pluginsFile.mkdirs();
-        Sponge.getCommandManager().register(this, BongeCommand.build(), "bonge", "bukkit");
-        server.getPluginManager().loadPlugins(pluginsFile);
-        Sponge.getEventManager().registerListeners(this, new org.bonge.listeners.Listener());
+        BongeBukkitLaunch.onLoad(this);
     }
 
     @Listener
     public void onStarting(GameStartingServerEvent event){
-        BongeServer server = (BongeServer) Bukkit.getServer();
-        BongePluginManager manager = server.getPluginManager();
-        manager.bootPlugins();
+        BongeBukkitLaunch.onEnable();
     }
 
     @Listener
     public void onDisable(GameStoppedServerEvent event){
-        this.config.save();
+        BongeBukkitLaunch.onDisable(this);
     }
 
     public static Logger getLogger(){

@@ -72,7 +72,7 @@ public class InterfaceConvert {
 
     public static CommandSender getSender(org.spongepowered.api.command.CommandSource source){
         if(source instanceof org.spongepowered.api.entity.living.player.Player){
-            return new BongePlayer((org.spongepowered.api.entity.living.player.Player)source);
+            return BongePlayer.getPlayer((org.spongepowered.api.entity.living.player.Player)source);
         }
         if(source instanceof org.spongepowered.api.command.source.ConsoleSource){
             return new ConsoleSource();

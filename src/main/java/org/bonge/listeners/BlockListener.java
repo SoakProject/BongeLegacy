@@ -14,13 +14,13 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 
-public class Listener {
+public class BlockListener {
 
     @org.spongepowered.api.event.Listener
     public void onBlockBreak(ChangeBlockEvent.Break event, @Root org.spongepowered.api.entity.living.player.Player player){
         if(event.getTransactions().size() == 1) {
             BlockSnapshot block = event.getTransactions().get(0).getOriginal();
-            Player bPlayer = new BongePlayer(player);
+            Player bPlayer = BongePlayer.getPlayer(player);
             BlockBreakEvent bukkitEvent = new BlockBreakEvent(new BongeBlockSnapshot(block), bPlayer);
             Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);
             event.setCancelled(bukkitEvent.isCancelled());
@@ -30,7 +30,8 @@ public class Listener {
     @org.spongepowered.api.event.Listener
     public void onSignChange(ChangeSignEvent event, @Root org.spongepowered.api.entity.living.player.Player player){
         BongeBlock block = new BongeBlock(event.getTargetTile().getLocation());
-        BongePlayer bPlayer = new BongePlayer(player);
+        BongePlayer bPlayer = BongePlayer.getPlayer(player);
+
         String[] lines = new String[4];
         for(int A = 0; A < lines.length; A++){
             lines[A] = InterfaceConvert.toString(event.getOriginalText().asList().get(A));

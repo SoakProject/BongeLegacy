@@ -475,7 +475,7 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     public static Entity of(org.spongepowered.api.entity.Entity entity){
         if(entity instanceof org.spongepowered.api.entity.living.player.Player){
-            return new BongePlayer((org.spongepowered.api.entity.living.player.Player)entity);
+            return BongePlayer.getPlayer((org.spongepowered.api.entity.living.player.Player)entity);
         }
         if(entity instanceof org.spongepowered.api.entity.living.animal.Sheep){
             return new BongeSheep((org.spongepowered.api.entity.living.animal.Sheep)entity);

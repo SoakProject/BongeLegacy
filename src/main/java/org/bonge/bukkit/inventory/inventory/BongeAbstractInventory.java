@@ -1,14 +1,17 @@
 package org.bonge.bukkit.inventory.inventory;
 
+import org.bonge.convert.InterfaceConvert;
 import org.bonge.convert.InventoryConvert;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Slot;
+import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
@@ -18,10 +21,16 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inventory.Inventory> extends Inventory {
-    
+
+    interface Swappable {
+
+        void setHolder(InventoryHolder holder);
+
+    }
+
     I getSpongeInventoryValue();
 
-    default Slot getSlot(int index){
+    default org.spongepowered.api.item.inventory.Inventory getSlot(int index){
         return this.getSpongeInventoryValue().query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(index)));
     }
 
@@ -99,10 +108,10 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default boolean contains(Material material) throws IllegalArgumentException {
-        if(!material.getSpongeValue().isPresent()){
+        if(!material.getSpongeItemValue().isPresent()){
             return false;
         }
-        ItemType type = (ItemType) material.getSpongeValue().get();
+        ItemType type = material.getSpongeItemValue().get();
         return this.getSpongeInventoryValue().contains(type);
     }
 
@@ -178,7 +187,11 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default String getTitle() {
-        return null;
+        Optional<InventoryTitle> opTitle = this.getSpongeInventoryValue().getInventoryProperty(InventoryTitle.class);
+        if(!opTitle.isPresent()){
+            return null;
+        }
+        return InterfaceConvert.toString(opTitle.get().getValue());
     }
 
     @Override
