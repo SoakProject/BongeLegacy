@@ -7,6 +7,8 @@ import org.bonge.bukkit.command.BongeCommandManager;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.entity.living.human.BongePlayer;
 import org.bonge.bukkit.inventory.inventory.BongeCustomInventory;
+import org.bonge.bukkit.inventory.inventory.tileentity.workbench.BongeWorkbenchInventory;
+import org.bonge.bukkit.inventory.inventory.tileentity.furnace.BongeFurnaceInventory;
 import org.bonge.bukkit.inventory.item.BongeItemFactory;
 import org.bonge.bukkit.scheduler.BongeScheduler;
 import org.bonge.bukkit.scoreboard.BongeScoreboardManager;
@@ -24,6 +26,7 @@ import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
+import org.bukkit.block.Furnace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -46,13 +49,11 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.CachedServerIcon;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.awt.image.BufferedImage;
@@ -210,7 +211,8 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public int broadcastMessage(String s) {
-        return 0;
+        Sponge.getServer().getBroadcastChannel().send(InterfaceConvert.fromString(s));
+        return Sponge.getServer().getBroadcastChannel().getMembers().size();
     }
 
     @Override
@@ -517,20 +519,26 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public Inventory createInventory(InventoryHolder inventoryHolder, InventoryType inventoryType) {
-        org.spongepowered.api.item.inventory.Inventory inventory = org.spongepowered.api.item.inventory.Inventory
+        return this.createInventory(inventoryHolder, inventoryType, null);
+    }
+
+    @Override
+    public Inventory createInventory(InventoryHolder inventoryHolder, InventoryType inventoryType, String s) {
+        org.spongepowered.api.item.inventory.Inventory.Builder inventoryBuilder = org.spongepowered.api.item.inventory.Inventory
                 .builder()
-                .of(InventoryConvert.getInventoryType(inventoryType))
-                .build(BongeLaunch.getInstance());
+                .of(InventoryConvert.getInventoryType(inventoryType));
+        org.spongepowered.api.item.inventory.Inventory inventory = inventoryBuilder.build(BongeLaunch.getInstance());
+        if(inventory.getArchetype().equals(InventoryArchetypes.WORKBENCH)){
+            return new BongeWorkbenchInventory((inventoryHolder instanceof Furnace ? ((Furnace)inventoryHolder) : null), (org.spongepowered.api.item.inventory.crafting.CraftingInventory) inventory);
+        }
+        if(inventory.getArchetype().equals(InventoryArchetypes.FURNACE)){
+            return new BongeFurnaceInventory((inventoryHolder instanceof Furnace ? ((Furnace)inventoryHolder) : null), (org.spongepowered.api.item.inventory.type.TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace>)inventory);
+        }
         if(inventory.getArchetype().equals(InventoryArchetypes.CHEST) || inventory.getArchetype().equals(InventoryArchetypes.DOUBLE_CHEST)){
             BongeCustomInventory bci = new BongeCustomInventory(inventory);
             bci.setHolder(inventoryHolder);
             return bci;
         }
-        return null;
-    }
-
-    @Override
-    public Inventory createInventory(InventoryHolder inventoryHolder, InventoryType inventoryType, String s) {
         return null;
     }
 

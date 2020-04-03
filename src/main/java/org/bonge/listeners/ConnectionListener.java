@@ -24,6 +24,7 @@ public class ConnectionListener {
             case KICK_BANNED:
             case KICK_WHITELIST:
             case KICK_OTHER:
+                event.setCancelled(true);
                 break;
         }
         String message = asyncBEvent.getKickMessage();

@@ -4,8 +4,10 @@ import org.bonge.bukkit.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.entity.BongeAbstractEntity;
 import org.bonge.bukkit.inventory.inventory.BongeAbstractInventory;
 import org.bonge.bukkit.inventory.inventory.BongeInventoryView;
+import org.bonge.bukkit.inventory.inventory.tileentity.workbench.BongeCustomWorkbenchInventory;
 import org.bonge.bukkit.scoreboard.BongeScoreboard;
 import org.bonge.convert.InterfaceConvert;
+import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -19,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.resourcepack.ResourcePacks;
 import org.spongepowered.api.text.Text;
@@ -310,16 +312,19 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     }
 
     @Override
+    @Deprecated
     public void awardAchievement(Achievement achievement) {
 
     }
 
     @Override
+    @Deprecated
     public void removeAchievement(Achievement achievement) {
 
     }
 
     @Override
+    @Deprecated
     public boolean hasAchievement(Achievement achievement) {
         return false;
     }
@@ -835,7 +840,7 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public InventoryView openWorkbench(Location location, boolean force) {
-        return null;
+        return openInventory(new BongeCustomWorkbenchInventory(this, org.spongepowered.api.item.inventory.Inventory.builder().of(InventoryArchetypes.WORKBENCH).build(BongeLaunch.getInstance())));
     }
 
     @Override
@@ -845,6 +850,8 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public void openInventory(InventoryView inventory) {
+        this.view = (BongeInventoryView) inventory;
+        this.spongeValue.openInventory(((BongeAbstractInventory<?>)inventory).getSpongeInventoryValue());
     }
 
     @Override
