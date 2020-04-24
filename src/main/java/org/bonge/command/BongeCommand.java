@@ -1,7 +1,7 @@
 package org.bonge.command;
 
-import org.bonge.bukkit.server.BongeServer;
-import org.bonge.bukkit.server.plugin.loader.BongePluginLoader;
+import org.bonge.bukkit.r1_13.server.BongeServer;
+import org.bonge.bukkit.r1_13.server.plugin.loader.BongePluginLoader;
 import org.bonge.command.argument.PluginArgument;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;

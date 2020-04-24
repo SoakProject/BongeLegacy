@@ -1,28 +1,65 @@
 package org.bonge.listeners;
 
-import org.bonge.bukkit.entity.living.human.BongePlayer;
-import org.bonge.bukkit.inventory.inventory.BongeAbstractInventory;
-import org.bonge.bukkit.inventory.inventory.BongeInventoryView;
+import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
+import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
+import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
 import org.bonge.convert.InventoryConvert;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.inventory.InventoryHolder;
+import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
+import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.EventContextKey;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 public class InventoryListener {
+
+    @org.spongepowered.api.event.Listener
+    public void onInventoryOpen(InteractInventoryEvent.Open event, @First Player player){
+        Optional<BlockSnapshot> opBlock = event.getCause().getContext().get(EventContextKeys.BLOCK_HIT);
+        BongeInventoryView biv = null;
+        if(!opBlock.isPresent()){
+            return;
+        }
+        if(!opBlock.get().getLocation().get().getTileEntity().isPresent()){
+            return;
+        }
+        TileEntity tileEntity = opBlock.get().getLocation().get().getTileEntity().get();
+        if(!(tileEntity instanceof TileEntityCarrier)){
+            return;
+        }
+        TileEntityCarrier tec = (TileEntityCarrier) tileEntity;
+        Optional<BongeBlockState<TileEntityCarrier>> opTile = BongeBlockState.of(tec);
+        if(!opTile.isPresent()){
+            return;
+        }
+        biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory(opTile.get()));
+        /*if(opBlock.isPresent() && opBlock.get().getLocation().get().getTileEntity().isPresent()){
+            biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory((InventoryHolder) BongeBlockState.of(opBlock.get().getLocation().get().getTileEntity().get()).orElse(null), event.getTargetInventory()));
+        }else {
+            biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory(event.getTargetInventory()));
+        }*/
+        InventoryOpenEvent bEvent = new InventoryOpenEvent(biv);
+        Bukkit.getPluginManager().callEvent(bEvent);
+        event.setCancelled(bEvent.isCancelled());
+    }
 
     @org.spongepowered.api.event.Listener
     public void onPlayerClick(ClickInventoryEvent.Primary event, @First Player sPlayer){

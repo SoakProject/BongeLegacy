@@ -73,9 +73,6 @@ public class BongeConfig {
     }
 
     private void updateDefaults(){
-        System.out.println("PATH_PLUGINS_CONFIG: " + this.get(PATH_PLUGINS_CONFIG).isPresent());
-        System.out.println("PATH_PLUGINS_FILE: " + this.get(PATH_PLUGINS_FILE).isPresent());
-
         if (!this.get(PATH_PLUGINS_CONFIG).isPresent()){
             this.write(File::getPath, PATH_PLUGINS_CONFIG);
             this.writeComment("Where all the config files for plugins should go. Note that some plugins do not respect this. Those files will be in '/plugins'", PATH_PLUGINS_CONFIG.getPath());

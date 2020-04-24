@@ -1,12 +1,13 @@
 package org.bonge.launch;
 
-import org.bonge.bukkit.server.BongeServer;
-import org.bonge.bukkit.server.plugin.BongePluginManager;
+import org.bonge.bukkit.r1_13.server.BongeServer;
+import org.bonge.bukkit.r1_13.server.plugin.BongePluginManager;
 import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
 import org.bonge.listeners.BlockListener;
 import org.bonge.listeners.ConnectionListener;
 import org.bonge.listeners.InventoryListener;
+import org.bonge.listeners.PlayerListener;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.Sponge;
 
@@ -41,6 +42,7 @@ public class BongeBukkitLaunch {
         Sponge.getEventManager().registerListeners(launch, new BlockListener());
         Sponge.getEventManager().registerListeners(launch, new ConnectionListener());
         Sponge.getEventManager().registerListeners(launch, new InventoryListener());
+        Sponge.getEventManager().registerListeners(launch, new PlayerListener());
     }
 
     static void onDisable(BongeLaunch launch){

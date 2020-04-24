@@ -1,18 +1,20 @@
 package org.bonge.listeners;
 
-import org.bonge.bukkit.block.BongeBlock;
-import org.bonge.bukkit.block.BongeBlockSnapshot;
-import org.bonge.bukkit.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_13.block.BongeBlock;
+import org.bonge.bukkit.r1_13.block.BongeBlockSnapshot;
+import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.convert.InterfaceConvert;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.text.Text;
 
 public class BlockListener {
 
@@ -40,6 +42,7 @@ public class BlockListener {
         Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);
         SignData data = event.getText();
         for(int A = 0; A < 4; A++){
+            Sponge.getServer().getConsole().sendMessage(Text.join(Text.of(A + ") "), InterfaceConvert.fromString(bukkitEvent.getLine(A))));
             data.setElement(A, InterfaceConvert.fromString(bukkitEvent.getLine(A)));
         }
         event.setCancelled(bukkitEvent.isCancelled());

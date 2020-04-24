@@ -1,11 +1,14 @@
 package org.bonge.convert;
 
-import org.bonge.bukkit.entity.living.human.BongePlayer;
-import org.bonge.bukkit.server.source.ConsoleSource;
+import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
+import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_13.server.source.ConsoleSource;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.projectiles.ProjectileSource;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
@@ -68,6 +71,20 @@ public class InterfaceConvert {
             return null;
         }
         return TextSerializers.FORMATTING_CODE.serialize(text);
+    }
+
+    public static org.spongepowered.api.entity.projectile.source.ProjectileSource getProjectile(ProjectileSource source){
+        if(source instanceof Entity){
+            return (org.spongepowered.api.entity.projectile.source.ProjectileSource)((BongeAbstractEntity<?>)source).getSpongeValue();
+        }
+        return null;
+    }
+
+    public static ProjectileSource getProjectile(org.spongepowered.api.entity.projectile.source.ProjectileSource projectile){
+        if(projectile instanceof org.spongepowered.api.entity.Entity){
+            return (ProjectileSource) BongeAbstractEntity.of((org.spongepowered.api.entity.Entity)projectile);
+        }
+        return null;
     }
 
     public static CommandSender getSender(org.spongepowered.api.command.CommandSource source){

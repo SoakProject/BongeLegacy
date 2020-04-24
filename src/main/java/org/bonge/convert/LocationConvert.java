@@ -2,7 +2,7 @@ package org.bonge.convert;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
-import org.bonge.bukkit.world.BongeWorld;
+import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.World;

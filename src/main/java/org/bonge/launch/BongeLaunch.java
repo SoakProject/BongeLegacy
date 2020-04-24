@@ -1,11 +1,6 @@
 package org.bonge.launch;
 
-import org.bonge.bukkit.server.BongeServer;
-import org.bonge.bukkit.server.plugin.BongePluginManager;
-import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
-import org.bukkit.Bukkit;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
@@ -13,8 +8,6 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 @Plugin(id = BongeLaunch.PLUGIN_ID, name = BongeLaunch.PLUGIN_NAME, version = BongeLaunch.PLUGIN_VERSION)
