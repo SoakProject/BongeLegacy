@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.inventory.inventory;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.convert.InventoryConvert;
 import org.bukkit.entity.HumanEntity;
@@ -12,6 +13,7 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class BongeInventoryView extends InventoryView {
@@ -61,7 +63,13 @@ public class BongeInventoryView extends InventoryView {
             if(this.eventReference != null){
                 Optional<SlotTransaction> opTransaction = this.eventReference.getTransactions().stream().filter(t -> t.getSlot().getInventoryProperty(SlotIndex.class).get().getValue() == slot).findAny();
                 if(opTransaction.isPresent()){
-                    ItemStack item = InventoryConvert.getItemStack(opTransaction.get().getOriginal());
+
+                    ItemStack item;
+                    try {
+                        item = Bonge.getInstance().convert(ItemStack.class, opTransaction.get().getOriginal());
+                    } catch (IOException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                     return item;
                 }
             }

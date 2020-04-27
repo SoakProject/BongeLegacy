@@ -1,5 +1,6 @@
 package org.bonge.listeners;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
@@ -27,6 +29,7 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class InventoryListener {
@@ -71,7 +74,12 @@ public class InventoryListener {
             view = new BongeInventoryView(player, InventoryConvert.getInventory(event.getTargetInventory()));
         }
         if(!event.getCursorTransaction().getFinal().equals(ItemStackSnapshot.NONE)){
-            view.setCursorO(InventoryConvert.getItemStack(event.getCursorTransaction().getFinal()));
+            try {
+                ItemStack stack = Bonge.getInstance().convert(ItemStack.class, event.getCursorTransaction().getFinal());
+                view.setCursorO(stack);
+            } catch (IOException e) {
+
+            }
         }
         view.setEventReference(event);
         for (int A = 0; A < event.getTransactions().size(); A++){
@@ -99,7 +107,13 @@ public class InventoryListener {
                 }
                continue;
             }
-            transaction.setCustom(InventoryConvert.getItemStack(bEvent.getCurrentItem()).get());
+            org.spongepowered.api.item.inventory.ItemStack item;
+            try {
+                item = Bonge.getInstance().convert(bEvent.getCurrentItem(), org.spongepowered.api.item.inventory.ItemStack.class);
+                transaction.setCustom(item);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         view.setEventReference(null);
     }

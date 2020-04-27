@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.entity.living;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bukkit.Material;
@@ -20,6 +21,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.world.World;
 
+import java.io.IOException;
 import java.util.*;
 
 public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.entity.living.Living> extends BongeAbstractEntity<T> implements LivingEntity {
@@ -36,7 +38,12 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
             if(transparent == null){
                 return false;
             }
-            Material material = Material.getMaterial(r.getLocation().getBlockType());
+            Material material;
+            try {
+                material = Bonge.getInstance().convert(Material.class, r.getLocation().getBlockType());
+            } catch (IOException e) {
+                throw new IllegalArgumentException(e);
+            }
             return transparent.stream().anyMatch(m -> m.equals(material));
         }).build();
         while(ray.hasNext()){

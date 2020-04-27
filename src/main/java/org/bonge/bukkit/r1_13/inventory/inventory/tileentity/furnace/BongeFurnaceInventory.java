@@ -1,13 +1,13 @@
 package org.bonge.bukkit.r1_13.inventory.inventory.tileentity.furnace;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
-import org.bonge.convert.InventoryConvert;
 import org.bukkit.block.Furnace;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.type.TileEntityInventory;
 
-import java.util.Optional;
+import java.io.IOException;
 
 public class BongeFurnaceInventory implements BongeAbstractInventory<TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace>>, FurnaceInventory {
 
@@ -15,8 +15,8 @@ public class BongeFurnaceInventory implements BongeAbstractInventory<TileEntityI
     public static final int ITEM_SLOT = 1;
     public static final int FUEL_SLOT = 0;
 
-    private org.spongepowered.api.item.inventory.type.TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace> inventory;
-    private Furnace furnace;
+    private final org.spongepowered.api.item.inventory.type.TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace> inventory;
+    private final Furnace furnace;
 
     public BongeFurnaceInventory(Furnace fun, org.spongepowered.api.item.inventory.type.TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace> inventory){
         this.inventory = inventory;
@@ -31,43 +31,64 @@ public class BongeFurnaceInventory implements BongeAbstractInventory<TileEntityI
     @Override
     public ItemStack getResult() {
         org.spongepowered.api.item.inventory.ItemStack item = this.getSlot(RESULT_SLOT).peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public ItemStack getFuel() {
         org.spongepowered.api.item.inventory.ItemStack item = this.getSlot(FUEL_SLOT).peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public ItemStack getSmelting() {
         org.spongepowered.api.item.inventory.ItemStack item = this.getSlot(ITEM_SLOT).peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setFuel(ItemStack stack) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = InventoryConvert.getItemStack(stack);
-        if(opItem.isPresent()){
-            this.getSlot(FUEL_SLOT).set(opItem.get());
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(stack, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
+        this.getSlot(FUEL_SLOT).set(is);
     }
 
     @Override
     public void setResult(ItemStack stack) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = InventoryConvert.getItemStack(stack);
-        if(opItem.isPresent()){
-            this.getSlot(RESULT_SLOT).set(opItem.get());
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(stack, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
+        this.getSlot(RESULT_SLOT).set(is);
     }
 
     @Override
     public void setSmelting(ItemStack stack) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = InventoryConvert.getItemStack(stack);
-        if(opItem.isPresent()){
-            this.getSlot(FUEL_SLOT).set(opItem.get());
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(stack, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
+        this.getSlot(ITEM_SLOT).set(is);
     }
 
     @Override

@@ -1,13 +1,15 @@
 package org.bonge.bukkit.r1_13.scoreboard;
 
-import org.bonge.convert.EnumConvert;
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.Bonge;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.*;
+import org.spongepowered.api.scoreboard.critieria.Criterion;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -26,11 +28,17 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public Objective registerNewObjective(String name, String criteria, String displayName) throws IllegalArgumentException {
+        Criterion criterion;
+        try {
+            criterion = Bonge.getInstance().convert(criteria, Criterion.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         org.spongepowered.api.scoreboard.objective.Objective objective = org.spongepowered.api.scoreboard.objective.Objective
                 .builder()
-                .displayName(InterfaceConvert.fromString(displayName))
+                .displayName(TextConverter.CONVERTER.from(displayName))
                 .name(name)
-                .criterion(InterfaceConvert.getCriteria(criteria))
+                .criterion(criterion)
                 .build();
         this.spongeValue.addObjective(objective);
         return new BongeObjective(objective, this);
@@ -44,7 +52,13 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public Set<Objective> getObjectivesByCriteria(String criteria) throws IllegalArgumentException {
-        return ArrayUtils.convert(new HashSet<>(), o -> new BongeObjective(o, BongeScoreboard.this), this.spongeValue.getObjectivesByCriteria(InterfaceConvert.getCriteria(criteria)));
+        Set<org.spongepowered.api.scoreboard.objective.Objective> objectives;
+        try {
+            objectives = this.spongeValue.getObjectivesByCriteria(Bonge.getInstance().convert(criteria, Criterion.class));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        return ArrayUtils.convert(new HashSet<>(), o -> new BongeObjective(o, BongeScoreboard.this), objectives);
     }
 
     @Override
@@ -54,7 +68,13 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public Objective getObjective(DisplaySlot slot) throws IllegalArgumentException {
-        Optional<org.spongepowered.api.scoreboard.objective.Objective> opSlot = this.spongeValue.getObjective(EnumConvert.getDisplaySlot(slot));
+        org.spongepowered.api.scoreboard.displayslot.DisplaySlot slot1;
+        try {
+            slot1 = Bonge.getInstance().convert(slot, org.spongepowered.api.scoreboard.displayslot.DisplaySlot.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        Optional<org.spongepowered.api.scoreboard.objective.Objective> opSlot = this.spongeValue.getObjective(slot1);
         return opSlot.map(objective -> new BongeObjective(objective, this)).orElse(null);
     }
 
@@ -69,7 +89,7 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
                 .getScores()
                 .values()
                 .stream()
-                .filter(s -> InterfaceConvert.toString(s.getName()).equals(entry))
+                .filter(s -> TextConverter.CONVERTER.to(s.getName()).equals(entry))
                 .forEach(v -> e
                         .add(new BongeScore(v, new BongeObjective(t, BongeScoreboard.this)))),
                 this.spongeValue.getObjectives());
@@ -117,11 +137,15 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public Set<String> getEntries() {
-        return ArrayUtils.build(new HashSet<>(), (l, e) -> e.getScores().values().forEach(s -> l.add(InterfaceConvert.toString(s.getName()))), this.spongeValue.getObjectives());
+        return ArrayUtils.build(new HashSet<>(), (l, e) -> e.getScores().values().forEach(s -> l.add(TextConverter.CONVERTER.to(s.getName()))), this.spongeValue.getObjectives());
     }
 
     @Override
     public void clearSlot(DisplaySlot slot) throws IllegalArgumentException {
-        this.spongeValue.clearSlot(EnumConvert.getDisplaySlot(slot));
+        try {
+            this.spongeValue.clearSlot(Bonge.getInstance().convert(slot, org.spongepowered.api.scoreboard.displayslot.DisplaySlot.class));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

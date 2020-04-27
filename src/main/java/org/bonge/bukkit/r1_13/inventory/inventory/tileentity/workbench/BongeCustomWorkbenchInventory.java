@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.inventory.inventory.tileentity.workbench;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
 import org.bonge.convert.InventoryConvert;
 import org.bukkit.inventory.CraftingInventory;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.spongepowered.api.item.inventory.Inventory;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class BongeCustomWorkbenchInventory implements BongeAbstractInventory<Inventory>, CraftingInventory {
@@ -30,20 +32,33 @@ public class BongeCustomWorkbenchInventory implements BongeAbstractInventory<Inv
     public ItemStack getResult() {
         Inventory inv = this.getSlot(0);
         org.spongepowered.api.item.inventory.ItemStack item = inv.peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setResult(ItemStack newResult) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(newResult);
-        opStack.ifPresent(itemStack -> this.getSlot(0).set(itemStack));
+        org.spongepowered.api.item.inventory.ItemStack itemStack;
+        try {
+            itemStack = Bonge.getInstance().convert(newResult, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        this.getSlot(0).set(itemStack);
     }
 
     @Override
     public ItemStack[] getMatrix() {
         ItemStack[] stacks = new ItemStack[9];
         for (int A = 0; A < 9; A++){
-            stacks[A] = InventoryConvert.getItemStack(this.getSlot(A).peek().get());
+            try {
+                stacks[A] = Bonge.getInstance().convert(ItemStack.class, this.getSlot(A).peek().get());
+            } catch (IOException e) {
+                continue;
+            }
         }
         return stacks;
     }
@@ -51,10 +66,13 @@ public class BongeCustomWorkbenchInventory implements BongeAbstractInventory<Inv
     @Override
     public void setMatrix(ItemStack[] contents) {
         for(int A = 0; A < contents.length; A++){
-            Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(contents[A]);
-            if(opStack.isPresent()) {
-                this.getSlot(A).set(opStack.get());
+            org.spongepowered.api.item.inventory.ItemStack itemStack;
+            try {
+                itemStack = Bonge.getInstance().convert(contents[A], org.spongepowered.api.item.inventory.ItemStack.class);
+            } catch (IOException e) {
+                continue;
             }
+            this.getSlot(A).set(itemStack);
         }
     }
 

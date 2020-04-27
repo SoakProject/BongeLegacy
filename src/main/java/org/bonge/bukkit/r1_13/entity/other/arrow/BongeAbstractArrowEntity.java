@@ -1,11 +1,13 @@
 package org.bonge.bukkit.r1_13.entity.other.arrow;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
-import org.bonge.convert.InterfaceConvert;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.projectiles.ProjectileSource;
 import org.spongepowered.api.data.key.Keys;
+
+import java.io.IOException;
 
 public class BongeAbstractArrowEntity<T extends org.spongepowered.api.entity.projectile.arrow.Arrow> extends BongeAbstractEntity<T> implements Arrow {
 
@@ -55,12 +57,20 @@ public class BongeAbstractArrowEntity<T extends org.spongepowered.api.entity.pro
 
     @Override
     public ProjectileSource getShooter() {
-        return InterfaceConvert.getProjectile(this.spongeValue.getShooter());
+        try {
+            return Bonge.getInstance().convert(ProjectileSource.class, this.spongeValue.getShooter());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setShooter(ProjectileSource source) {
-        this.spongeValue.setShooter(InterfaceConvert.getProjectile(source));
+        try {
+            this.spongeValue.setShooter(Bonge.getInstance().convert(source, org.spongepowered.api.entity.projectile.source.ProjectileSource.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

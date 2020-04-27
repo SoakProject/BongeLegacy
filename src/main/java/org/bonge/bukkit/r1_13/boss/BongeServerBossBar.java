@@ -1,8 +1,8 @@
 package org.bonge.bukkit.r1_13.boss;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.convert.EnumConvert;
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.boss.BarColor;
@@ -10,7 +10,10 @@ import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+import org.spongepowered.api.boss.BossBarColor;
+import org.spongepowered.api.boss.BossBarOverlay;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,32 +28,48 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
 
     @Override
     public String getTitle() {
-        return InterfaceConvert.toString(this.spongeValue.getName());
+        return TextConverter.CONVERTER.to(this.spongeValue.getName());
     }
 
     @Override
     public void setTitle(String title) {
-        this.spongeValue.setName(InterfaceConvert.fromString(title));
+        this.spongeValue.setName(TextConverter.CONVERTER.from(title));
     }
 
     @Override
     public BarColor getColor() {
-        return EnumConvert.getColour(this.spongeValue.getColor());
+        try {
+            return Bonge.getInstance().convert(BarColor.class, this.spongeValue.getColor());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setColor(BarColor color) {
-        this.spongeValue.setColor(EnumConvert.getColour(color));
+        try {
+            this.spongeValue.setColor(Bonge.getInstance().convert(color, BossBarColor.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public BarStyle getStyle() {
-        return EnumConvert.getStyle(this.spongeValue.getOverlay());
+        try {
+            return Bonge.getInstance().convert(BarStyle.class, this.spongeValue.getOverlay());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setStyle(BarStyle style) {
-        this.spongeValue.setOverlay(EnumConvert.getStyle(style));
+        try {
+            this.spongeValue.setOverlay(Bonge.getInstance().convert(style, BossBarOverlay.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

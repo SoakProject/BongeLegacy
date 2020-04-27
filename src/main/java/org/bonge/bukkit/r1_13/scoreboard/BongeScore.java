@@ -1,6 +1,6 @@
 package org.bonge.bukkit.r1_13.scoreboard;
 
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -24,7 +24,7 @@ public class BongeScore extends BongeWrapper<org.spongepowered.api.scoreboard.Sc
 
     @Override
     public String getEntry() {
-        return InterfaceConvert.toString(this.spongeValue.getName());
+        return TextConverter.CONVERTER.to(this.spongeValue.getName());
     }
 
     @Override

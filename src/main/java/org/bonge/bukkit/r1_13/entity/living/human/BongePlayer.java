@@ -6,7 +6,7 @@ import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
 import org.bonge.bukkit.r1_13.inventory.inventory.tileentity.workbench.BongeCustomWorkbenchInventory;
 import org.bonge.bukkit.r1_13.scoreboard.BongeScoreboard;
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.*;
@@ -57,12 +57,12 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public @NotNull String getDisplayName() {
-        return InterfaceConvert.toString(this.spongeValue.get(Keys.DISPLAY_NAME).get());
+        return TextConverter.CONVERTER.to(this.spongeValue.get(Keys.DISPLAY_NAME).get());
     }
 
     @Override
     public void setDisplayName(@Nullable String name) {
-        this.spongeValue.offer(Keys.DISPLAY_NAME, InterfaceConvert.fromString(name));
+        this.spongeValue.offer(Keys.DISPLAY_NAME, TextConverter.CONVERTER.from(name));
     }
 
     @Override
@@ -148,18 +148,18 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public void sendMessage(@NotNull String message) {
-        this.spongeValue.sendMessage(InterfaceConvert.fromString(message));
+        this.spongeValue.sendMessage(TextConverter.CONVERTER.from(message));
     }
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        this.spongeValue.sendMessages(ArrayUtils.convert(Text.class, InterfaceConvert::fromString, messages));
+        this.spongeValue.sendMessages(ArrayUtils.convert(Text.class, TextConverter.CONVERTER::from, messages));
     }
 
     @Override
     public void kickPlayer(@Nullable String message) {
         if(message != null){
-            this.spongeValue.kick(InterfaceConvert.fromString(message));
+            this.spongeValue.kick(TextConverter.CONVERTER.from(message));
             return;
         }
         this.spongeValue.kick();
@@ -682,8 +682,8 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
                 .fadeIn(((fadeIn == -1) ? null : fadeIn))
                 .fadeOut(((fadeOut == -1) ? null : fadeOut))
                 .stay(((stay == -1) ? null : stay))
-                .title(InterfaceConvert.fromString(title))
-                .subtitle(InterfaceConvert.fromString(subtitle))
+                .title(TextConverter.CONVERTER.from(title))
+                .subtitle(TextConverter.CONVERTER.from(subtitle))
                 .build();
         this.spongeValue.sendTitle(sTitle);
 

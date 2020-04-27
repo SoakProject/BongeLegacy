@@ -3,7 +3,7 @@ package org.bonge.listeners;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
 import org.bonge.bukkit.r1_13.block.BongeBlockSnapshot;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -36,14 +36,14 @@ public class BlockListener {
 
         String[] lines = new String[4];
         for(int A = 0; A < lines.length; A++){
-            lines[A] = InterfaceConvert.toString(event.getOriginalText().asList().get(A));
+            lines[A] = TextConverter.CONVERTER.to(event.getOriginalText().asList().get(A));
         }
         SignChangeEvent bukkitEvent = new SignChangeEvent(block, bPlayer, lines);
         Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);
         SignData data = event.getText();
         for(int A = 0; A < 4; A++){
-            Sponge.getServer().getConsole().sendMessage(Text.join(Text.of(A + ") "), InterfaceConvert.fromString(bukkitEvent.getLine(A))));
-            data.setElement(A, InterfaceConvert.fromString(bukkitEvent.getLine(A)));
+            Sponge.getServer().getConsole().sendMessage(Text.join(Text.of(A + ") "), TextConverter.CONVERTER.from(bukkitEvent.getLine(A))));
+            data.setElement(A, TextConverter.CONVERTER.from(bukkitEvent.getLine(A)));
         }
         event.setCancelled(bukkitEvent.isCancelled());
     }

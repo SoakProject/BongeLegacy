@@ -7,7 +7,7 @@ import org.bonge.bukkit.r1_13.server.plugin.loader.BongePluginLoader;
 import org.bonge.bukkit.r1_13.server.plugin.event.EventData;
 import org.bonge.bukkit.r1_13.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_13.server.plugin.loader.IBongePluginLoader;
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -302,7 +302,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             permissionProvider
                     .newDescriptionBuilder(BongeLaunch.getInstance())
                     .id(permission.getName())
-                    .description(InterfaceConvert.fromString(permission.getDescription()))
+                    .description(TextConverter.CONVERTER.from(permission.getDescription()))
                     .register();
         }
 

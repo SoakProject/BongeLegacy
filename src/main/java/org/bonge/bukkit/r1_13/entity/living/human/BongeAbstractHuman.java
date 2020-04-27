@@ -1,11 +1,10 @@
 package org.bonge.bukkit.r1_13.entity.living.human;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
 import org.bonge.bukkit.r1_13.inventory.inventory.entity.living.human.BongePlayerInventory;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
-import org.bonge.convert.EnumConvert;
-import org.bonge.convert.InventoryConvert;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,6 +19,7 @@ import org.spongepowered.api.data.type.HandPreference;
 import org.spongepowered.api.data.type.HandPreferences;
 import org.spongepowered.api.data.type.HandTypes;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.living.Humanoid> extends BongeAbstractLivingEntity<T> implements HumanEntity {
@@ -70,7 +70,11 @@ public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.
     @Override
     public @NotNull ItemStack getItemInHand() {
         org.spongepowered.api.item.inventory.ItemStack item = this.spongeValue.getItemInHand(HandTypes.MAIN_HAND).get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
@@ -123,12 +127,20 @@ public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.
 
     @Override
     public @NotNull GameMode getGameMode() {
-        return EnumConvert.getGamemode(this.spongeValue.get(Keys.GAME_MODE).get());
+        try {
+            return Bonge.getInstance().convert(GameMode.class, this.spongeValue.get(Keys.GAME_MODE).get());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setGameMode(@NotNull GameMode mode) {
-        this.spongeValue.offer(Keys.GAME_MODE, EnumConvert.getGamemode(mode));
+        try {
+            this.spongeValue.offer(Keys.GAME_MODE, Bonge.getInstance().convert(mode, org.spongepowered.api.entity.living.player.gamemode.GameMode.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

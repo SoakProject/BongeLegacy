@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.server;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeTag;
 import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.boss.BongeServerBossBar;
@@ -13,6 +14,7 @@ import org.bonge.bukkit.r1_13.inventory.inventory.tileentity.furnace.BongeFurnac
 import org.bonge.bukkit.r1_13.inventory.item.BongeItemFactory;
 import org.bonge.bukkit.r1_13.inventory.item.recipe.BongeRecipe;
 import org.bonge.bukkit.r1_13.scoreboard.BongeScoreboardManager;
+import org.bonge.bukkit.r1_13.server.help.BongeHelpMap;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bonge.bukkit.r1_13.scheduler.BongeScheduler;
 import org.bonge.bukkit.r1_13.server.messager.BongeMessenger;
@@ -20,9 +22,8 @@ import org.bonge.bukkit.r1_13.server.plugin.BongePluginManager;
 import org.bonge.bukkit.r1_13.server.service.BongeServiceManager;
 import org.bonge.bukkit.r1_13.server.source.ConsoleSource;
 import org.bonge.bukkit.r1_13.toremove.BongeUnsafeValues;
-import org.bonge.convert.EnumConvert;
-import org.bonge.convert.InterfaceConvert;
 import org.bonge.convert.InventoryConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
@@ -52,8 +53,11 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.CachedServerIcon;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.boss.BossBarColor;
+import org.spongepowered.api.boss.BossBarOverlay;
 import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
@@ -63,19 +67,21 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> implements Server {
 
-    private BongePluginManager pluginManager;
-    private BongeScheduler pluginScheduler;
-    private BongeCommandManager commandMap;
-    private BongeServiceManager serviceManager;
-    private Set<BongeRecipe<? extends Recipe>> recipes = new HashSet<>();
+    private final BongePluginManager pluginManager;
+    private final BongeScheduler pluginScheduler;
+    private final BongeCommandManager commandMap;
+    private final BongeServiceManager serviceManager;
+    private final BongeHelpMap helpMap;
+    private final Set<BongeRecipe<? extends Recipe>> recipes = new HashSet<>();
 
-    private Set<BongeTag<? extends Keyed>> tags = new HashSet<>(Arrays.asList(
+    private final Set<BongeTag<? extends Keyed>> tags = new HashSet<>(Arrays.asList(
             new BongeTag<>(NamespacedKey.minecraft("wool"), Tag.REGISTRY_BLOCKS),
             new BongeTag<>(NamespacedKey.minecraft("planks"), Tag.REGISTRY_BLOCKS),
             new BongeTag<>(NamespacedKey.minecraft("stone_bricks"), Tag.REGISTRY_BLOCKS),
@@ -120,6 +126,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         this.pluginScheduler = new BongeScheduler();
         this.commandMap = new BongeCommandManager();
         this.serviceManager = new BongeServiceManager();
+        this.helpMap = new BongeHelpMap();
     }
 
     public BongeCommandManager getCommandManager(){
@@ -221,7 +228,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public int broadcastMessage(String s) {
-        Sponge.getServer().getBroadcastChannel().send(InterfaceConvert.fromString(s));
+        Sponge.getServer().getBroadcastChannel().send(TextConverter.CONVERTER.from(s));
         return Sponge.getServer().getBroadcastChannel().getMembers().size();
     }
 
@@ -379,7 +386,13 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public boolean dispatchCommand(CommandSender commandSender, String s) throws CommandException {
-        CommandResult result = Sponge.getCommandManager().process(InterfaceConvert.getSource(commandSender), s);
+        CommandSource sender;
+        try {
+            sender = Bonge.getInstance().convert(commandSender, CommandSource.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        CommandResult result = Sponge.getCommandManager().process(sender, s);
         return result.equals(CommandResult.empty());
     }
 
@@ -394,7 +407,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public List<Recipe> getRecipesFor(ItemStack itemStack) {
-        return ArrayUtils.convert(r -> r.getRecipe(), this.recipes);
+        return ArrayUtils.convert(BongeRecipe::getRecipe, this.recipes);
     }
 
     @Override
@@ -455,19 +468,13 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     @Override
     public OfflinePlayer getOfflinePlayer(String s) {
         Optional<User> opUser = Sponge.getServiceManager().getRegistration(UserStorageService.class).get().getProvider().get(s);
-        if(opUser.isPresent()){
-            return new BongeOfflinePlayer(opUser.get());
-        }
-        return null;
+        return opUser.map(BongeOfflinePlayer::new).orElse(null);
     }
 
     @Override
     public OfflinePlayer getOfflinePlayer(UUID uuid) {
         Optional<User> opUser = Sponge.getServiceManager().getRegistration(UserStorageService.class).get().getProvider().get(uuid);
-        if(opUser.isPresent()){
-            return new BongeOfflinePlayer(opUser.get());
-        }
-        return null;
+        return opUser.map(BongeOfflinePlayer::new).orElse(null);
     }
 
     @Override
@@ -504,7 +511,15 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     @Override
     public GameMode getDefaultGameMode() {
         Optional<WorldProperties> opWorld = this.spongeValue.getDefaultWorld();
-        return opWorld.map(worldProperties -> EnumConvert.getGamemode(worldProperties.getGameMode())).orElse(null);
+        if(!opWorld.isPresent()){
+            throw new IllegalStateException("Unknown default world");
+        }
+        org.spongepowered.api.entity.living.player.gamemode.GameMode mode = opWorld.get().getGameMode();
+        try {
+            return Bonge.getInstance().convert(GameMode.class, mode);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -513,7 +528,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         if(!opWorld.isPresent()){
             return;
         }
-        opWorld.get().setGameMode(EnumConvert.getGamemode(gameMode));
+        try {
+            org.spongepowered.api.entity.living.player.gamemode.GameMode sGamemode = Bonge.getInstance().convert(gameMode, org.spongepowered.api.entity.living.player.gamemode.GameMode.class);
+            opWorld.get().setGameMode(sGamemode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -530,9 +550,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     public OfflinePlayer[] getOfflinePlayers() {
         Set<OfflinePlayer> set = new HashSet<>();
         UserStorageService storage = Sponge.getServiceManager().getRegistration(UserStorageService.class).get().getProvider();
-        storage.getAll().forEach(u -> {
-            storage.get(u).ifPresent(user -> set.add(new BongeOfflinePlayer(user)));
-        });
+        storage.getAll().forEach(u -> storage.get(u).ifPresent(user -> set.add(new BongeOfflinePlayer(user))));
         return set.toArray(new OfflinePlayer[set.size()]);
     }
 
@@ -543,7 +561,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public HelpMap getHelpMap() {
-        throw new NotImplementedException("Server.getHelpMap() has not been looked at yet");
+        return this.helpMap;
     }
 
     @Override
@@ -589,7 +607,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
                 .builder()
                 .of(InventoryArchetypes.CHEST)
                 .property(InventoryDimension.of(9, i/9))
-                .property(InventoryTitle.of(InterfaceConvert.fromString(s)))
+                .property(InventoryTitle.of(TextConverter.CONVERTER.from(s)))
                 .build(BongeLaunch.getInstance());
         BongeCustomInventory bci = new BongeCustomInventory(inventory);
         bci.setHolder(inventoryHolder);
@@ -683,11 +701,19 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public BossBar createBossBar(String s, BarColor barColor, BarStyle barStyle, BarFlag... barFlags) {
+        BossBarColor colour;
+        BossBarOverlay overlay;
+        try {
+            colour = Bonge.getInstance().convert(barColor, BossBarColor.class);
+            overlay = Bonge.getInstance().convert(barStyle, BossBarOverlay.class);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         return new BongeServerBossBar(ServerBossBar
                 .builder()
-                .name(InterfaceConvert.fromString(s))
-                .color(EnumConvert.getColour(barColor))
-                .overlay(EnumConvert.getStyle(barStyle))
+                .name(TextConverter.CONVERTER.from(s))
+                .color(colour)
+                .overlay(overlay)
                 .createFog(containsFlag(BarFlag.CREATE_FOG, barFlags))
                 .darkenSky(containsFlag(BarFlag.DARKEN_SKY, barFlags))
                 .playEndBossMusic(containsFlag(BarFlag.PLAY_BOSS_MUSIC, barFlags))
@@ -726,20 +752,21 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public BlockData createBlockData(Material material) {
-        return BongeAbstractBlockData.of((material.getSpongeBlockValue().get()).getDefaultState());
+        return material.createBlockData();
     }
 
     @Override
     public BlockData createBlockData(Material material, Consumer<BlockData> consumer) {
-        BlockData data = createBlockData(material);
-        consumer.accept(data);
-        return data;
+        return material.createBlockData(consumer);
     }
 
     @Override
     public BlockData createBlockData(String s) throws IllegalArgumentException {
-        Optional<BlockState> opState = Sponge.getRegistry().getType(BlockState.class, s);
-        return opState.map(BongeAbstractBlockData::of).orElse(null);
+        Optional<BlockState> opBlock = Sponge.getRegistry().getType(BlockState.class, s);
+        if(opBlock.isPresent()){
+            return BongeAbstractBlockData.of(opBlock.get());
+        }
+        throw new IllegalArgumentException("Unknown BlockState of " + s);
     }
 
     @Override
@@ -776,6 +803,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     }*/
 
     @Override
+    @Deprecated
     public UnsafeValues getUnsafe() {
         return new BongeUnsafeValues();
     }

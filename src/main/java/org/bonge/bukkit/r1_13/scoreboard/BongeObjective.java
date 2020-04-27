@@ -1,12 +1,16 @@
 package org.bonge.bukkit.r1_13.scoreboard;
 
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.Bonge;
+import org.bonge.convert.text.TextConverter;
+import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import java.io.IOException;
 
 public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboard.objective.Objective> implements Objective {
 
@@ -24,17 +28,21 @@ public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboar
 
     @Override
     public String getDisplayName() throws IllegalStateException {
-        return InterfaceConvert.toString(this.spongeValue.getDisplayName());
+        return TextConverter.CONVERTER.to(this.spongeValue.getDisplayName());
     }
 
     @Override
     public void setDisplayName(String displayName) throws IllegalStateException, IllegalArgumentException {
-        this.spongeValue.setDisplayName(InterfaceConvert.fromString(displayName));
+        this.spongeValue.setDisplayName(TextConverter.CONVERTER.from(displayName));
     }
 
     @Override
     public String getCriteria() throws IllegalStateException {
-        return InterfaceConvert.getCriteria(this.spongeValue.getCriterion());
+        try {
+            return Bonge.getInstance().convert(String.class, this.spongeValue.getCriterion());
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -68,7 +76,7 @@ public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboar
 
     @Override
     public Score getScore(String entry) throws IllegalArgumentException, IllegalStateException {
-        org.spongepowered.api.scoreboard.Score score = this.spongeValue.getOrCreateScore(InterfaceConvert.fromString(entry));
+        org.spongepowered.api.scoreboard.Score score = this.spongeValue.getOrCreateScore(TextConverter.CONVERTER.from(entry));
         return new BongeScore(score, this);
 
     }

@@ -1,9 +1,9 @@
 package org.bonge.bukkit.r1_13.entity.living.other.armorstand;
 
 import com.flowpowered.math.vector.Vector3d;
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
-import org.bonge.convert.InventoryConvert;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
@@ -12,10 +12,9 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.BodyPart;
 import org.spongepowered.api.data.type.BodyParts;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
+import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongepowered.api.entity.living.ArmorStand> implements ArmorStand {
 
@@ -26,81 +25,106 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
     @Override
     public ItemStack getItemInHand() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getItemInHand(HandTypes.MAIN_HAND).get();
-        return InventoryConvert.getItemStack(stack);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setItemInHand(ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(opStack.isPresent()){
-            this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, opStack.get());
-            return;
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, ItemStackSnapshot.NONE.createStack());
+        this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, is);
     }
 
     @Override
     public ItemStack getBoots() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getBoots().get();
-        return InventoryConvert.getItemStack(stack);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setBoots(ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(opStack.isPresent()){
-            this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, opStack.get());
-            return;
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setBoots(ItemStackSnapshot.NONE.createStack());
+        this.spongeValue.setBoots(is);
     }
 
     @Override
     public ItemStack getLeggings() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getLeggings().get();
-        return InventoryConvert.getItemStack(stack);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setLeggings(ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(opStack.isPresent()){
-            this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, opStack.get());
-            return;
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setLeggings(ItemStackSnapshot.NONE.createStack());
+        this.spongeValue.setLeggings(is);
     }
 
     @Override
     public ItemStack getChestplate() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getChestplate().get();
-        return InventoryConvert.getItemStack(stack);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setChestplate(ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(opStack.isPresent()){
-            this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, opStack.get());
-            return;
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setChestplate(ItemStackSnapshot.NONE.createStack());
+        this.spongeValue.setChestplate(is);
     }
 
     @Override
     public ItemStack getHelmet() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getHelmet().get();
-        return InventoryConvert.getItemStack(stack);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public void setHelmet(ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(opStack.isPresent()){
-            this.spongeValue.setItemInHand(HandTypes.MAIN_HAND, opStack.get());
-            return;
+        org.spongepowered.api.item.inventory.ItemStack is;
+        try {
+            is = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setHelmet(ItemStackSnapshot.NONE.createStack());
+        this.spongeValue.setHelmet(is);
     }
 
     @Override

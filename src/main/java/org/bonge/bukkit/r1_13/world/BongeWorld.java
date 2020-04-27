@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.world;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
@@ -28,6 +29,7 @@ import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.weather.Weathers;
 
 import java.io.File;
@@ -185,7 +187,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
     @Override
     public BongeItem dropItem(Location location, ItemStack itemStack) {
         org.spongepowered.api.entity.Item item = (org.spongepowered.api.entity.Item)this.spongeValue.createEntity(EntityTypes.ITEM, new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
-        item.offer(Keys.REPRESENTED_ITEM, InventoryConvert.getItemStack(itemStack).get().createSnapshot());
+        try {
+            item.offer(Keys.REPRESENTED_ITEM, Bonge.getInstance().convert(itemStack, ItemStackSnapshot.class));
+        } catch (IOException e) {
+        }
         this.spongeValue.spawnEntity(item);
         BongeItem bItem = new BongeItem(item);
         return bItem;

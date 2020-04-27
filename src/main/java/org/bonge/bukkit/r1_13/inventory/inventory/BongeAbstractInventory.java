@@ -1,7 +1,8 @@
 package org.bonge.bukkit.r1_13.inventory.inventory;
 
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.Bonge;
 import org.bonge.convert.InventoryConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -10,11 +11,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -57,26 +58,34 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
     @Override
     default ItemStack getItem(int index) {
         org.spongepowered.api.item.inventory.ItemStack item = this.getSlot(index).peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     default void setItem(int index, ItemStack item) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(item);
-        if(!opStack.isPresent()){
-            return;
+        org.spongepowered.api.item.inventory.ItemStack stack;
+        try {
+            stack = Bonge.getInstance().convert(item, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        this.getSlot(index).set(opStack.get());
+        this.getSlot(index).set(stack);
     }
 
     @Override
     default HashMap<Integer, ItemStack> addItem(ItemStack... items) throws IllegalArgumentException {
         for(ItemStack stack : items){
-            Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = InventoryConvert.getItemStack(stack);
-            if(!opItem.isPresent()){
+            org.spongepowered.api.item.inventory.ItemStack stack1;
+            try {
+                stack1 = Bonge.getInstance().convert(stack, org.spongepowered.api.item.inventory.ItemStack.class);
+            } catch (IOException e) {
                 continue;
             }
-            this.getSpongeInventoryValue().offer(opItem.get());
+            this.getSpongeInventoryValue().offer(stack1);
         }
         return null;
     }
@@ -108,10 +117,12 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default boolean contains(Material material) throws IllegalArgumentException {
-        if(!material.getSpongeItemValue().isPresent()){
-            return false;
+        ItemType type;
+        try {
+            type = Bonge.getInstance().convert(material, ItemType.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
         }
-        ItemType type = material.getSpongeItemValue().get();
         return this.getSpongeInventoryValue().contains(type);
     }
 
@@ -191,7 +202,7 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
         if(!opTitle.isPresent()){
             return null;
         }
-        return InterfaceConvert.toString(opTitle.get().getValue());
+        return TextConverter.CONVERTER.to(opTitle.get().getValue());
     }
 
     @Override

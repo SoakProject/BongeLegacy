@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.block.state;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
 import org.bonge.bukkit.r1_13.block.state.states.BongeChestBlockState;
 import org.bonge.bukkit.r1_13.block.state.states.BongeSignBlockState;
@@ -24,6 +25,7 @@ import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +87,11 @@ public abstract class BongeBlockState<T extends TileEntity> extends BongeWrapper
     @NotNull
     @Override
     public Material getType() {
-        return Material.getMaterial(this.spongeValue.getLocation().getBlockType());
+        try {
+            return Bonge.getInstance().convert(Material.class, this.spongeValue.getLocation().getBlockType());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

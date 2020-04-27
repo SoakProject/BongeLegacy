@@ -1,19 +1,17 @@
 package org.bonge.bukkit.r1_13.inventory.inventory.tileentity.workbench;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
-import org.bonge.convert.InventoryConvert;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.crafting.CraftingGridInventory;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class BongeWorkbenchInventory implements BongeAbstractInventory<org.spongepowered.api.item.inventory.crafting.CraftingInventory>, CraftingInventory {
@@ -35,37 +33,50 @@ public class BongeWorkbenchInventory implements BongeAbstractInventory<org.spong
     @Override
     public ItemStack getResult() {
         org.spongepowered.api.item.inventory.ItemStack item = this.inventory.getResult().peek().get();
-        return InventoryConvert.getItemStack(item);
+        try {
+            return Bonge.getInstance().convert(ItemStack.class, item);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+
+    @Override
+    public void setResult(ItemStack newResult) {
+        org.spongepowered.api.item.inventory.ItemStack itemStack;
+        try {
+            itemStack = Bonge.getInstance().convert(newResult, org.spongepowered.api.item.inventory.ItemStack.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        this.getSlot(0).set(itemStack);
     }
 
     @Override
     public ItemStack[] getMatrix() {
-        CraftingGridInventory grid = this.inventory.getCraftingGrid();
         ItemStack[] stacks = new ItemStack[9];
-        for (Inventory inventory : grid.slots()){
-            int index = inventory.getInventoryProperty(SlotIndex.class).get().getValue();
-            stacks[index] = InventoryConvert.getItemStack(inventory.peek().get());
+        for (int A = 0; A < 9; A++){
+            try {
+                stacks[A] = Bonge.getInstance().convert(ItemStack.class, this.getSlot(A).peek().get());
+            } catch (IOException e) {
+                continue;
+            }
         }
         return stacks;
     }
 
     @Override
-    public void setResult(ItemStack newResult) {
-        Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(newResult);
-        opStack.ifPresent(itemStack -> this.inventory.getResult().set(itemStack));
-    }
-
-    @Override
     public void setMatrix(ItemStack[] contents) {
-        CraftingGridInventory grid = this.inventory.getCraftingGrid();
         for(int A = 0; A < contents.length; A++){
-            Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = InventoryConvert.getItemStack(contents[A]);
-            if(opStack.isPresent()) {
-                grid.set(SlotIndex.of(A), opStack.get());
+            org.spongepowered.api.item.inventory.ItemStack itemStack;
+            try {
+                itemStack = Bonge.getInstance().convert(contents[A], org.spongepowered.api.item.inventory.ItemStack.class);
+            } catch (IOException e) {
+                continue;
             }
+            this.getSlot(A).set(itemStack);
         }
     }
-
     @Override
     public Recipe getRecipe() {
         if(this.getHolder() == null){

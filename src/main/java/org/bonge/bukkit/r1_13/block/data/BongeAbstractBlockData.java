@@ -1,11 +1,13 @@
 package org.bonge.bukkit.r1_13.block.data;
 
+import org.bonge.Bonge;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +21,11 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
 
     @Override
     public Material getMaterial() {
-        return Material.getMaterial(this.spongeValue.getType());
+        try {
+            return Bonge.getInstance().convert(Material.class, this.spongeValue.getType());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

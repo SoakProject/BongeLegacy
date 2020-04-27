@@ -3,6 +3,7 @@ package org.bonge.convert;
 import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeCustomInventory;
 import org.bonge.bukkit.r1_13.inventory.inventory.tileentity.chest.BongeChestInventory;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Material;
@@ -93,37 +94,4 @@ public class InventoryConvert {
         }
     }
 
-    public static Optional<org.spongepowered.api.item.inventory.ItemStack> getItemStack(ItemStack stack){
-        Optional<ItemType> opItemType = stack.getType().getSpongeItemValue();
-        if(!opItemType.isPresent()){
-            return Optional.empty();
-        }
-        org.spongepowered.api.item.inventory.ItemStack.Builder item = org.spongepowered.api.item.inventory.ItemStack.builder()
-                .itemType(opItemType.get())
-                .quantity(stack.getAmount());
-        ItemMeta meta = stack.getItemMeta();
-        item.add(Keys.UNBREAKABLE, meta.isUnbreakable());
-        if (meta.hasDisplayName()){
-            item.add(Keys.DISPLAY_NAME, InterfaceConvert.fromString(meta.getDisplayName()));
-        }
-        if(meta.hasLore()){
-            item.add(Keys.ITEM_LORE, ArrayUtils.convert(s -> InterfaceConvert.fromString(s), meta.getLore()));
-        }
-        return Optional.of(item.build());
-    }
-
-    public static ItemStack getItemStack(org.spongepowered.api.item.inventory.ItemStack stack){
-        ItemStack stack2 = new ItemStack(Material.getMaterial(stack.getType()), stack.getQuantity());
-        ItemMeta meta = stack2.getItemMeta();
-        meta.setDisplayName(InterfaceConvert.toString(stack.get(Keys.DISPLAY_NAME).orElse(null)));
-        stack.get(Keys.UNBREAKABLE).ifPresent(meta::setUnbreakable);
-        stack.get(Keys.DISPLAY_NAME).ifPresent(t -> meta.setDisplayName(InterfaceConvert.toString(t)));
-        stack.get(Keys.ITEM_LORE).ifPresent(t -> meta.setLore(ArrayUtils.convert(s -> InterfaceConvert.toString(s), t)));
-        stack2.setItemMeta(meta);
-        return stack2;
-    }
-
-    public static ItemStack getItemStack(org.spongepowered.api.item.inventory.ItemStackSnapshot stack){
-        return getItemStack(stack.createStack());
-    }
 }

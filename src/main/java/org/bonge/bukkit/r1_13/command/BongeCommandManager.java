@@ -1,7 +1,7 @@
 package org.bonge.bukkit.r1_13.command;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
-import org.bonge.convert.InterfaceConvert;
 import org.bonge.launch.BongeLaunch;
 import org.bukkit.Location;
 import org.bukkit.command.*;
@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 
+import java.io.IOException;
 import java.util.*;
 
 public class BongeCommandManager implements CommandMap {
@@ -75,7 +77,12 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public boolean dispatch(@NotNull CommandSender sender, @NotNull String cmdLine) throws CommandException {
-        CommandResult result = Sponge.getCommandManager().process(InterfaceConvert.getSource(sender), cmdLine);
+        CommandResult result = null;
+        try {
+            result = Sponge.getCommandManager().process(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         return !result.equals(CommandResult.empty());
     }
 
@@ -105,12 +112,20 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull String cmdLine) throws IllegalArgumentException {
-        return Sponge.getCommandManager().getSuggestions(InterfaceConvert.getSource(sender), cmdLine,  ((sender instanceof Player) ? new BongeLocation(((Player)sender).getLocation()).getSpongeLocation() : null));
+        try {
+            return Sponge.getCommandManager().getSuggestions(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine,  ((sender instanceof Player) ? new BongeLocation(((Player)sender).getLocation()).getSpongeLocation() : null));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull String cmdLine, @Nullable Location location) throws IllegalArgumentException {
         assert location != null;
-        return Sponge.getCommandManager().getSuggestions(InterfaceConvert.getSource(sender), cmdLine,  new BongeLocation(location).getSpongeLocation());
+        try {
+            return Sponge.getCommandManager().getSuggestions(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine,  new BongeLocation(location).getSpongeLocation());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

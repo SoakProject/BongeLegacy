@@ -1,6 +1,6 @@
 package org.bonge.bukkit.r1_13.server.source;
 
-import org.bonge.convert.InterfaceConvert;
+import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -21,12 +21,12 @@ import java.util.Set;
 public class ConsoleSource implements ConsoleCommandSender {
     @Override
     public void sendMessage(@NotNull String message) {
-        Sponge.getServer().getConsole().sendMessage(InterfaceConvert.fromString(message));
+        Sponge.getServer().getConsole().sendMessage(TextConverter.CONVERTER.from(message));
     }
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        Sponge.getServer().getConsole().sendMessages(ArrayUtils.convert(Text.class, InterfaceConvert::fromString, messages));
+        Sponge.getServer().getConsole().sendMessages(ArrayUtils.convert(Text.class, t -> TextConverter.CONVERTER.from(t), messages));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendRawMessage(@NotNull String message) {
-        Sponge.getServer().getConsole().sendMessage(InterfaceConvert.fromString(message));
+        Sponge.getServer().getConsole().sendMessage(TextConverter.CONVERTER.from(message));
     }
 
     @Override

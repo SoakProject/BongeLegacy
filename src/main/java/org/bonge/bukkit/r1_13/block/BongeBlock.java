@@ -1,12 +1,12 @@
 package org.bonge.bukkit.r1_13.block;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.block.state.BongeBasicBlockState;
 import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bonge.bukkit.r1_13.world.chunk.BongeChunk;
-import org.bonge.convert.EnumConvert;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Chunk;
@@ -20,10 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -55,19 +57,35 @@ public class BongeBlock extends BongeWrapper<Location<org.spongepowered.api.worl
     @NotNull
     @Override
     public Block getRelative(@NotNull BlockFace face) {
-        return new BongeBlock(this.spongeValue.add(EnumConvert.getDirection(face).asBlockOffset()));
+        Direction dir;
+        try {
+            dir = Bonge.getInstance().convert(face, Direction.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return new BongeBlock(this.spongeValue.add(dir.asBlockOffset()));
     }
 
     @NotNull
     @Override
     public Block getRelative(@NotNull BlockFace face, int distance) {
-        return new BongeBlock(this.spongeValue.add(EnumConvert.getDirection(face).asBlockOffset().mul(distance)));
+        Direction dir;
+        try {
+            dir = Bonge.getInstance().convert(face, Direction.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return new BongeBlock(this.spongeValue.add(dir.asBlockOffset().mul(distance)));
     }
 
     @NotNull
     @Override
     public Material getType() {
-        return Material.getMaterial(this.spongeValue.getBlockType());
+        try {
+            return Bonge.getInstance().convert(Material.class, this.spongeValue.getBlockType());
+        } catch (IOException e) {
+            return Material.UNKNOWN;
+        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.bonge.bukkit.r1_13.entity;
 
+import com.flowpowered.math.vector.Vector3d;
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.animal.BongeChicken;
 import org.bonge.bukkit.r1_13.entity.living.animal.BongeCow;
 import org.bonge.bukkit.r1_13.entity.living.animal.BongePig;
@@ -17,7 +19,6 @@ import org.bonge.bukkit.r1_13.entity.living.other.squid.BongeSquid;
 import org.bonge.bukkit.r1_13.entity.other.item.BongeItem;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
-import org.bonge.convert.LocationConvert;
 import org.bonge.util.WrappedArrayList;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
@@ -34,9 +35,11 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,12 +63,20 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     @Override
     public void setVelocity(Vector vector) {
-        this.getSpongeValue().setVelocity(LocationConvert.toVector3d(vector));
+        try {
+            this.getSpongeValue().setVelocity(Bonge.getInstance().convert(vector, Vector3d.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public Vector getVelocity() {
-        return LocationConvert.toVector(this.getSpongeValue().getVelocity());
+        try {
+            return Bonge.getInstance().convert(Vector.class, this.getSpongeValue().getVelocity());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
@@ -90,7 +101,11 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     @Override
     public boolean teleport(Location location) {
-        return this.getSpongeValue().setTransform(LocationConvert.toTransform(location));
+        try {
+            return this.getSpongeValue().setTransform(Bonge.getInstance().convert(location, Transform.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

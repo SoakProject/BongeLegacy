@@ -1,9 +1,9 @@
 package org.bonge.bukkit.r1_13.block;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
-import org.bonge.convert.EnumConvert;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Chunk;
@@ -17,7 +17,9 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.util.Direction;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,18 +54,30 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     @NotNull
     @Override
     public Block getRelative(@NotNull BlockFace face) {
-        return new BongeBlock(this.getSpongeLocation().add(EnumConvert.getDirection(face).asBlockOffset()));
+        try {
+            return new BongeBlock(this.getSpongeLocation().add(Bonge.getInstance().convert(face, Direction.class).asBlockOffset()));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @NotNull
     @Override
     public Block getRelative(@NotNull BlockFace face, int distance) {
-        return new BongeBlock(this.getSpongeLocation().add(EnumConvert.getDirection(face).asBlockOffset().mul(distance)));
+        try {
+            return new BongeBlock(this.getSpongeLocation().add(Bonge.getInstance().convert(face, Direction.class).asBlockOffset().mul(distance)));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public Material getType() {
-        return Material.getMaterial(this.spongeValue.getExtendedState().getType());
+        try {
+            return Bonge.getInstance().convert(Material.class, this.spongeValue.getExtendedState().getType());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override

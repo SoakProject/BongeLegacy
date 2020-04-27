@@ -1,7 +1,8 @@
 package org.bonge.bukkit.r1_13.inventory.item.recipe;
 
-import org.bonge.convert.InventoryConvert;
+import org.bonge.Bonge;
 import org.bonge.util.ArrayUtils;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -11,6 +12,7 @@ import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class BongeSharedRecipe implements BongeRecipe<ShapedRecipe> {
@@ -86,12 +88,22 @@ public class BongeSharedRecipe implements BongeRecipe<ShapedRecipe> {
             if(!opChoice.isPresent()){
                 return false;
             }
-            if (opChoice.get().test(InventoryConvert.getItemStack(stack))){
+            try {
+                ItemStack stack1 = Bonge.getInstance().convert(ItemStack.class, stack);
+                if(opChoice.get().test(stack1)){
+                    continue;
+                }
+                return false;
+            } catch (IOException e) {
                 continue;
             }
-            return false;
         }
-        inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(0))).set(InventoryConvert.getItemStack(this.recipe.getResult()).get());
+        try {
+            org.spongepowered.api.item.inventory.ItemStack stack = Bonge.getInstance().convert(this.recipe.getResult(), org.spongepowered.api.item.inventory.ItemStack.class);
+            inventory.query(QueryOperationTypes.INVENTORY_PROPERTY.of(SlotIndex.of(0))).set(stack);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
         return true;
     }
 }
