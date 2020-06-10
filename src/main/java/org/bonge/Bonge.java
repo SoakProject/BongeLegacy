@@ -43,26 +43,36 @@ public class Bonge {
 
     public <B, S> B convert(Class<B> clazz, S value) throws IOException{
         Set<Converter<B, S>> set = this.getConverts(clazz, value);
+        if(set.isEmpty()){
+            throw new IOException("No valid converts to convert Bukkit: " + clazz.getSimpleName() + " to Sponge: " + value.getClass().getSimpleName());
+        }
+        IOException e2 = null;
         for(Converter<B, S> converter : set){
             try{
                 return converter.to(value);
-            }catch (Throwable e){
+            }catch (IOException e){
+                e2 = e;
                 continue;
             }
         }
-        throw new IOException("Could not convert " + value + " to " + clazz.getName());
+        throw e2;
     }
 
     public <B, S> S convert(B value, Class<S> clazz) throws IOException{
         Set<Converter<B, S>> set = this.getConverts(value, clazz);
+        if(set.isEmpty()){
+            throw new IOException("No valid converts to convert Bukkit: " + value.getClass().getSimpleName() + " to Sponge: " + clazz.getSimpleName());
+        }
+        IOException e2 = null;
         for(Converter<B, S> converter : set){
             try{
                 return converter.from(value);
-            }catch (Throwable e){
+            }catch (IOException e){
+                e2 = e;
                 continue;
             }
         }
-        throw new IOException("Could not convert " + value + " to " + clazz.getName());
+        throw e2;
     }
 
     public Set<Material> getMaterials(){

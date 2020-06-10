@@ -6,6 +6,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,7 +25,7 @@ public class TextConverter implements Converter<String, Text> {
     }
 
     @Override
-    public Text from(String value) {
+    public Text from(String value){
         Text text = TextSerializers.FORMATTING_CODE.deserialize(value);
         try{
             URL url = new URL(ChatColor.stripColor(value));

@@ -4,6 +4,7 @@ import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.spongepowered.api.data.key.Keys;
 
@@ -81,5 +82,10 @@ public class BongeAbstractArrowEntity<T extends org.spongepowered.api.entity.pro
     @Override
     public void setBounce(boolean doesBounce) {
 
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.ARROW;
     }
 }

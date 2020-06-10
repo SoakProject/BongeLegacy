@@ -1,12 +1,13 @@
 package org.bonge.bukkit.r1_13.entity.living.monster;
 
-import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.loot.LootTable;
 import org.spongepowered.api.entity.Entity;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public abstract class BongeAbstractMonster<T extends org.spongepowered.api.entity.living.monster.Monster> extends BongeAbstractLivingEntity<T> implements Monster {
@@ -23,7 +24,15 @@ public abstract class BongeAbstractMonster<T extends org.spongepowered.api.entit
     @Override
     public LivingEntity getTarget() {
         Optional<Entity> opEntity = this.getSpongeValue().getTarget();
-        return opEntity.map(entity -> (LivingEntity) BongeAbstractEntity.of(entity)).orElse(null);
+        if(!opEntity.isPresent()){
+            return null;
+        }
+        try {
+            return (LivingEntity) Bonge.getInstance().convert(Entity.class, opEntity.get());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

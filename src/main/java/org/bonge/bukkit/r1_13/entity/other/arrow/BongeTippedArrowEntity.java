@@ -1,6 +1,7 @@
 package org.bonge.bukkit.r1_13.entity.other.arrow;
 
 import org.bukkit.Color;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TippedArrow;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
@@ -62,5 +63,10 @@ public class BongeTippedArrowEntity extends BongeAbstractArrowEntity<org.spongep
     @Override
     public void clearCustomEffects() {
 
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.TIPPED_ARROW;
     }
 }

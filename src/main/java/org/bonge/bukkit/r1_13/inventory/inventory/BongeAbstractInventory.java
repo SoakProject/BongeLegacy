@@ -1,25 +1,28 @@
 package org.bonge.bukkit.r1_13.inventory.inventory;
 
 import org.bonge.Bonge;
+import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.convert.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
+import org.bonge.util.ArrayUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.Carrier;
+import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.api.item.inventory.type.CarriedInventory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
+import java.util.*;
 
 public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inventory.Inventory> extends Inventory {
 
@@ -37,7 +40,7 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default int getSize() {
-        return this.getSpongeInventoryValue().size();
+        return this.getSpongeInventoryValue().capacity();
     }
 
     @Override
@@ -57,9 +60,12 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default ItemStack getItem(int index) {
-        org.spongepowered.api.item.inventory.ItemStack item = this.getSlot(index).peek().get();
+        Optional<org.spongepowered.api.item.inventory.ItemStack> opItem = this.getSlot(index).peek();
+        if(!opItem.isPresent()){
+            return null;
+        }
         try {
-            return Bonge.getInstance().convert(ItemStack.class, item);
+            return Bonge.getInstance().convert(ItemStack.class, opItem.get());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -97,7 +103,17 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default ItemStack[] getContents() {
-        return new ItemStack[0];
+        List<ItemStack> stacks = new ArrayList<>();
+        for(int A = 0; A < this.getSize(); A++){
+            Optional<org.spongepowered.api.item.inventory.ItemStack> opStack = this.getSlot(A).peek();
+            if(opStack.isPresent()){
+                try {
+                    stacks.add(Bonge.getInstance().convert(ItemStack.class, opStack.get()));
+                } catch (IOException e) {
+                }
+            }
+        }
+        return stacks.toArray(new ItemStack[stacks.size()]);
     }
 
     @Override
@@ -193,7 +209,17 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
 
     @Override
     default List<HumanEntity> getViewers() {
-        return null;
+        if(this.getSpongeInventoryValue() instanceof Carrier){
+            return ArrayUtils.convert(e -> {
+                try {
+                    Bonge.getInstance().convert(Entity.class, e);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+                return null;
+            }, ((Container)this.getSpongeInventoryValue()).getViewers());
+        }
+        return Collections.EMPTY_LIST;
     }
 
     @Override
@@ -203,25 +229,5 @@ public interface BongeAbstractInventory<I extends org.spongepowered.api.item.inv
             return null;
         }
         return TextConverter.CONVERTER.to(opTitle.get().getValue());
-    }
-
-    @Override
-    default InventoryType getType() {
-        return null;
-    }
-
-    @Override
-    default ListIterator<ItemStack> iterator() {
-        return null;
-    }
-
-    @Override
-    default ListIterator<ItemStack> iterator(int index) {
-        return null;
-    }
-
-    @Override
-    default Location getLocation() {
-        return null;
     }
 }

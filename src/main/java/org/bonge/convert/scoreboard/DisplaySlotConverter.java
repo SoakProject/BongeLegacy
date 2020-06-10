@@ -4,6 +4,8 @@ import org.bonge.convert.Converter;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 
+import java.io.IOException;
+
 public class DisplaySlotConverter implements Converter<DisplaySlot, org.spongepowered.api.scoreboard.displayslot.DisplaySlot> {
 
     @Override
@@ -17,17 +19,17 @@ public class DisplaySlotConverter implements Converter<DisplaySlot, org.spongepo
     }
 
     @Override
-    public org.spongepowered.api.scoreboard.displayslot.DisplaySlot from(DisplaySlot value) {
+    public org.spongepowered.api.scoreboard.displayslot.DisplaySlot from(DisplaySlot value) throws IOException {
         switch (value){
             case BELOW_NAME: return DisplaySlots.BELOW_NAME;
             case PLAYER_LIST: return DisplaySlots.LIST;
             case SIDEBAR: return DisplaySlots.SIDEBAR;
-            default: throw new IllegalStateException("Unknown Display Slot of " + value.name());
+            default: throw new IOException("Unknown Display Slot of " + value.name());
         }
     }
 
     @Override
-    public DisplaySlot to(org.spongepowered.api.scoreboard.displayslot.DisplaySlot value) {
+    public DisplaySlot to(org.spongepowered.api.scoreboard.displayslot.DisplaySlot value) throws IOException{
         if(value.equals(DisplaySlots.BELOW_NAME)){
             return DisplaySlot.BELOW_NAME;
         }
@@ -37,6 +39,6 @@ public class DisplaySlotConverter implements Converter<DisplaySlot, org.spongepo
         if(value.equals(DisplaySlots.SIDEBAR)){
             return DisplaySlot.SIDEBAR;
         }
-        throw new IllegalStateException("Unknown Display Slot of " + value.getId());
+        throw new IOException("Unknown Display Slot of " + value.getId());
     }
 }

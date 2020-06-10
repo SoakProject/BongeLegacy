@@ -19,20 +19,12 @@ public class ItemStackConverter implements Converter<ItemStack, org.spongepowere
     }
 
     @Override
-    public org.spongepowered.api.item.inventory.ItemStack from(ItemStack value) {
-        try {
-            return Bonge.getInstance().convert(ItemStackSnapshot.class, value).createStack();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public org.spongepowered.api.item.inventory.ItemStack from(ItemStack value) throws IOException{
+        return Bonge.getInstance().convert(value, ItemStackSnapshot.class).createStack();
     }
 
     @Override
-    public ItemStack to(org.spongepowered.api.item.inventory.ItemStack value) {
-        try {
-            return Bonge.getInstance().convert(value.createSnapshot(), ItemStack.class);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public ItemStack to(org.spongepowered.api.item.inventory.ItemStack value) throws IOException{
+        return Bonge.getInstance().convert(ItemStack.class, value.createSnapshot());
     }
 }

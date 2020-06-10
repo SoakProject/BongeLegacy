@@ -76,12 +76,13 @@ public class BongeInventoryView extends InventoryView {
             ItemStack item = top.getItem(slot);
             return item;
         }
+        System.out.println("Slot: " + slot + " | TopSize: " + top.getSize() + " | " + (slot - top.getSize()) + " | " + top.getType().name() + " | " + top.getClass().getSimpleName());
         ItemStack item = this.getBottomInventory().getItem(slot - top.getSize());
         return item;
     }
 
     @Override
     public InventoryType getType() {
-        return null;
+        return this.topInventory.getType();
     }
 }

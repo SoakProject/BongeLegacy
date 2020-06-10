@@ -1,6 +1,7 @@
 package org.bonge.bukkit.r1_13.inventory.item.meta;
 
 import com.google.common.collect.Multimap;
+import org.bonge.bukkit.r1_13.inventory.item.enchantment.EnchantmentData;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -17,7 +18,10 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     protected String displayName;
     protected List<String> lore = new ArrayList<>();
     protected Integer damage;
+    protected Set<EnchantmentData> enchantment = new HashSet<>();
+    protected boolean unbreakable;
     protected Material[] acceptable;
+    protected Set<ItemFlag> flags = new HashSet<>();
 
     public AbstractItemMeta(Material... material){
         this.acceptable = material;
@@ -30,6 +34,10 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
             }
         }
         return false;
+    }
+
+    public Set<EnchantmentData> getEnchantments(){
+        return this.enchantment;
     }
 
     @Override
@@ -80,32 +88,56 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public boolean hasEnchants() {
-        return false;
+        return !this.enchantment.isEmpty();
     }
 
     @Override
     public boolean hasEnchant(Enchantment ench) {
-        return false;
+        return this.enchantment.stream().anyMatch(d -> d.getEnchantment().equals(ench));
     }
 
     @Override
     public int getEnchantLevel(Enchantment ench) {
+        for(EnchantmentData enchantment : this.enchantment){
+            if(enchantment.getEnchantment().equals(ench)){
+                return enchantment.getLevel();
+            }
+        }
         return 0;
     }
 
     @Override
     public Map<Enchantment, Integer> getEnchants() {
-        return null;
+        Map<Enchantment, Integer> map = new HashMap<>();
+        this.enchantment.forEach(e -> map.put(e.getEnchantment(), e.getLevel()));
+        return map;
     }
 
     @Override
     public boolean addEnchant(Enchantment ench, int level, boolean ignoreLevelRestriction) {
-        return false;
+        for(EnchantmentData data : this.enchantment){
+            if(data.getEnchantment().equals(ench)){
+                data.setLevel(level);
+                data.setIgnore(ignoreLevelRestriction);
+                return true;
+            }
+        }
+        return this.enchantment.add(new EnchantmentData(ench, level, ignoreLevelRestriction));
     }
 
     @Override
     public boolean removeEnchant(Enchantment ench) {
-        return false;
+        EnchantmentData data1 = null;
+        for(EnchantmentData data : this.enchantment){
+            if(data.getEnchantment().equals(ench)) {
+                data1 = data;
+                break;
+            }
+        }
+        if(data1 == null){
+            return false;
+        }
+        return this.enchantment.remove(data1);
     }
 
     @Override
@@ -115,32 +147,32 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public void addItemFlags(ItemFlag... itemFlags) {
-
+        this.flags.addAll(Arrays.asList(itemFlags));
     }
 
     @Override
     public void removeItemFlags(ItemFlag... itemFlags) {
-
+        this.flags.removeAll(Arrays.asList(itemFlags));
     }
 
     @Override
     public Set<ItemFlag> getItemFlags() {
-        return null;
+        return this.flags;
     }
 
     @Override
     public boolean hasItemFlag(ItemFlag flag) {
-        return false;
+        return this.flags.contains(flag);
     }
 
     @Override
     public boolean isUnbreakable() {
-        return false;
+        return this.unbreakable;
     }
 
     @Override
     public void setUnbreakable(boolean unbreakable) {
-
+        this.unbreakable = unbreakable;
     }
 
     @Override
@@ -195,7 +227,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public int getDamage() {
-        return this.damage;
+        return (this.damage == null) ? -1 : this.damage;
     }
 
     @Override
@@ -205,7 +237,8 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public Map<String, Object> serialize() {
-        return null;
+        Map<String, Object> map = new HashMap<>();
+        return map;
     }
 
     @Override

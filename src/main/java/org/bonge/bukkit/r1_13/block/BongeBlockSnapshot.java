@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.block;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
+import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bonge.util.exception.NotImplementedException;

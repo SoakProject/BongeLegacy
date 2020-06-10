@@ -2,10 +2,13 @@ package org.bonge.bukkit.r1_13.material;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.jetbrains.annotations.NotNull;
 
-public class UnknownMaterial implements Material {
+import java.util.function.Consumer;
+
+public class UnknownMaterial extends Material {
     @Override
     public @NotNull NamespacedKey getKey() {
         return new NamespacedKey("bonge", "unknown");
@@ -104,5 +107,20 @@ public class UnknownMaterial implements Material {
     @Override
     public float getBlastResistance() {
         return 0;
+    }
+
+    @Override
+    public BlockData createBlockData() {
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(Consumer<BlockData> consumer) {
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(String data) throws IllegalArgumentException {
+        return null;
     }
 }

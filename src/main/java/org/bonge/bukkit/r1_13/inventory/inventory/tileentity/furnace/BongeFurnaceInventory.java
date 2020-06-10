@@ -2,12 +2,15 @@ package org.bonge.bukkit.r1_13.inventory.inventory.tileentity.furnace;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
+import org.bukkit.Location;
 import org.bukkit.block.Furnace;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.type.TileEntityInventory;
 
 import java.io.IOException;
+import java.util.ListIterator;
 
 public class BongeFurnaceInventory implements BongeAbstractInventory<TileEntityInventory<org.spongepowered.api.block.tileentity.carrier.Furnace>>, FurnaceInventory {
 
@@ -92,7 +95,27 @@ public class BongeFurnaceInventory implements BongeAbstractInventory<TileEntityI
     }
 
     @Override
+    public InventoryType getType() {
+        return InventoryType.FURNACE;
+    }
+
+    @Override
     public Furnace getHolder() {
         return this.furnace;
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator() {
+        return null;
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator(int index) {
+        return null;
+    }
+
+    @Override
+    public Location getLocation() {
+        return this.getHolder().getLocation();
     }
 }

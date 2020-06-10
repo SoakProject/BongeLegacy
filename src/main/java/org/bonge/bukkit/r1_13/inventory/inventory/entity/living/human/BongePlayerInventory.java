@@ -1,10 +1,13 @@
 package org.bonge.bukkit.r1_13.inventory.inventory.entity.living.human;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
+import org.bonge.util.InventoryListIterator;
 import org.bonge.wrapper.BongeWrapper;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.spongepowered.api.data.type.HandTypes;
@@ -13,6 +16,7 @@ import org.spongepowered.api.entity.living.Humanoid;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
 
 import java.io.IOException;
+import java.util.ListIterator;
 
 public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.entity.living.Humanoid> implements BongeAbstractInventory<CarriedInventory<Humanoid>>, PlayerInventory {
 
@@ -23,6 +27,11 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
     @Override
     public void setItem(int slot, ItemStack stack){
         BongeAbstractInventory.super.setItem(slot, stack);
+    }
+
+    @Override
+    public InventoryType getType() {
+        return InventoryType.PLAYER;
     }
 
     @Override
@@ -201,7 +210,27 @@ public class BongePlayerInventory extends BongeWrapper<org.spongepowered.api.ent
 
     @Override
     public HumanEntity getHolder() {
-        return (HumanEntity) BongeAbstractEntity.of(this.spongeValue);
+        try {
+            return (HumanEntity) Bonge.getInstance().convert(Entity.class, this.spongeValue);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator() {
+        return new InventoryListIterator(this);
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator(int index) {
+        return new InventoryListIterator(this).setUntil(index);
+    }
+
+    @Override
+    public Location getLocation() {
+        return this.getHolder().getLocation();
     }
 
     @Override

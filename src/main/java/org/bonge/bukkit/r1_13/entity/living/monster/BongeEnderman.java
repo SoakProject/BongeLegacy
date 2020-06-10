@@ -3,7 +3,9 @@ package org.bonge.bukkit.r1_13.entity.living.monster;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Enderman;
+import org.bukkit.entity.EntityType;
 import org.bukkit.material.MaterialData;
+import org.spongepowered.api.entity.EntityTypes;
 
 public class BongeEnderman extends BongeAbstractMonster<org.spongepowered.api.entity.living.monster.Enderman> implements Enderman {
 
@@ -46,5 +48,10 @@ public class BongeEnderman extends BongeAbstractMonster<org.spongepowered.api.en
     @Override
     public Location getEyeLocation() {
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.ENDERMAN;
     }
 }

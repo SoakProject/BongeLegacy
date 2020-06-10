@@ -4,6 +4,8 @@ import org.bonge.convert.Converter;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
+import java.io.IOException;
+
 public class GameModeConverter implements Converter<org.bukkit.GameMode, GameMode> {
     @Override
     public Class<GameMode> getSpongeClass() {
@@ -26,7 +28,7 @@ public class GameModeConverter implements Converter<org.bukkit.GameMode, GameMod
     }
 
     @Override
-    public org.bukkit.GameMode to(GameMode gamemode) {
+    public org.bukkit.GameMode to(GameMode gamemode){
         if (gamemode == GameModes.ADVENTURE){
             return org.bukkit.GameMode.ADVENTURE;
         }

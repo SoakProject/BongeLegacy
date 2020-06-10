@@ -1,7 +1,7 @@
 package org.bonge.bukkit.r1_13.world.chunk;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
-import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Chunk;
@@ -11,7 +11,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.Chunk> implements Chunk {
 
@@ -55,15 +58,27 @@ public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.Chunk> 
         Entity[] entities = new Entity[sEntities.size()];
         int count = 0;
         for (org.spongepowered.api.entity.Entity sEntity : sEntities) {
-            entities[count] = BongeAbstractEntity.of(sEntity);
-            count++;
+            try {
+                entities[count] = Bonge.getInstance().convert(Entity.class, sEntity);
+                count++;
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         }
         return entities;
     }
 
     @Override
     public BlockState[] getTileEntities() {
-        return new BlockState[0];
+        List<BlockState> array = new ArrayList<>();
+        this.spongeValue.getTileEntities().forEach(t -> {
+            try {
+                array.add(Bonge.getInstance().convert(BlockState.class, t));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return array.toArray(new BlockState[0]);
     }
 
     @Override

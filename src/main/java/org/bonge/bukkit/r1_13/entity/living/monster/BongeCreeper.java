@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.entity.living.monster;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EntityType;
 import org.spongepowered.api.data.key.Keys;
 
 import java.util.Optional;
@@ -55,5 +56,10 @@ public class BongeCreeper extends BongeAbstractMonster<org.spongepowered.api.ent
     @Override
     public Location getEyeLocation() {
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.CREEPER;
     }
 }

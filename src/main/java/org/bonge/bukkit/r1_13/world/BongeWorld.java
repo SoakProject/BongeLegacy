@@ -4,6 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
+import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_13.entity.other.arrow.BongeAbstractArrowEntity;
@@ -13,6 +14,7 @@ import org.bonge.bukkit.r1_13.world.chunk.BongeChunk;
 import org.bonge.convert.InventoryConvert;
 import org.bonge.util.ArrayUtils;
 import org.bonge.util.WrappedArrayList;
+import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
@@ -27,15 +29,20 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.world.GeneratorTypes;
+import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.world.weather.Weathers;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> implements World {
 
@@ -126,12 +133,12 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public boolean isChunkGenerated(int i, int i1) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean isChunkInUse(int i, int i1) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -151,37 +158,42 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public boolean unloadChunk(int i, int i1) {
-        return false;
+        Optional<org.spongepowered.api.world.Chunk> opChunk = this.spongeValue.getChunk(i, 0, i1);
+        return opChunk.filter(chunk -> this.spongeValue.unloadChunk(chunk)).isPresent();
     }
 
     @Override
     public boolean unloadChunk(int i, int i1, boolean b) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean unloadChunk(int x, int z, boolean save, boolean safe) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean unloadChunkRequest(int i, int i1) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean unloadChunkRequest(int x, int z, boolean safe) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean regenerateChunk(int i, int i1) {
-        return false;
+        return this.spongeValue.regenerateChunk(i, 0, i1).isPresent();
     }
 
     @Override
     public boolean refreshChunk(int i, int i1) {
-        return false;
+        if (!this.unloadChunk(i, i1)){
+            return false;
+        }
+        this.loadChunk(i, i1);
+        return true;
     }
 
     @Override
@@ -192,8 +204,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
         } catch (IOException e) {
         }
         this.spongeValue.spawnEntity(item);
-        BongeItem bItem = new BongeItem(item);
-        return bItem;
+        return new BongeItem(item);
     }
 
     @Override
@@ -212,7 +223,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
     public <T extends Arrow> T spawnArrow(Location location, Vector direction, float speed, float spread, Class<T> clazz) {
         BongeAbstractArrowEntity<?> arrow = null;
         if(clazz.isAssignableFrom(SpectralArrow.class)){
-
+            //TODO
         }else{
             arrow = new BongeTippedArrowEntity((org.spongepowered.api.entity.projectile.arrow.TippedArrow) this.spongeValue.createEntity(EntityTypes.TIPPED_ARROW, new Vector3d(location.getX(), location.getY(), location.getZ())));
         }
@@ -224,27 +235,35 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public boolean generateTree(Location location, TreeType treeType) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public boolean generateTree(Location location, TreeType treeType, BlockChangeDelegate blockChangeDelegate) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public Entity spawnEntity(Location location, EntityType entityType) {
-        return null;
+        try {
+            org.spongepowered.api.world.Location<org.spongepowered.api.world.World> loc = Bonge.getInstance().convert(location, org.spongepowered.api.world.Location.class);
+            org.spongepowered.api.entity.Entity entity = loc.createEntity(Bonge.getInstance().convert(entityType, org.spongepowered.api.entity.EntityType.class));
+            loc.spawnEntity(entity);
+            return Bonge.getInstance().convert(Entity.class, entity);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public LightningStrike strikeLightning(Location location) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public LightningStrike strikeLightningEffect(Location location) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -254,7 +273,13 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
                 return null;
             }
           return (((BongeAbstractEntity<?>)e).getSpongeValue());
-        }, BongeAbstractEntity::of, this.spongeValue.getEntities());
+        }, e -> {
+            try {
+                return Bonge.getInstance().convert(Entity.class, e);
+            } catch (IOException ioException) {
+                throw new IllegalArgumentException(ioException);
+            }
+        }, this.spongeValue.getEntities());
     }
 
     @Override
@@ -270,7 +295,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public <T extends Entity> Collection<T> getEntitiesByClass(Class<T> aClass) {
-        return ArrayUtils.convert(e -> (T)e, this.getEntities().stream().filter(e -> aClass.isInstance(e)).collect(Collectors.toSet()));
+        return ArrayUtils.convert(e -> (T)e, this.getEntities().stream().filter(aClass::isInstance).collect(Collectors.toSet()));
     }
 
     @Override
@@ -292,7 +317,22 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public Collection<Entity> getNearbyEntities(Location location, double v, double v1, double v2) {
-        return null;
+        if(v == v1 && v1 == v2){
+            return new WrappedArrayList.Direct<>(e -> {
+                try {
+                    return Bonge.getInstance().convert(e, org.spongepowered.api.entity.Entity.class);
+                } catch (IOException ioException) {
+                    throw new IllegalArgumentException(ioException);
+                }
+            }, e -> {
+                try {
+                    return Bonge.getInstance().convert(Entity.class, e);
+                } catch (IOException ioException) {
+                    throw new IllegalArgumentException(ioException);
+                }
+            }, this.spongeValue.getNearbyEntities(new Vector3d(location.getX(), location.getY(), location.getZ()), v));
+        }
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -373,52 +413,63 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public boolean isThundering() {
-        return false;
+        return this.spongeValue.getWeather().equals(Weathers.THUNDER_STORM);
     }
 
     @Override
     public void setThundering(boolean b) {
+        if(b){
+            this.spongeValue.setWeather(Weathers.THUNDER_STORM);
+            return;
+        }
+        this.spongeValue.setWeather(Weathers.CLEAR);
 
     }
 
     @Override
     public int getThunderDuration() {
-        return 0;
+        return (int)this.spongeValue.getRemainingDuration();
     }
 
     @Override
     public void setThunderDuration(int i) {
-
+        this.spongeValue.setWeather(Weathers.THUNDER_STORM, i);
     }
 
     @Override
-    public boolean createExplosion(double v, double v1, double v2, float v3) {
-        return false;
+    public boolean createExplosion(double x, double y, double z, float power) {
+        return this.createExplosion(x, y, z, power, true, true);
     }
 
     @Override
-    public boolean createExplosion(double v, double v1, double v2, float v3, boolean b) {
-        return false;
+    public boolean createExplosion(double x, double y, double z, float power, boolean setFire) {
+        return this.createExplosion(x, y, z, power, setFire, true);
     }
 
     @Override
-    public boolean createExplosion(double v, double v1, double v2, float v3, boolean b, boolean b1) {
-        return false;
+    public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
+        Explosion exp = Explosion.builder().canCauseFire(setFire).shouldBreakBlocks(breakBlocks).radius(power).location(this.spongeValue.getLocation(x, y, z)).build();
+        this.spongeValue.triggerExplosion(exp);
+        return true;
     }
 
     @Override
-    public boolean createExplosion(Location location, float v) {
-        return false;
+    public boolean createExplosion(Location location, float power) {
+        return this.createExplosion(location, power, true);
     }
 
     @Override
-    public boolean createExplosion(Location location, float v, boolean b) {
-        return false;
+    public boolean createExplosion(Location location, float power, boolean setFire) {
+        return this.createExplosion(location.getX(), location.getY(), location.getZ(), power, setFire);
     }
 
     @Override
     public Environment getEnvironment() {
-        return null;
+        try {
+            return Bonge.getInstance().convert(Environment.class, this.spongeValue.getDimension().getType());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
@@ -438,7 +489,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public ChunkGenerator getGenerator() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -452,372 +503,449 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World> 
 
     @Override
     public List<BlockPopulator> getPopulators() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public <T extends Entity> T spawn(Location location, Class<T> aClass) throws IllegalArgumentException {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public <T extends Entity> T spawn(Location location, Class<T> aClass, Consumer<T> consumer) throws IllegalArgumentException {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     @Deprecated
     public FallingBlock spawnFallingBlock(Location location, MaterialData materialData) throws IllegalArgumentException {
-        return null;
+        return this.spawnFallingBlock(location, materialData.getSpongeValue());
     }
 
     @Override
     public FallingBlock spawnFallingBlock(Location location, BlockData blockData) throws IllegalArgumentException {
-        return null;
+        try {
+            return this.spawnFallingBlock(location, Bonge.getInstance().convert(blockData, BlockState.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
+    public FallingBlock spawnFallingBlock(Location loc, BlockState state){
+        org.spongepowered.api.entity.FallingBlock block = (org.spongepowered.api.entity.FallingBlock) this.spongeValue.createEntity(EntityTypes.FALLING_BLOCK, new Vector3d(loc.getX(), loc.getY(), loc.getZ()));
+        block.offer(Keys.REPRESENTED_BLOCK, state);
+        try {
+            return (FallingBlock) Bonge.getInstance().convert(Entity.class, block);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    @Deprecated
     @Override
     public FallingBlock spawnFallingBlock(Location location, Material material, byte b) throws IllegalArgumentException {
-        return null;
+        return this.spawnFallingBlock(location, material.createBlockData());
     }
 
     @Override
     public void playEffect(Location location, Effect effect, int i) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void playEffect(Location location, Effect effect, int i, int i1) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public <T> void playEffect(Location location, Effect effect, T t) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public <T> void playEffect(Location location, Effect effect, T t, int i) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public ChunkSnapshot getEmptyChunkSnapshot(int i, int i1, boolean b, boolean b1) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void setSpawnFlags(boolean b, boolean b1) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public boolean getAllowAnimals() {
-        return false;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public boolean getAllowMonsters() {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public Biome getBiome(int i, int i1) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void setBiome(int i, int i1, Biome biome) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public double getTemperature(int i, int i1) {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public double getHumidity(int i, int i1) {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public int getMaxHeight() {
-        return 0;
+        return this.spongeValue.getBlockMax().getY();
     }
 
     @Override
     public int getSeaLevel() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public boolean getKeepSpawnInMemory() {
-        return false;
+        return this.spongeValue.getProperties().doesKeepSpawnLoaded();
     }
 
     @Override
     public void setKeepSpawnInMemory(boolean b) {
-
+        this.spongeValue.getProperties().setKeepSpawnLoaded(b);
     }
 
     @Override
     public boolean isAutoSave() {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void setAutoSave(boolean b) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void setDifficulty(Difficulty difficulty) {
-
+        try {
+            this.spongeValue.getProperties().setDifficulty(Bonge.getInstance().convert(difficulty, org.spongepowered.api.world.difficulty.Difficulty.class));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public Difficulty getDifficulty() {
-        return null;
+        try {
+            return Bonge.getInstance().convert(Difficulty.class, this.spongeValue.getDifficulty());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+
     }
 
     @Override
     public File getWorldFolder() {
-        return null;
+        return this.spongeValue.getDirectory().toFile();
     }
 
     @Override
-    public WorldType getWorldType() {
-        return null;
+    public WorldType getWorldType(){
+        try {
+            return Bonge.getInstance().convert(WorldType.class, this.spongeValue.getDimension().getGeneratorType());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
     public boolean canGenerateStructures() {
-        return false;
+        //TODO NOT SURE IF THIS IS CORRECT
+        return this.spongeValue.getWorldGenerator().getGenerationPopulators().isEmpty();
     }
 
     @Override
     public long getTicksPerAnimalSpawns() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void setTicksPerAnimalSpawns(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public long getTicksPerMonsterSpawns() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void setTicksPerMonsterSpawns(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public int getMonsterSpawnLimit() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void setMonsterSpawnLimit(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public int getAnimalSpawnLimit() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void setAnimalSpawnLimit(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
-    public int getWaterAnimalSpawnLimit() {
-        return 0;
+    public int getWaterAnimalSpawnLimit(){
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void setWaterAnimalSpawnLimit(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public int getAmbientSpawnLimit() {
-        return 0;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void setAmbientSpawnLimit(int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void playSound(Location location, Sound sound, float v, float v1) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void playSound(Location location, String s, float v, float v1) {
-
+        //throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void playSound(Location location, Sound sound, SoundCategory soundCategory, float v, float v1) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void playSound(Location location, String s, SoundCategory soundCategory, float v, float v1) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public String[] getGameRules() {
-        return new String[0];
+        return this.spongeValue.getGameRules().keySet().toArray(new String[0]);
     }
 
     @Override
     public String getGameRuleValue(String s) {
-        return null;
+        return this.spongeValue.getGameRule(s).orElse(null);
     }
 
     @Override
     public boolean setGameRuleValue(String s, String s1) {
-        return false;
+        if(this.spongeValue.getGameRules().containsKey(s)) {
+            this.spongeValue.getGameRules().replace(s, s1);
+            return true;
+        }
+        this.spongeValue.getGameRules().put(s, s1);
+        return true;
     }
 
     @Override
     public boolean isGameRule(String s) {
-        return false;
+        return Stream.of(GameRule.values()).anyMatch(v -> v.getName().equalsIgnoreCase(s));
     }
 
     @Override
     public <T> T getGameRuleValue(GameRule<T> gameRule) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public <T> T getGameRuleDefault(GameRule<T> gameRule) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public <T> boolean setGameRule(GameRule<T> gameRule, T t) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public WorldBorder getWorldBorder() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void spawnParticle(Particle particle, Location location, int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void spawnParticle(Particle particle, double v, double v1, double v2, int i) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, Location location, int i, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, T t) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3, T t, boolean b) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, T t, boolean b) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public Location locateNearestStructure(Location location, StructureType structureType, int i, boolean b) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void setMetadata(String s, MetadataValue metadataValue) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public List<MetadataValue> getMetadata(String s) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public boolean hasMetadata(String s) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
     public void removeMetadata(String s, Plugin plugin) {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public void sendPluginMessage(Plugin plugin, String s, byte[] bytes) {
-
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public Set<String> getListeningPluginChannels() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 }

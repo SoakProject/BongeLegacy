@@ -1,31 +1,41 @@
-package org.bonge.bukkit.r1_13.material;
+package org.bonge.bukkit.r1_13.material.block;
 
-import org.bonge.wrapper.BongeWrapper;
+import org.bonge.bukkit.r1_13.material.BongeMaterial;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.property.block.*;
-import org.spongepowered.api.data.property.item.BurningFuelProperty;
-import org.spongepowered.api.item.ItemType;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
+public class ExtendedBlockMaterial extends Material implements BongeMaterial.Block {
 
+    private BlockState state;
     private String name;
 
-    public BlockMaterial(BlockType type, String name){
-        super(type);
+    public ExtendedBlockMaterial(BlockState state, String name){
+        this.state = state;
         this.name = name;
     }
 
     @Override
-    public NamespacedKey getKey() {
-        return NamespacedKey.minecraft(this.spongeValue.getId().substring(10));
+    public Optional<Block> toBlock() {
+        return Optional.of(this);
+    }
 
+    @Override
+    public Optional<Item> toItem() {
+        return Optional.empty();
+    }
+
+    @Override
+    public @NotNull NamespacedKey getKey() {
+        return NamespacedKey.minecraft(this.state.getType().getId().substring(10));
     }
 
     @Override
@@ -44,28 +54,13 @@ public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
     }
 
     @Override
-    public BlockData createBlockData() {
-        return null;
-    }
-
-    @Override
-    public BlockData createBlockData(Consumer<BlockData> consumer) {
-        return null;
-    }
-
-    @Override
-    public BlockData createBlockData(String data) throws IllegalArgumentException {
-        return null;
-    }
-
-    @Override
     public Class<? extends MaterialData> getData() {
-        return getNewData((byte)0).getClass();
+        return this.getNewData((byte)0).getClass();
     }
 
     @Override
     public MaterialData getNewData(byte raw) {
-        return MaterialData.getData(this.spongeValue.getDefaultState());
+        return MaterialData.getData(this.state);
     }
 
     @Override
@@ -85,7 +80,7 @@ public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
 
     @Override
     public boolean isSolid() {
-        Optional<MatterProperty> opProp = this.spongeValue.getProperty(MatterProperty.class);
+        Optional<MatterProperty> opProp = this.state.getType().getProperty(MatterProperty.class);
         if(!opProp.isPresent()){
             return false;
         }
@@ -99,8 +94,7 @@ public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
 
     @Override
     public boolean isFlammable() {
-        return this.spongeValue.getProperty(FlammableProperty.class).get().getValue();
-
+        return this.state.getType().getProperty(FlammableProperty.class).get().getValue();
     }
 
     @Override
@@ -115,29 +109,29 @@ public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
 
     @Override
     public boolean isOccluding() {
-        //TODO
         return false;
     }
 
     @Override
     public boolean hasGravity() {
-        return this.spongeValue.getProperty(GravityAffectedProperty.class).get().getValue();
+        return this.state.getType().getProperty(GravityAffectedProperty.class).get().getValue();
     }
+
 
     @Override
     public boolean isItem() {
-        return false;
+        return this.toItem().isPresent();
     }
+
 
     @Override
     public boolean isInteractable() {
-        //TODO
         return false;
     }
 
     @Override
     public float getHardness() {
-        Optional<HardnessProperty> opProp = this.spongeValue.getProperty(HardnessProperty.class);
+        Optional<HardnessProperty> opProp = this.state.getType().getProperty(HardnessProperty.class);
         if(opProp.isPresent()){
             return opProp.get().getValue().floatValue();
         }
@@ -146,10 +140,30 @@ public class BlockMaterial extends BongeWrapper<BlockType> implements Material {
 
     @Override
     public float getBlastResistance() {
-        Optional<BlastResistanceProperty> opProp = this.spongeValue.getProperty(BlastResistanceProperty.class);
+        Optional<BlastResistanceProperty> opProp = this.state.getType().getProperty(BlastResistanceProperty.class);
         if(opProp.isPresent()){
             return opProp.get().getValue().floatValue();
         }
         return 0;
+    }
+
+    @Override
+    public BlockData createBlockData() {
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(Consumer<BlockData> consumer) {
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(String data) throws IllegalArgumentException {
+        return null;
+    }
+
+    @Override
+    public BlockType getSpongeBlockType() {
+        return this.state.getType();
     }
 }

@@ -1,14 +1,15 @@
 package org.bonge.bukkit.r1_13.entity.living.human;
 
 import org.bonge.Bonge;
+import org.bonge.bukkit.r1_13.entity.EntityManager;
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
+import org.bonge.bukkit.r1_13.inventory.inventory.InventorySnapshot;
 import org.bonge.bukkit.r1_13.inventory.inventory.entity.living.human.BongePlayerInventory;
+import org.bonge.bukkit.r1_13.inventory.inventory.entity.living.human.PlayerInventorySnapshot;
+import org.bonge.bukkit.r1_13.server.BongeServer;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.*;
@@ -45,6 +46,10 @@ public abstract class BongeAbstractHuman<T extends org.spongepowered.api.entity.
 
     @Override
     public @NotNull PlayerInventory getInventory() {
+        InventorySnapshot inventory = this.getData().get(EntityManager.INVENTORY);
+        if(inventory != null){
+            return (PlayerInventorySnapshot)inventory;
+        }
         return new BongePlayerInventory(this.spongeValue);
     }
 

@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_13.entity.living.animal;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -13,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.data.key.Keys;
 
+import java.io.IOException;
 import java.util.*;
 
 public abstract class BongeAbstractAnimal<T extends org.spongepowered.api.entity.living.animal.Animal> extends BongeAbstractEntity<T> implements Animals {
@@ -87,9 +89,14 @@ public abstract class BongeAbstractAnimal<T extends org.spongepowered.api.entity
         if(!opEntity.isPresent()){
             return null;
         }
-        Entity entity = BongeAbstractEntity.of(opEntity.get());
-        if(entity instanceof LivingEntity){
-            return (LivingEntity)entity;
+        Entity entity = null;
+        try {
+            entity = Bonge.getInstance().convert(Entity.class, opEntity.get());
+            if(entity instanceof LivingEntity){
+                return (LivingEntity)entity;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

@@ -19,22 +19,14 @@ public class LocationConverter implements Converter<Location, org.spongepowered.
     }
 
     @Override
-    public org.spongepowered.api.world.Location<World> from(Location value) {
-        try {
-            World world = Bonge.getInstance().convert(World.class, value.getWorld());
-            return world.getLocation(value.getX(), value.getY(), value.getZ());
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public org.spongepowered.api.world.Location<World> from(Location value) throws IOException{
+        World world = Bonge.getInstance().convert(value.getWorld(), World.class);
+        return world.getLocation(value.getX(), value.getY(), value.getZ());
     }
 
     @Override
-    public Location to(org.spongepowered.api.world.Location<World> value) {
-        try {
-            org.bukkit.World world = Bonge.getInstance().convert(value.getExtent(), org.bukkit.World.class);
-            return new Location(world, value.getX(), value.getY(), value.getZ());
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public Location to(org.spongepowered.api.world.Location<World> value) throws IOException{
+        org.bukkit.World world = Bonge.getInstance().convert(org.bukkit.World.class, value.getExtent());
+        return new Location(world, value.getX(), value.getY(), value.getZ());
     }
 }

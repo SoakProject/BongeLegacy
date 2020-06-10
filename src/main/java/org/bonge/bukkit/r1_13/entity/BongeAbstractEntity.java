@@ -2,21 +2,7 @@ package org.bonge.bukkit.r1_13.entity;
 
 import com.flowpowered.math.vector.Vector3d;
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_13.entity.living.animal.BongeChicken;
-import org.bonge.bukkit.r1_13.entity.living.animal.BongeCow;
-import org.bonge.bukkit.r1_13.entity.living.animal.BongePig;
-import org.bonge.bukkit.r1_13.entity.living.animal.BongeSheep;
-import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_13.entity.living.monster.BongeCreeper;
-import org.bonge.bukkit.r1_13.entity.living.monster.BongeEnderman;
-import org.bonge.bukkit.r1_13.entity.living.monster.skeleton.BongeTypicalSkeleton;
-import org.bonge.bukkit.r1_13.entity.living.monster.spider.BongeCaveSpider;
-import org.bonge.bukkit.r1_13.entity.living.monster.spider.BongeTypicalSpider;
-import org.bonge.bukkit.r1_13.entity.living.monster.zombie.BongeTypicalZombie;
-import org.bonge.bukkit.r1_13.entity.living.other.armorstand.BongeArmorStandEntity;
-import org.bonge.bukkit.r1_13.entity.living.other.bat.BongeBat;
-import org.bonge.bukkit.r1_13.entity.living.other.squid.BongeSquid;
-import org.bonge.bukkit.r1_13.entity.other.item.BongeItem;
+import org.bonge.bukkit.r1_13.server.BongeServer;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
 import org.bonge.util.WrappedArrayList;
@@ -25,7 +11,6 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.metadata.MetadataValue;
@@ -40,19 +25,24 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> extends BongeWrapper<T> implements Entity {
+public abstract class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> extends BongeWrapper<T> implements Entity {
     
     public BongeAbstractEntity(T entity){
         super(entity);
     }
 
+    public EntityManager.KeyHashMap getData(){
+        return ((BongeServer)Bukkit.getServer()).getEntityManager().getData(this);
+    }
+
     @Override
     public Location getLocation() {
+        Location loc = this.getData().get(EntityManager.LOCATION);
+        if(loc != null){
+            return loc;
+        }
         return new BongeLocation(this.getSpongeValue().getTransform());
     }
 
@@ -287,11 +277,6 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
     }
 
     @Override
-    public EntityType getType() {
-        return null;
-    }
-
-    @Override
     public boolean isInsideVehicle() {
         return getVehicle() != null;
     }
@@ -304,7 +289,15 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
     @Override
     public Entity getVehicle() {
         Optional<org.spongepowered.api.entity.Entity> opVe = this.spongeValue.getVehicle();
-        return opVe.map(BongeAbstractEntity::of).orElse(null);
+        if(!opVe.isPresent()){
+            return null;
+        }
+        try {
+            return Bonge.getInstance().convert(Entity.class, opVe.get());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -409,17 +402,21 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
 
     @Override
     public List<MetadataValue> getMetadata(String s) {
-        return null;
+        Map<MetadataValue, String> map = this.getData().getOrDefault(EntityManager.METADATA, new HashMap<>());
+        List<MetadataValue> list = new ArrayList<>();
+        map.entrySet().stream().filter(m -> m.getValue().equals(s)).forEach(e -> list.add(e.getKey()));
+        return list;
     }
 
     @Override
     public boolean hasMetadata(String s) {
-        return false;
+        return !this.getMetadata(s).isEmpty();
     }
 
     @Override
     public void removeMetadata(String s, Plugin plugin) {
-
+        Map<MetadataValue, String> map = this.getData().getOrDefault(EntityManager.METADATA, new HashMap<>());
+        map.entrySet().stream().filter(m -> m.getValue().equals(s)).filter(m -> m.getKey().getOwningPlugin().equals(plugin)).findAny().ifPresent(v -> map.remove(v.getKey()));
     }
 
     @Override
@@ -487,54 +484,5 @@ public class BongeAbstractEntity<T extends org.spongepowered.api.entity.Entity> 
     @Deprecated
     public void setOp(boolean b) {
 
-    }
-
-    public static Entity of(org.spongepowered.api.entity.Entity entity){
-        if(entity instanceof org.spongepowered.api.entity.living.player.Player){
-            return BongePlayer.getPlayer((org.spongepowered.api.entity.living.player.Player)entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.ArmorStand){
-            return new BongeArmorStandEntity((org.spongepowered.api.entity.living.ArmorStand)entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.animal.Sheep){
-            return new BongeSheep((org.spongepowered.api.entity.living.animal.Sheep)entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.animal.Pig){
-            return new BongePig((org.spongepowered.api.entity.living.animal.Pig)entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.animal.Cow){
-            return new BongeCow((org.spongepowered.api.entity.living.animal.Cow) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.animal.Chicken){
-            return new BongeChicken((org.spongepowered.api.entity.living.animal.Chicken)entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.CaveSpider){
-            return new BongeCaveSpider((org.spongepowered.api.entity.living.monster.CaveSpider) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Spider){
-            return new BongeTypicalSpider((org.spongepowered.api.entity.living.monster.Spider) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Zombie){
-            return new BongeTypicalZombie((org.spongepowered.api.entity.living.monster.Zombie) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Skeleton){
-            return new BongeTypicalSkeleton((org.spongepowered.api.entity.living.monster.Skeleton) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Creeper){
-            return new BongeCreeper((org.spongepowered.api.entity.living.monster.Creeper) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Enderman){
-            return new BongeEnderman((org.spongepowered.api.entity.living.monster.Enderman) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.Squid){
-            return new BongeSquid((org.spongepowered.api.entity.living.Squid) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.living.Bat){
-            return new BongeBat((org.spongepowered.api.entity.living.Bat) entity);
-        }
-        if(entity instanceof org.spongepowered.api.entity.Item){
-            return new BongeItem((org.spongepowered.api.entity.Item) entity);
-        }
-        return null;
     }
 }

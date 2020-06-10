@@ -1,9 +1,12 @@
 package org.bonge.convert.entity;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.convert.Converter;
 import org.bukkit.entity.Entity;
 import org.bukkit.projectiles.ProjectileSource;
+
+import java.io.IOException;
 
 public class ProjectileSourceConverter implements Converter<ProjectileSource, org.spongepowered.api.entity.projectile.source.ProjectileSource> {
     @Override
@@ -17,18 +20,22 @@ public class ProjectileSourceConverter implements Converter<ProjectileSource, or
     }
 
     @Override
-    public org.spongepowered.api.entity.projectile.source.ProjectileSource from(ProjectileSource source) {
+    public org.spongepowered.api.entity.projectile.source.ProjectileSource from(ProjectileSource source) throws IOException{
         if(source instanceof Entity){
             return (org.spongepowered.api.entity.projectile.source.ProjectileSource)((BongeAbstractEntity<?>)source).getSpongeValue();
         }
-        throw new IllegalArgumentException("Unknown source of " + source.getClass().getSimpleName());
+        throw new IOException("Unknown source of " + source.getClass().getSimpleName());
     }
 
     @Override
-    public ProjectileSource to(org.spongepowered.api.entity.projectile.source.ProjectileSource projectile) {
+    public ProjectileSource to(org.spongepowered.api.entity.projectile.source.ProjectileSource projectile) throws IOException{
         if(projectile instanceof org.spongepowered.api.entity.Entity){
-            return (ProjectileSource) BongeAbstractEntity.of((org.spongepowered.api.entity.Entity)projectile);
+            try {
+                return (ProjectileSource) Bonge.getInstance().convert(Entity.class, projectile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        throw new IllegalArgumentException("Unknown source of " + projectile.getClass().getSimpleName());
+        throw new IOException("Unknown source of " + projectile.getClass().getSimpleName());
     }
 }

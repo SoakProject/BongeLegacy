@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.entity.living.animal;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Sheep;
 import org.spongepowered.api.data.key.Keys;
 
@@ -45,5 +46,10 @@ public class BongeSheep extends BongeAbstractAnimal<org.spongepowered.api.entity
     @Override
     public void setColor(DyeColor color) {
 
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.SHEEP;
     }
 }

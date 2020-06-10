@@ -6,6 +6,7 @@ import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bonge.bukkit.r1_13.world.BongeLocation;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.spongepowered.api.data.key.Keys;
@@ -286,5 +287,10 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
     @Override
     public Location getEyeLocation() {
         return new BongeLocation(this.getLocation()).add(0, 1, 0);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.ARMOR_STAND;
     }
 }

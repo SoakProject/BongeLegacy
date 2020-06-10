@@ -10,6 +10,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 
+import java.io.IOException;
+
 public class CommandSourceConverter implements Converter<CommandSender, CommandSource> {
     @Override
     public Class<CommandSource> getSpongeClass() {
@@ -22,24 +24,24 @@ public class CommandSourceConverter implements Converter<CommandSender, CommandS
     }
 
     @Override
-    public CommandSource from(CommandSender sender) {
+    public CommandSource from(CommandSender sender) throws IOException{
         if(sender instanceof Player){
             return ((BongePlayer)sender).getSpongeValue();
         }
         if(sender instanceof ConsoleCommandSender){
             return Sponge.getServer().getConsole();
         }
-        throw new IllegalStateException("Unknown sender of " + sender.getName());
+        throw new IOException("Unknown sender of " + sender.getName());
     }
 
     @Override
-    public CommandSender to(CommandSource source) {
+    public CommandSender to(CommandSource source) throws IOException {
         if(source instanceof org.spongepowered.api.entity.living.player.Player){
             return BongePlayer.getPlayer((org.spongepowered.api.entity.living.player.Player)source);
         }
         if(source instanceof org.spongepowered.api.command.source.ConsoleSource){
             return new ConsoleSource();
         }
-        throw new IllegalArgumentException("Unknown source of " + source.getName());
+        throw new IOException("Unknown source of " + source.getName());
     }
 }

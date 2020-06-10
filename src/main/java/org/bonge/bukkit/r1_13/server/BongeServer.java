@@ -6,6 +6,7 @@ import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.boss.BongeServerBossBar;
 import org.bonge.bukkit.r1_13.command.BongeCommandManager;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
+import org.bonge.bukkit.r1_13.entity.EntityManager;
 import org.bonge.bukkit.r1_13.entity.living.human.BongeOfflinePlayer;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeCustomInventory;
@@ -22,6 +23,7 @@ import org.bonge.bukkit.r1_13.server.plugin.BongePluginManager;
 import org.bonge.bukkit.r1_13.server.service.BongeServiceManager;
 import org.bonge.bukkit.r1_13.server.source.ConsoleSource;
 import org.bonge.bukkit.r1_13.toremove.BongeUnsafeValues;
+import org.bonge.command.Permissions;
 import org.bonge.convert.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
@@ -71,6 +73,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> implements Server {
 
@@ -78,6 +81,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     private final BongeScheduler pluginScheduler;
     private final BongeCommandManager commandMap;
     private final BongeServiceManager serviceManager;
+    private final EntityManager entityManager;
     private final BongeHelpMap helpMap;
     private final Set<BongeRecipe<? extends Recipe>> recipes = new HashSet<>();
 
@@ -123,10 +127,15 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     public BongeServer(org.spongepowered.api.Server server){
         super(server);
         this.pluginManager = new BongePluginManager();
+        this.entityManager = new EntityManager();
         this.pluginScheduler = new BongeScheduler();
         this.commandMap = new BongeCommandManager();
         this.serviceManager = new BongeServiceManager();
         this.helpMap = new BongeHelpMap();
+    }
+
+    public EntityManager getEntityManager(){
+        return this.entityManager;
     }
 
     public BongeCommandManager getCommandManager(){
@@ -144,12 +153,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public String getVersion() {
-        return BongeLaunch.PLUGIN_NAME + ": " + BongeLaunch.PLUGIN_VERSION + " | MC: " + Sponge.getPlatform().getMinecraftVersion().getName();
+        return BongeLaunch.PLUGIN_NAME + ": " + getBukkitVersion() + " | MC: " + Sponge.getPlatform().getMinecraftVersion().getName();
     }
 
     @Override
     public String getBukkitVersion() {
-        return BongeLaunch.PLUGIN_VERSION;
+        return BongeLaunch.IMPLEMENTATION_VERSION + " (" +BongeLaunch.PLUGIN_VERSION + ")";
     }
 
     @Override
@@ -179,12 +188,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public String getServerName() {
-        return null;
+        return "BongeServer";
     }
 
     @Override
     public String getServerId() {
-        return null;
+        return "bonge:bongeServer";
     }
 
     @Override
@@ -199,12 +208,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public boolean getAllowEnd() {
-        return false;
+        return Sponge.getServer().getWorld("DIM-1").isPresent();
     }
 
     @Override
     public boolean getAllowNether() {
-        return false;
+        return Sponge.getServer().getWorld("DIM1").isPresent();
     }
 
     @Override
@@ -214,7 +223,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public void setWhitelist(boolean b) {
-
+        this.getSpongeValue().setHasWhitelist(b);
     }
 
     @Override
@@ -503,9 +512,13 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     }
 
     @Override
-    @Deprecated
     public Set<OfflinePlayer> getOperators() {
-        return new HashSet<>();
+        UserStorageService storage = Sponge.getServiceManager().getRegistration(UserStorageService.class).get().getProvider();
+        Set<OfflinePlayer> players = new HashSet<>();
+        storage.getAll().stream().filter(p -> storage.get(p).isPresent()).filter(p -> storage.get(p).get().hasPermission(Permissions.BONGE_OP)).forEach(p -> {
+            players.add(new BongeOfflinePlayer(storage.get(p).get()));
+        });
+        return players;
     }
 
     @Override
@@ -734,7 +747,11 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         for (org.spongepowered.api.world.World world : this.spongeValue.getWorlds()){
             Optional<org.spongepowered.api.entity.Entity> opEntity = world.getEntity(uuid);
             if(opEntity.isPresent()){
-                return BongeAbstractEntity.of(opEntity.get());
+                try {
+                    return Bonge.getInstance().convert(Entity.class, opEntity.get());
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
             }
         }
         return null;

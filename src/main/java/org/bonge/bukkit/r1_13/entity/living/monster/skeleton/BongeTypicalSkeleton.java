@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.entity.living.monster.skeleton;
 
 import org.bonge.bukkit.r1_13.entity.living.monster.BongeAbstractMonster;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton;
 
 public class BongeTypicalSkeleton extends BongeAbstractMonster<org.spongepowered.api.entity.living.monster.Skeleton> implements Skeleton {
@@ -35,5 +36,10 @@ public class BongeTypicalSkeleton extends BongeAbstractMonster<org.spongepowered
     @Override
     public Location getEyeLocation() {
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.SKELETON;
     }
 }

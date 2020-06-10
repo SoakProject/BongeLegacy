@@ -239,6 +239,11 @@ public interface BongeEntityInventory<T extends org.spongepowered.api.entity.Arm
 
     @Override
     default Entity getHolder() {
-        return BongeAbstractEntity.of(this.getSpongeValue());
+        try {
+            return Bonge.getInstance().convert(Entity.class, this.getSpongeValue());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

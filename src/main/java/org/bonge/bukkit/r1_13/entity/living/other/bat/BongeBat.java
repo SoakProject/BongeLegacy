@@ -3,6 +3,7 @@ package org.bonge.bukkit.r1_13.entity.living.other.bat;
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.Bat;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.loot.LootTable;
 import org.spongepowered.api.data.key.Keys;
@@ -66,5 +67,10 @@ public class BongeBat extends BongeAbstractLivingEntity<org.spongepowered.api.en
     @Override
     public long getSeed() {
         return 0;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.BAT;
     }
 }

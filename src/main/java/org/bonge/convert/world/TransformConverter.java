@@ -9,10 +9,10 @@ import org.spongepowered.api.world.World;
 
 import java.io.IOException;
 
-public class TransformConverter implements Converter<Location, Transform<World>> {
+public class TransformConverter implements Converter<Location, Transform> {
     @Override
-    public Class<Transform<World>> getSpongeClass() {
-        return (Class<Transform<World>>)(Object)Transform.class;
+    public Class<Transform> getSpongeClass() {
+        return Transform.class;
     }
 
     @Override
@@ -21,25 +21,17 @@ public class TransformConverter implements Converter<Location, Transform<World>>
     }
 
     @Override
-    public Transform<World> from(Location value) {
-        try {
-            World world = Bonge.getInstance().convert(World.class, value.getWorld());
-            return new Transform<>(world, new Vector3d(value.getX(), value.getY(), value.getZ()), new Vector3d(value.getPitch(), value.getYaw(), 0));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public Transform from(Location value) throws IOException{
+        World world = Bonge.getInstance().convert(value.getWorld(), World.class);
+        return new Transform<>(world, new Vector3d(value.getX(), value.getY(), value.getZ()), new Vector3d(value.getPitch(), value.getYaw(), 0));
     }
 
     @Override
-    public Location to(Transform<World> value) {
-        try {
-            org.bukkit.World world = Bonge.getInstance().convert(value.getExtent(), org.bukkit.World.class);
-            Location loc = new Location(world, value.getPosition().getX(), value.getPosition().getY(), value.getPosition().getZ());
-            loc.setPitch((float)value.getPitch());
-            loc.setYaw((float)value.getYaw());
-            return loc;
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    public Location to(Transform value) throws IOException{
+        org.bukkit.World world = Bonge.getInstance().convert(org.bukkit.World.class, value.getExtent());
+        Location loc = new Location(world, value.getPosition().getX(), value.getPosition().getY(), value.getPosition().getZ());
+        loc.setPitch((float)value.getPitch());
+        loc.setYaw((float)value.getYaw());
+        return loc;
     }
 }

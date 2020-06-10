@@ -4,6 +4,8 @@ import org.bonge.convert.Converter;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.critieria.Criterion;
 
+import java.io.IOException;
+
 public class CriteriaConverter implements Converter<String, Criterion> {
     @Override
     public Class<Criterion> getSpongeClass() {
@@ -16,7 +18,7 @@ public class CriteriaConverter implements Converter<String, Criterion> {
     }
 
     @Override
-    public Criterion from(String criteria) {
+    public Criterion from(String criteria) throws IOException {
         switch (criteria){
             case "dummy": return Criteria.DUMMY;
             case "deathCount": return Criteria.DEATHS;
@@ -24,12 +26,12 @@ public class CriteriaConverter implements Converter<String, Criterion> {
             case "totalKillCount": return Criteria.TOTAL_KILLS;
             case "health": return Criteria.HEALTH;
             case "trigger": return Criteria.TRIGGER;
-            default: throw new IllegalStateException("Unknown criteria of '" + criteria + "'");
+            default: throw new IOException("Unknown criteria of '" + criteria + "'");
         }
     }
 
     @Override
-    public String to(Criterion criterion) {
+    public String to(Criterion criterion) throws IOException{
         if(criterion.equals(Criteria.DEATHS)){
             return "deathCount";
         }
@@ -48,6 +50,6 @@ public class CriteriaConverter implements Converter<String, Criterion> {
         if(criterion.equals(Criteria.TRIGGER)){
             return "trigger";
         }
-        throw new IllegalStateException("Unknown criteria of " + criterion.getId());
+        throw new IOException("Unknown criteria of " + criterion.getId());
     }
 }

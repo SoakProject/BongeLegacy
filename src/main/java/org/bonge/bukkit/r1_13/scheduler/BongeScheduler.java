@@ -11,10 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.function.Predicate;
@@ -52,7 +49,11 @@ public class BongeScheduler implements BukkitScheduler {
         }
     }
 
-    private List<BongeTaskData> tasks = new ArrayList<>();
+    private Set<BongeTaskData> tasks = new HashSet<>();
+
+    public Set<BongeTaskData> getTasks(){
+        return this.tasks;
+    }
 
     private Optional<BongeTaskData> getId(int id){
         Set<BongeTaskData> set = get(b -> b.getTaskId() == id);
@@ -67,15 +68,28 @@ public class BongeScheduler implements BukkitScheduler {
 
     }
 
-    private int getRandomID(){
-        return this.tasks.size();
+    private int getRandomID() {
+        int B = 0;
+        while(true) {
+            boolean check = true;
+            for (BongeTaskData data : this.tasks) {
+                if (B == data.getTaskId()) {
+                    B++;
+                    check = false;
+                    break;
+                }
+            }
+            if(check){
+                return B;
+            }
+        }
     }
 
     @Override
-    public int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay) {
+    public synchronized int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay) {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task task1 = Task.builder().delayTicks(delay).execute(runnable).submit(BongeLaunch.getInstance());
         int id = getRandomID();
+        Task task1 = Task.builder().delayTicks(delay).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
         BongeTaskData data = new BongeTaskData(task1, plugin, id, true);
         runnable.setData(data);
         this.tasks.add(data);
@@ -84,26 +98,26 @@ public class BongeScheduler implements BukkitScheduler {
 
     @Override
     @Deprecated
-    public int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) {
+    public synchronized int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) {
         return this.scheduleSyncDelayedTask(plugin, (Runnable)task, delay);
     }
 
     @Override
-    public int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task) {
+    public synchronized int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task) {
         return this.scheduleSyncDelayedTask(plugin, task, 0);
     }
 
     @Override
     @Deprecated
-    public int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task) {
+    public synchronized int scheduleSyncDelayedTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task) {
         return this.scheduleSyncDelayedTask(plugin, task, 0);
     }
 
     @Override
-    public int scheduleSyncRepeatingTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) {
+    public synchronized int scheduleSyncRepeatingTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task task1 = Task.builder().delayTicks(delay).intervalTicks(period).execute(runnable).submit(BongeLaunch.getInstance());
-        int id = getRandomID();
+        int id = this.getRandomID();
+        Task task1 = Task.builder().delayTicks(delay).intervalTicks(period).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
         BongeTaskData data = new BongeTaskData(task1, plugin, id, true);
         runnable.setData(data);
         this.tasks.add(data);
@@ -112,15 +126,15 @@ public class BongeScheduler implements BukkitScheduler {
 
     @Override
     @Deprecated
-    public int scheduleSyncRepeatingTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) {
+    public synchronized int scheduleSyncRepeatingTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) {
         return this.scheduleSyncRepeatingTask(plugin, (Runnable) task, delay, period);
     }
 
     @Override
-    public int scheduleAsyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay) {
+    public synchronized int scheduleAsyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay) {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task task1 = Task.builder().async().delayTicks(delay).execute(runnable).submit(BongeLaunch.getInstance());
-        int id = getRandomID();
+        int id = this.getRandomID();
+        Task task1 = Task.builder().async().delayTicks(delay).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
         BongeTaskData data = new BongeTaskData(task1, plugin, id, false);
         runnable.setData(data);
         this.tasks.add(data);
@@ -128,15 +142,15 @@ public class BongeScheduler implements BukkitScheduler {
     }
 
     @Override
-    public int scheduleAsyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task) {
+    public synchronized int scheduleAsyncDelayedTask(@NotNull Plugin plugin, @NotNull Runnable task) {
         return this.scheduleAsyncDelayedTask(plugin, task, 0);
     }
 
     @Override
-    public int scheduleAsyncRepeatingTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) {
+    public synchronized int scheduleAsyncRepeatingTask(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task task1 = Task.builder().async().delayTicks(delay).intervalTicks(period).execute(runnable).submit(BongeLaunch.getInstance());
-        int id = getRandomID();
+        int id = this.getRandomID();
+        Task task1 = Task.builder().async().delayTicks(delay).intervalTicks(period).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
         BongeTaskData data = new BongeTaskData(task1, plugin, id, false);
         runnable.setData(data);
         this.tasks.add(data);
@@ -190,10 +204,11 @@ public class BongeScheduler implements BukkitScheduler {
 
     @NotNull
     @Override
-    public BukkitTask runTask(@NotNull Plugin plugin, @NotNull Runnable task) throws IllegalArgumentException {
+    public synchronized BukkitTask runTask(@NotNull Plugin plugin, @NotNull Runnable task) throws IllegalArgumentException {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task result = Sponge.getScheduler().createTaskBuilder().execute(runnable).submit(BongeLaunch.getInstance());
-        BongeTaskData taskData = new BongeTaskData(result, plugin, this.getRandomID(), true);
+        int id = this.getRandomID();
+        Task result = Sponge.getScheduler().createTaskBuilder().name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
+        BongeTaskData taskData = new BongeTaskData(result, plugin, id, true);
         runnable.setData(taskData);
         this.tasks.add(taskData);
         return taskData;
@@ -201,16 +216,17 @@ public class BongeScheduler implements BukkitScheduler {
 
     @NotNull
     @Override
-    public BukkitTask runTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task) throws IllegalArgumentException {
+    public synchronized BukkitTask runTask(@NotNull Plugin plugin, @NotNull BukkitRunnable task) throws IllegalArgumentException {
         return null;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task) throws IllegalArgumentException {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task result = Sponge.getScheduler().createTaskBuilder().async().execute(runnable).submit(BongeLaunch.getInstance());
-        BongeTaskData taskData = new BongeTaskData(result, plugin, this.getRandomID(), false);
+        int id = this.getRandomID();
+        Task result = Sponge.getScheduler().createTaskBuilder().async().name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
+        BongeTaskData taskData = new BongeTaskData(result, plugin, id, false);
         runnable.setData(taskData);
         this.tasks.add(taskData);
         return taskData;
@@ -218,44 +234,46 @@ public class BongeScheduler implements BukkitScheduler {
 
     @NotNull
     @Override
-    public BukkitTask runTaskAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task) throws IllegalArgumentException {
         return null;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskLater(@NotNull Plugin plugin, @NotNull Runnable task, long delay) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskLater(@NotNull Plugin plugin, @NotNull Runnable task, long delay) throws IllegalArgumentException {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task result = Sponge.getScheduler().createTaskBuilder().execute(runnable).delayTicks(delay).submit(BongeLaunch.getInstance());
-        BongeTaskData data = new BongeTaskData(result, plugin, this.getRandomID(), true);
+        int id = this.getRandomID();
+        Task result = Sponge.getScheduler().createTaskBuilder().name(task.getClass().getSimpleName() + "-" + id).execute(runnable).delayTicks(delay).submit(BongeLaunch.getInstance());
+        BongeTaskData data = new BongeTaskData(result, plugin, id, true);
         this.tasks.add(data);
         return data;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskLater(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskLater(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) throws IllegalArgumentException {
         return null;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskLaterAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task, long delay) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskLaterAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task, long delay) throws IllegalArgumentException {
         return null;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskLaterAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskLaterAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay) throws IllegalArgumentException {
         return null;
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskTimer(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskTimer(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) throws IllegalArgumentException {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task result = Sponge.getScheduler().createTaskBuilder().delayTicks(delay).intervalTicks(period).execute(runnable).submit(BongeLaunch.getInstance());
-        BongeTaskData taskData = new BongeTaskData(result, plugin, this.getRandomID(), false);
+        int id = this.getRandomID();
+        Task result = Sponge.getScheduler().createTaskBuilder().delayTicks(delay).intervalTicks(period).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
+        BongeTaskData taskData = new BongeTaskData(result, plugin, id, false);
         runnable.setData(taskData);
         this.tasks.add(taskData);
         return taskData;
@@ -263,16 +281,17 @@ public class BongeScheduler implements BukkitScheduler {
 
     @NotNull
     @Override
-    public BukkitTask runTaskTimer(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
-        return null;
+    public synchronized BukkitTask runTaskTimer(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+        return task.runTaskTimer(plugin, delay, period);
     }
 
     @NotNull
     @Override
-    public BukkitTask runTaskTimerAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskTimerAsynchronously(@NotNull Plugin plugin, @NotNull Runnable task, long delay, long period) throws IllegalArgumentException {
         BongeWrappedRunnable runnable = new BongeWrappedRunnable(task);
-        Task result = Sponge.getScheduler().createTaskBuilder().async().delayTicks(delay).intervalTicks(period).execute(runnable).submit(BongeLaunch.getInstance());
-        BongeTaskData taskData = new BongeTaskData(result, plugin, this.getRandomID(), false);
+        int id = this.getRandomID();
+        Task result = Sponge.getScheduler().createTaskBuilder().async().delayTicks(delay).intervalTicks(period).name(task.getClass().getSimpleName() + "-" + id).execute(runnable).submit(BongeLaunch.getInstance());
+        BongeTaskData taskData = new BongeTaskData(result, plugin, id, false);
         runnable.setData(taskData);
         this.tasks.add(taskData);
         return taskData;
@@ -280,7 +299,7 @@ public class BongeScheduler implements BukkitScheduler {
 
     @NotNull
     @Override
-    public BukkitTask runTaskTimerAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
+    public synchronized BukkitTask runTaskTimerAsynchronously(@NotNull Plugin plugin, @NotNull BukkitRunnable task, long delay, long period) throws IllegalArgumentException {
         return null;
     }
 }

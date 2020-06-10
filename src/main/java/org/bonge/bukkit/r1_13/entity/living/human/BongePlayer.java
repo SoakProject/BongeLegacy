@@ -1,11 +1,13 @@
 package org.bonge.bukkit.r1_13.entity.living.human;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
 import org.bonge.bukkit.r1_13.inventory.inventory.tileentity.workbench.BongeCustomWorkbenchInventory;
 import org.bonge.bukkit.r1_13.scoreboard.BongeScoreboard;
+import org.bonge.command.Permissions;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
@@ -23,6 +25,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.map.MapView;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +38,12 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.resourcepack.ResourcePacks;
+import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
+import org.spongepowered.api.util.Tristate;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,6 +58,7 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     private static Set<BongePlayer> PLAYERS = new HashSet<>();
 
     private BongeInventoryView view;
+    private Set<PermissionAttachment> permissionsOverride = new HashSet<>();
 
     public BongePlayer(org.spongepowered.api.entity.living.player.Player entity) {
         super(entity);
@@ -662,7 +671,15 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
     @Override
     public @Nullable Entity getSpectatorTarget() {
         Optional<org.spongepowered.api.entity.Entity> opTarget = this.spongeValue.getSpectatorTarget();
-        return opTarget.map(BongeAbstractEntity::of).orElse(null);
+        if(!opTarget.isPresent()){
+            return null;
+        }
+        try {
+            return Bonge.getInstance().convert(Entity.class, opTarget.get());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -870,6 +887,79 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
         this.spongeValue.closeInventory();
     }
 
+    @Override
+    public boolean isOp() {
+        return this.spongeValue.hasPermission(Permissions.BONGE_OP);
+    }
+
+    @Override
+    public void setOp(boolean value) {
+        this.spongeValue.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, Permissions.BONGE_OP, value ? Tristate.TRUE : Tristate.FALSE);
+    }
+
+    @Override
+    public boolean isPermissionSet(String s) {
+        return this.permissionsOverride.stream().filter(a -> {
+            Boolean value = a.getPermissions().get(s);
+            if(value == null){
+                return false;
+            }
+            return value;
+        }).findAny().isPresent();
+    }
+
+    @Override
+    public boolean isPermissionSet(Permission permission) {
+        return this.isPermissionSet(permission.getName());
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b) {
+        PermissionAttachment attachment = new PermissionAttachment(plugin, this);
+        attachment.setPermission(s, b);
+        this.permissionsOverride.add(attachment);
+        return attachment;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin) {
+        PermissionAttachment attachment = new PermissionAttachment(plugin, this);
+        this.permissionsOverride.add(attachment);
+        return attachment;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b, int i) {
+        PermissionAttachment attachment = this.addAttachment(plugin, s, b);
+        Sponge.getScheduler().createTaskBuilder().execute(() -> this.permissionsOverride.remove(attachment)).delayTicks(i).submit(BongeLaunch.getContainer());
+        return attachment;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, int i) {
+        PermissionAttachment attachment = this.addAttachment(plugin);
+        Sponge.getScheduler().createTaskBuilder().execute(() -> this.permissionsOverride.remove(attachment)).delayTicks(i).submit(BongeLaunch.getContainer());
+        return attachment;
+    }
+
+    @Override
+    public void removeAttachment(PermissionAttachment permissionAttachment) {
+        this.permissionsOverride.remove(permissionAttachment);
+    }
+
+    @Override
+    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+        Set<PermissionAttachmentInfo> set = new HashSet<>();
+        this.permissionsOverride.forEach(p -> {
+            p.getPermissions().entrySet().forEach(e -> {
+                set.add(new PermissionAttachmentInfo(BongePlayer.this, e.getKey(), p, e.getValue()));
+            });
+        });
+
+
+        return set;
+    }
+
     private static void updatePlayerList(){
         PLAYERS = PLAYERS.stream().filter(p -> Sponge.getServer().getPlayer(p.getUniqueId()).isPresent()).collect(Collectors.toSet());
     }
@@ -882,5 +972,10 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
         BongePlayer player2 = new BongePlayer(player);
         PLAYERS.add(player2);
         return player2;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.PLAYER;
     }
 }

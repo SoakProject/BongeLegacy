@@ -7,9 +7,9 @@ import org.spongepowered.api.scheduler.Task;
 
 public class BongeTaskData implements BukkitTask {
 
-    private Task task;
+    private final Task task;
     private int id;
-    private Plugin plugin;
+    private final Plugin plugin;
     private boolean synced;
 
     public BongeTaskData(Task task, Plugin plugin, int id, boolean synced){
@@ -45,5 +45,13 @@ public class BongeTaskData implements BukkitTask {
     @Override
     public void cancel() {
         Bukkit.getScheduler().cancelTask(this.id);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof BukkitTask)){
+            return false;
+        }
+        return ((BukkitTask)obj).getTaskId() == this.getTaskId();
     }
 }

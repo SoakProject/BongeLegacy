@@ -1,9 +1,11 @@
-package org.bonge.bukkit.r1_13.material;
+package org.bonge.bukkit.r1_13.material.item;
 
-import org.bonge.Bonge;
-import org.bonge.wrapper.BongeWrapper;
+import org.bonge.bukkit.r1_13.material.BongeMaterial;
+import org.bonge.bukkit.r1_13.material.SpongeMaterialFix;
+import org.bonge.bukkit.r1_13.material.block.BlockMaterial;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockType;
@@ -13,36 +15,46 @@ import org.spongepowered.api.data.property.item.RecordProperty;
 import org.spongepowered.api.data.property.item.UseLimitProperty;
 import org.spongepowered.api.item.ItemType;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
-public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
+public class ItemMaterial extends Material implements BongeMaterial.Item {
 
     private final String name;
+    private final ItemType spongeValue;
 
     public ItemMaterial(ItemType type, String name){
-        super(type);
+        this.spongeValue = type;
         this.name = name;
     }
 
-    public Optional<BlockMaterial> toBlock(){
-        Optional<BlockType> opBlock = this.getSpongeValue().getBlock();
+    @Override
+    public ItemType getSpongeItemType(){
+        return this.spongeValue;
+    }
+
+    @Override
+    public Optional<Block> toBlock(){
+        Optional<BlockType> opBlock = this.spongeValue.getBlock();
         if(!opBlock.isPresent()){
+            Optional<SpongeMaterialFix> opFix = SpongeMaterialFix.get(this);
+            if(opFix.isPresent()){
+                return Optional.of(opFix.get().getBlock());
+            }
             return Optional.empty();
         }
-        try {
-            return Optional.of(Bonge.getInstance().convert(BlockMaterial.class, opBlock.get()));
-        } catch (IOException e) {
-            return Optional.empty();
-        }
+        return Optional.of(new BlockMaterial(opBlock.get(), this.name));
+    }
+
+    public Optional<Item> toItem(){
+        return Optional.of(this);
     }
 
     @Override
     @NotNull
     public NamespacedKey getKey() {
         return NamespacedKey.minecraft(this.spongeValue.getId().substring(10));
-
     }
 
     @Override
@@ -61,8 +73,9 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
     }
 
     @Override
+    @Deprecated
     public Class<? extends MaterialData> getData() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return null;
         }
@@ -70,8 +83,9 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
     }
 
     @Override
+    @Deprecated
     public MaterialData getNewData(byte raw) {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return null;
         }
@@ -80,13 +94,12 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isBlock() {
-        return false;
+        return this.toBlock().isPresent();
     }
 
     @Override
     public boolean isEdible() {
         return this.spongeValue.getDefaultProperty(FoodRestorationProperty.class).isPresent();
-
     }
 
     @Override
@@ -96,7 +109,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isSolid() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -105,7 +118,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isTransparent() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -114,7 +127,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isFlammable() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -123,7 +136,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isBurnable() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -137,7 +150,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isOccluding() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -146,7 +159,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean hasGravity() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -160,7 +173,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public boolean isInteractable() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return false;
         }
@@ -169,7 +182,7 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public float getHardness() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return 0;
         }
@@ -178,10 +191,37 @@ public class ItemMaterial extends BongeWrapper<ItemType> implements Material {
 
     @Override
     public float getBlastResistance() {
-        Optional<BlockMaterial> opBlock = this.toBlock();
+        Optional<Block> opBlock = this.toBlock();
         if(!opBlock.isPresent()){
             return 0;
         }
         return opBlock.get().getBlastResistance();
+    }
+
+    @Override
+    public BlockData createBlockData() {
+        Optional<Block> opMaterial = this.toBlock();
+        if(opMaterial.isPresent()){
+            return opMaterial.get().createBlockData();
+        }
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(Consumer<BlockData> consumer) {
+        Optional<Block> opMaterial = this.toBlock();
+        if(opMaterial.isPresent()){
+            return opMaterial.get().createBlockData(consumer);
+        }
+        return null;
+    }
+
+    @Override
+    public BlockData createBlockData(String data) throws IllegalArgumentException {
+        Optional<Block> opMaterial = this.toBlock();
+        if(opMaterial.isPresent()){
+            return opMaterial.get().createBlockData(data);
+        }
+        return null;
     }
 }

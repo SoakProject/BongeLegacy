@@ -34,6 +34,11 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
     }
 
     @Override
+    public String getAsString(boolean check){
+        return getAsString();
+    }
+
+    @Override
     public BlockData merge(BlockData data) {
         BlockState state = this.spongeValue;
         BlockState state2 = ((BongeAbstractBlockData)data).spongeValue;
@@ -50,7 +55,11 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
         return newInstance(this.spongeValue);
     }
 
-    private static void register(BlockType material, BongeAbstractBlockData clazz){
+    public static void register(BongeAbstractBlockData clazz){
+        register(clazz.getSpongeValue().getType(), clazz);
+    }
+
+    public static void register(BlockType material, BongeAbstractBlockData clazz){
         BLOCKS.put(material, clazz);
     }
 

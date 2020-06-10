@@ -3,6 +3,7 @@ package org.bonge.bukkit.r1_13.entity.other.item;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
 import org.bonge.convert.InventoryConvert;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.data.key.Keys;
@@ -37,5 +38,10 @@ public class BongeItem extends BongeAbstractEntity<org.spongepowered.api.entity.
     @Override
     public void setPickupDelay(int delay) {
         this.spongeValue.offer(Keys.PICKUP_DELAY, delay);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.DROPPED_ITEM;
     }
 }

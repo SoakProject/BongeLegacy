@@ -3,7 +3,7 @@ package org.bonge.bukkit.r1_13.server.plugin;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.command.BongeCommandManager;
 import org.bonge.bukkit.r1_13.server.BongeServer;
-import org.bonge.bukkit.r1_13.server.plugin.loader.BongePluginLoader;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bonge.bukkit.r1_13.server.plugin.event.EventData;
 import org.bonge.bukkit.r1_13.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_13.server.plugin.loader.IBongePluginLoader;
@@ -21,6 +21,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionService;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
 public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     private Set<IBongePluginLoader> plugins = new HashSet<>();
+    private List<Class<?>> eventClasses = new ArrayList<>();
     private Set<EventData<?>> datas = new HashSet<>();
     private Set<Permission> permissions = new HashSet<>();
     private BongeURLClassLoader loader;
@@ -41,6 +43,10 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     public BongeURLClassLoader getLoader(){
         return this.loader;
+    }
+
+    public List<Class<?>> getFiredEvents(){
+        return this.eventClasses;
     }
 
     public Optional<IBongePluginLoader> getPluginLoader(Plugin plugin){
@@ -60,6 +66,11 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     public void bootPlugins(){
         List<IBongePluginLoader> plugins = new ArrayList<>(this.plugins);
+        for(IBongePluginLoader loader : plugins){
+            if(!loader.getPlugin().get().getDescription().getDepend().stream().allMatch(n -> plugins.stream().anyMatch(p -> p.getPlugin().get().getName().equals(n)))){
+                BongePluginManager.this.disablePlugin(loader.getPlugin().get());
+            }
+        }
         plugins.sort((iBongePluginLoader, t1) -> {
             PluginDescriptionFile plugin1 = iBongePluginLoader.getPlugin().get().getDescription();
             PluginDescriptionFile plugin2 = t1.getPlugin().get().getDescription();
@@ -83,7 +94,12 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             }
             return 0;
         });
-        plugins.forEach(p -> {
+        for(IBongePluginLoader loader : plugins){
+            if(loader.getPlugin().get().isEnabled()) {
+                System.out.println("Order: " + loader.getPlugin().get().getName());
+            }
+        }
+        plugins.stream().forEach(p -> {
             BongeCommandManager cmdManager = ((BongeServer)Bukkit.getServer()).getCommandManager();
             JavaPlugin plugin = (JavaPlugin) p.getPlugin().get();
             Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
@@ -112,8 +128,8 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             }
             try {
                 plugin.onEnable();
-                if(p instanceof BongePluginLoader){
-                    ((BongePluginLoader) p).setEnabled(true);
+                if(p instanceof JavaPluginLoader){
+                    ((JavaPluginLoader) p).setEnabled(true);
                 }
             }catch (Throwable e){
                 Bonge.createCrashFile(plugin, "OnEnable", e);
@@ -121,6 +137,10 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             }
             cmdManager.registerWithSponge();
         });
+    }
+
+    public Set<EventData<?>> getEventData(){
+        return this.datas;
     }
 
     @Override
@@ -144,7 +164,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         Plugin[] plugins = new Plugin[this.plugins.size()];
         Object[] pluginA = this.plugins.toArray();
         for(int A = 0; A < this.plugins.size(); A++){
-            plugins[A] = ((BongePluginLoader)pluginA[A]).getPlugin().get();
+            plugins[A] = ((JavaPluginLoader)pluginA[A]).getPlugin().get();
         }
         return plugins;
     }
@@ -166,7 +186,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     @Override
     public Plugin loadPlugin(File file) {
-        BongePluginLoader loader = new BongePluginLoader(file, this.loader);
+        JavaPluginLoader loader = new JavaPluginLoader(file, this.loader);
         try {
             this.plugins.add(loader);
             JavaPlugin plugin = loader.getOrLoadPlugin();
@@ -223,7 +243,8 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     @Override
     public void callEvent(Event event) throws IllegalStateException {
-        List<EventData<?>> listeners = this.datas.stream().filter(e -> e.isValid(event)).sorted(Comparator.comparingInt(eventData -> eventData.getPriority().getSlot())).collect(Collectors.toList());
+        this.eventClasses.add(event.getClass());
+        List<EventData<?>> listeners = this.datas.stream().filter(e -> e.isValid(event)).sorted(Comparator.comparingInt(eventData -> -eventData.getPriority().getSlot())).collect(Collectors.toList());
         listeners.forEach(new Consumer<EventData<?>>() {
             @Override
             public void accept(EventData<?> eventData) {
@@ -231,7 +252,12 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                     this.run(eventData);
                 } catch (EventException e) {
                     Bonge.createCrashFile(eventData.getHolder(), "listener/" + event.getClass().getSimpleName(), e);
-                    e.printStackTrace();
+                    if(e.getCause() instanceof InvocationTargetException){
+                        InvocationTargetException c = (InvocationTargetException)e.getCause();
+                        c.getTargetException().printStackTrace();
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -269,7 +295,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         if(!(plugin instanceof JavaPlugin)){
             return;
         }
-        BongePluginLoader loader = ((BongePluginLoader)this.getPluginLoader(plugin).get());
+        JavaPluginLoader loader = ((JavaPluginLoader)this.getPluginLoader(plugin).get());
         if (loader.isEnabled()){
             return;
         }
@@ -282,7 +308,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         if(!(plugin instanceof JavaPlugin)){
             return;
         }
-        BongePluginLoader loader = ((BongePluginLoader)this.getPluginLoader(plugin).get());
+        JavaPluginLoader loader = ((JavaPluginLoader)this.getPluginLoader(plugin).get());
         if (!loader.isEnabled()){
             return;
         }

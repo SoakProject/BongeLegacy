@@ -3,8 +3,10 @@ package org.bonge.bukkit.r1_13.inventory.inventory.tileentity.workbench;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
 import org.bonge.bukkit.r1_13.world.BongeWorld;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import org.bukkit.inventory.Recipe;
 import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
 
 import java.io.IOException;
+import java.util.ListIterator;
 import java.util.Optional;
 
 public class BongeWorkbenchInventory implements BongeAbstractInventory<org.spongepowered.api.item.inventory.crafting.CraftingInventory>, CraftingInventory {
@@ -98,7 +101,27 @@ public class BongeWorkbenchInventory implements BongeAbstractInventory<org.spong
     }
 
     @Override
+    public InventoryType getType() {
+        return InventoryType.WORKBENCH;
+    }
+
+    @Override
     public InventoryHolder getHolder() {
         return this.holder;
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator() {
+        return null;
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator(int index) {
+        return null;
+    }
+
+    @Override
+    public Location getLocation() {
+        return null;
     }
 }

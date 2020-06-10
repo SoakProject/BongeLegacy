@@ -129,7 +129,7 @@ public class BongeBlock extends BongeWrapper<Location<org.spongepowered.api.worl
     @NotNull
     @Override
     public org.bukkit.Location getLocation() {
-        return new BongeLocation(this.spongeValue);
+        return new BongeLocation(this.spongeValue.getExtent().getLocation(this.spongeValue.getBlockX(), this.spongeValue.getBlockY(), this.spongeValue.getBlockZ()));
     }
 
     @Nullable

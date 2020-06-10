@@ -1,16 +1,20 @@
 package org.bonge.bukkit.r1_13.entity.living.human;
 
+import org.bonge.command.Permissions;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.ProviderRegistration;
+import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.util.Tristate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class BongeOfflinePlayer extends BongeWrapper<User> implements OfflinePlayer {
 
@@ -83,14 +87,12 @@ public class BongeOfflinePlayer extends BongeWrapper<User> implements OfflinePla
     }
 
     @Override
-    @Deprecated
     public boolean isOp() {
-        return false;
+        return this.spongeValue.hasPermission(Permissions.BONGE_OP);
     }
 
     @Override
-    @Deprecated
     public void setOp(boolean value) {
-
+        this.spongeValue.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, Permissions.BONGE_OP, value ? Tristate.TRUE : Tristate.FALSE);
     }
 }

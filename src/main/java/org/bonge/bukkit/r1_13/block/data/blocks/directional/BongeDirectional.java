@@ -1,4 +1,4 @@
-package org.bonge.bukkit.r1_13.block.data.block.impl;
+package org.bonge.bukkit.r1_13.block.data.blocks.directional;
 
 import org.bonge.bukkit.r1_13.block.data.IBongeBlockData;
 import org.bukkit.block.BlockFace;

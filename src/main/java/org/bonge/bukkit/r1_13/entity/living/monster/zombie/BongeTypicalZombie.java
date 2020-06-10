@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.entity.living.monster.zombie;
 
 import org.bonge.bukkit.r1_13.entity.living.monster.BongeAbstractMonster;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Zombie;
 import org.spongepowered.api.data.key.Keys;
@@ -59,5 +60,10 @@ public class BongeTypicalZombie extends BongeAbstractMonster<org.spongepowered.a
     @Override
     public Location getEyeLocation() {
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.ZOMBIE;
     }
 }

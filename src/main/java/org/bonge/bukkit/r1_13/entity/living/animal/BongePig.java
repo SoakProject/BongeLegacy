@@ -1,6 +1,7 @@
 package org.bonge.bukkit.r1_13.entity.living.animal;
 
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pig;
 import org.spongepowered.api.data.key.Keys;
 
@@ -33,5 +34,10 @@ public class BongePig extends BongeAbstractAnimal<org.spongepowered.api.entity.l
     @Override
     public Location getEyeLocation() {
         return null;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.PIG;
     }
 }

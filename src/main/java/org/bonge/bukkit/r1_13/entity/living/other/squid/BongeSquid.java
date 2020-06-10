@@ -2,6 +2,7 @@ package org.bonge.bukkit.r1_13.entity.living.other.squid;
 
 import org.bonge.bukkit.r1_13.entity.living.BongeAbstractLivingEntity;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Squid;
 import org.bukkit.loot.LootTable;
@@ -55,5 +56,10 @@ public class BongeSquid extends BongeAbstractLivingEntity<org.spongepowered.api.
     @Override
     public long getSeed() {
         return 0;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.SQUID;
     }
 }

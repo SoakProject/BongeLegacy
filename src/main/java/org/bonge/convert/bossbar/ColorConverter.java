@@ -5,6 +5,8 @@ import org.bukkit.boss.BarColor;
 import org.spongepowered.api.boss.BossBarColor;
 import org.spongepowered.api.boss.BossBarColors;
 
+import java.io.IOException;
+
 public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.spongepowered.api.boss.BossBarColor> {
     @Override
     public Class<BossBarColor> getSpongeClass() {
@@ -17,7 +19,7 @@ public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.s
     }
 
     @Override
-    public BossBarColor from(BarColor colour) {
+    public BossBarColor from(BarColor colour) throws IOException {
         switch (colour){
             case PINK: return BossBarColors.PINK;
             case BLUE: return BossBarColors.BLUE;
@@ -26,12 +28,12 @@ public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.s
             case YELLOW: return BossBarColors.YELLOW;
             case PURPLE: return BossBarColors.PURPLE;
             case WHITE: return BossBarColors.WHITE;
-            default: throw new IllegalStateException("Unknown bar colour of " + colour.name());
+            default: throw new IOException("Unknown bar colour of " + colour.name());
         }
     }
 
     @Override
-    public BarColor to(BossBarColor colour) {
+    public BarColor to(BossBarColor colour) throws IOException{
         if(colour.equals(BossBarColors.BLUE)){
             return BarColor.BLUE;
         }else if(colour.equals(BossBarColors.GREEN)){
@@ -47,7 +49,7 @@ public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.s
         }else if(colour.equals(BossBarColors.YELLOW)){
             return BarColor.YELLOW;
         }else{
-            throw new IllegalStateException("Unknown bar colour of " + colour.getId());
+            throw new IOException("Unknown bar colour of " + colour.getId());
         }
     }
 }
