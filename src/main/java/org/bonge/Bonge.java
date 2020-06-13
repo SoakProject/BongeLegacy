@@ -3,12 +3,7 @@ package org.bonge;
 
 import org.bonge.convert.Converter;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.spongepowered.api.entity.Entity;
 
 import java.io.File;
 import java.io.FileWriter;

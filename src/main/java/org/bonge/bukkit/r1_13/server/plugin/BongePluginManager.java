@@ -3,7 +3,6 @@ package org.bonge.bukkit.r1_13.server.plugin;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.command.BongeCommandManager;
 import org.bonge.bukkit.r1_13.server.BongeServer;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bonge.bukkit.r1_13.server.plugin.event.EventData;
 import org.bonge.bukkit.r1_13.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_13.server.plugin.loader.IBongePluginLoader;
@@ -17,6 +16,7 @@ import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionService;
 
@@ -210,6 +210,9 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         if (files == null){
             return new Plugin[0];
         }
+        List<File> list = new ArrayList<>();
+        List<File> pluginFiles = Arrays.asList(files);
+        list.addAll(pluginFiles);
         this.loader = new BongeURLClassLoader(ArrayUtils.convert(URL.class, f -> {
             try {
                 return f.toURI().toURL();
@@ -218,10 +221,14 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                 return null;
             }
         }, files));
+
         Plugin[] plugins = new Plugin[files.length];
+        int pluginId = 0;
         for (int A = 0; A < files.length; A++){
             try {
-                plugins[A] = loadPlugin(files[A]);
+                File pluginFile = files[A];
+                plugins[pluginId] = loadPlugin(pluginFile);
+                pluginId++;
             }catch (Throwable e){
                 e.printStackTrace();
                 Bonge.createCrashFile(null, null, e);

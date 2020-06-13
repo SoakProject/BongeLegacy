@@ -1,6 +1,5 @@
 package org.bonge.launch;
 
-import org.bonge.bukkitloader.BukkitDownloader;
 import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
 import org.spongepowered.api.Sponge;
@@ -9,13 +8,16 @@ import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Logger;
 
 @Plugin(id = BongeLaunch.PLUGIN_ID, name = BongeLaunch.PLUGIN_NAME, version = BongeLaunch.PLUGIN_VERSION)
@@ -42,19 +44,6 @@ public class BongeLaunch {
     public BongeLaunch(){
         instance = this;
     }
-
-    /*@Listener
-    public void onPreLoad(GamePreInitializationEvent event){
-        BukkitDownloader downloader = new BukkitDownloader(BukkitDownloader.DEFAULT_VERSION, BukkitDownloader.DEFAULT_OUTPUT, false);
-        try {
-            Set<Class<?>> set = downloader.load();
-            this.isBukkitAPILoaded = true;
-            System.out.println("Loaded Bukkit API code");
-        } catch (IOException e) {
-            System.err.println("Could not boot Bonge. If you haven't yet, use the command '/Bonge download' to download BukkitAPI");
-            e.printStackTrace();
-        }
-    }*/
 
     @Listener
     public void onLoad(GamePostInitializationEvent event){

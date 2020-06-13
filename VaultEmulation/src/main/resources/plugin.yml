@@ -1,6 +1,0 @@
-name: BongeVault
-main: org.ve.BongeVault
-version: 1.0-SNAPSHOT
-api-version: 1.13
-depend:
-    - Vault
