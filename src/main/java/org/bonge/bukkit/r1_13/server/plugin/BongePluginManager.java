@@ -222,6 +222,13 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             }
         }, files));
 
+        try {
+            Class.forName("org.apache.commons.lang.Validate");
+        } catch (ClassNotFoundException e) {
+            BongeLaunch.getLogger().severe("Your launcher requires patching to allow Apache Commons 2.6 to run. Run Bonge as a program to launch the patcher.");
+            return new Plugin[0];
+        }
+
         Plugin[] plugins = new Plugin[files.length];
         int pluginId = 0;
         for (int A = 0; A < files.length; A++){

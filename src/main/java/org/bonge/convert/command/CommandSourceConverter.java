@@ -1,5 +1,6 @@
 package org.bonge.convert.command;
 
+import org.bonge.bukkit.r1_13.command.rcon.RconCommandSource;
 import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_13.server.source.ConsoleSource;
 import org.bonge.convert.Converter;
@@ -8,6 +9,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.RconSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 
 import java.io.IOException;
@@ -25,11 +27,14 @@ public class CommandSourceConverter implements Converter<CommandSender, CommandS
 
     @Override
     public CommandSource from(CommandSender sender) throws IOException{
-        if(sender instanceof Player){
+        if(sender instanceof BongePlayer){
             return ((BongePlayer)sender).getSpongeValue();
         }
         if(sender instanceof ConsoleCommandSender){
             return Sponge.getServer().getConsole();
+        }
+        if(sender instanceof RconCommandSource){
+            return ((RconCommandSource)sender).getSpongeValue();
         }
         throw new IOException("Unknown sender of " + sender.getName());
     }
@@ -41,6 +46,9 @@ public class CommandSourceConverter implements Converter<CommandSender, CommandS
         }
         if(source instanceof org.spongepowered.api.command.source.ConsoleSource){
             return new ConsoleSource();
+        }
+        if(source instanceof RconSource){
+            return new RconCommandSource((RconSource) source);
         }
         throw new IOException("Unknown source of " + source.getName());
     }

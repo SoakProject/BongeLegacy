@@ -1,5 +1,6 @@
 package org.bonge.listeners;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_13.block.BongeBlock;
 import org.bonge.bukkit.r1_13.block.BongeBlockSnapshot;
@@ -29,6 +30,7 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.*;
 import org.spongepowered.api.event.filter.cause.Root;
@@ -139,6 +141,40 @@ public class PlayerListener {
             PlayerInteractAtEntityEvent piaee = new PlayerInteractAtEntityEvent(bPlayer, entity, Bonge.getInstance().convert(Vector.class, event.getInteractionPoint().get()));
         } catch (IOException e) {
 
+        }
+    }
+
+    @Listener
+    public void onAirClick(InteractEvent event, @Root org.spongepowered.api.entity.living.player.Player player){
+        if(event instanceof InteractBlockEvent){
+            return;
+        }
+        if(event instanceof InteractEntityEvent){
+            return;
+        }
+        Action action = Action.RIGHT_CLICK_AIR;
+        org.spongepowered.api.item.inventory.ItemStack stack = player.getItemInHand(HandTypes.OFF_HAND).get();
+        if(event instanceof InteractBlockEvent.Primary){
+            action = Action.LEFT_CLICK_AIR;
+            stack = player.getItemInHand(HandTypes.MAIN_HAND).get();
+        }
+        org.spongepowered.api.world.Location<World> loc;
+        Optional<Vector3d> opVector = event.getInteractionPoint();
+        if(opVector.isPresent()){
+            loc = player.getWorld().getLocation(opVector.get());
+        }else{
+            loc = player.getLocation();
+        }
+        BongeBlock bbs = new BongeBlock(loc);
+        try {
+            BongePlayer bPlayer = BongePlayer.getPlayer(player);
+            ItemStack stack2 = Bonge.getInstance().convert(ItemStack.class, stack);
+            PlayerInteractEvent bEvent = new PlayerInteractEvent(bPlayer, action, stack2, bbs, BlockFace.SELF);
+            Bukkit.getServer().getPluginManager().callEvent(bEvent);
+            if(bEvent.isCancelled()){
+                event.setCancelled(true);
+            }
+        } catch (IOException ignored) {
         }
     }
 
