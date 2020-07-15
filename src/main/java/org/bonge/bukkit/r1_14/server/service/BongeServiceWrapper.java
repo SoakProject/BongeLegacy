@@ -9,7 +9,7 @@ import org.spongepowered.api.Sponge;
 public class BongeServiceWrapper<T> extends RegisteredServiceProvider<T> {
 
     public BongeServiceWrapper(Class<T> spongeService) {
-        super(spongeService, Sponge.getServiceManager().getRegistration(spongeService).get().getProvider(), ServicePriority.Lowest, null);
+        super(spongeService, Sponge.getServiceProvider().getRegistration(spongeService).get().service(), ServicePriority.Lowest, null);
     }
 
     @Override
@@ -19,7 +19,7 @@ public class BongeServiceWrapper<T> extends RegisteredServiceProvider<T> {
 
     @Override
     public Plugin getPlugin() {
-        return new SpongePlugin(Sponge.getServiceManager().getRegistration(this.getService()).get().getPlugin());
+        return new SpongePlugin(Sponge.getServiceProvider().getRegistration(this.getService()).get().pluginContainer());
     }
 
     @Override

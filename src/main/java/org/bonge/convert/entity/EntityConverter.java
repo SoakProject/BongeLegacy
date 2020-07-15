@@ -18,10 +18,17 @@ import org.bonge.bukkit.r1_14.entity.living.other.squid.BongeSquid;
 import org.bonge.bukkit.r1_14.entity.other.item.BongeItem;
 import org.bonge.convert.Converter;
 import org.bukkit.entity.Entity;
+import org.spongepowered.api.entity.living.animal.cow.Cow;
+import org.spongepowered.api.entity.living.aquatic.Squid;
+import org.spongepowered.api.entity.living.monster.skeleton.Skeleton;
+import org.spongepowered.api.entity.living.monster.spider.CaveSpider;
+import org.spongepowered.api.entity.living.monster.spider.Spider;
+import org.spongepowered.api.entity.living.monster.zombie.Zombie;
 
 import java.io.IOException;
 
 public class EntityConverter implements Converter<Entity, org.spongepowered.api.entity.Entity> {
+
     @Override
     public Class<org.spongepowered.api.entity.Entity> getSpongeClass() {
         return org.spongepowered.api.entity.Entity.class;
@@ -54,23 +61,23 @@ public class EntityConverter implements Converter<Entity, org.spongepowered.api.
         if(entity instanceof org.spongepowered.api.entity.living.animal.Pig){
             return new BongePig((org.spongepowered.api.entity.living.animal.Pig)entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.animal.Cow){
-            return new BongeCow((org.spongepowered.api.entity.living.animal.Cow) entity);
+        if(entity instanceof Cow){
+            return new BongeCow((Cow) entity);
         }
         if(entity instanceof org.spongepowered.api.entity.living.animal.Chicken){
             return new BongeChicken((org.spongepowered.api.entity.living.animal.Chicken)entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.CaveSpider){
-            return new BongeCaveSpider((org.spongepowered.api.entity.living.monster.CaveSpider) entity);
+        if(entity instanceof CaveSpider){
+            return new BongeCaveSpider((CaveSpider) entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Spider){
-            return new BongeTypicalSpider((org.spongepowered.api.entity.living.monster.Spider) entity);
+        if(entity instanceof Spider){
+            return new BongeTypicalSpider((Spider) entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Zombie){
-            return new BongeTypicalZombie((org.spongepowered.api.entity.living.monster.Zombie) entity);
+        if(entity instanceof Zombie){
+            return new BongeTypicalZombie((Zombie) entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.monster.Skeleton){
-            return new BongeTypicalSkeleton((org.spongepowered.api.entity.living.monster.Skeleton) entity);
+        if(entity instanceof Skeleton){
+            return new BongeTypicalSkeleton((Skeleton) entity);
         }
         if(entity instanceof org.spongepowered.api.entity.living.monster.Creeper){
             return new BongeCreeper((org.spongepowered.api.entity.living.monster.Creeper) entity);
@@ -78,8 +85,8 @@ public class EntityConverter implements Converter<Entity, org.spongepowered.api.
         if(entity instanceof org.spongepowered.api.entity.living.monster.Enderman){
             return new BongeEnderman((org.spongepowered.api.entity.living.monster.Enderman) entity);
         }
-        if(entity instanceof org.spongepowered.api.entity.living.Squid){
-            return new BongeSquid((org.spongepowered.api.entity.living.Squid) entity);
+        if(entity instanceof Squid){
+            return new BongeSquid((Squid) entity);
         }
         if(entity instanceof org.spongepowered.api.entity.living.Bat){
             return new BongeBat((org.spongepowered.api.entity.living.Bat) entity);

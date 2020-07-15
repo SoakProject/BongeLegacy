@@ -21,35 +21,35 @@ public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.s
     @Override
     public BossBarColor from(BarColor colour) throws IOException {
         switch (colour){
-            case PINK: return BossBarColors.PINK;
-            case BLUE: return BossBarColors.BLUE;
-            case RED: return BossBarColors.RED;
-            case GREEN: return BossBarColors.GREEN;
-            case YELLOW: return BossBarColors.YELLOW;
-            case PURPLE: return BossBarColors.PURPLE;
-            case WHITE: return BossBarColors.WHITE;
+            case PINK: return BossBarColors.PINK.get();
+            case BLUE: return BossBarColors.BLUE.get();
+            case RED: return BossBarColors.RED.get();
+            case GREEN: return BossBarColors.GREEN.get();
+            case YELLOW: return BossBarColors.YELLOW.get();
+            case PURPLE: return BossBarColors.PURPLE.get();
+            case WHITE: return BossBarColors.WHITE.get();
             default: throw new IOException("Unknown bar colour of " + colour.name());
         }
     }
 
     @Override
     public BarColor to(BossBarColor colour) throws IOException{
-        if(colour.equals(BossBarColors.BLUE)){
+        if(colour.equals(BossBarColors.BLUE.get())){
             return BarColor.BLUE;
-        }else if(colour.equals(BossBarColors.GREEN)){
+        }else if(colour.equals(BossBarColors.GREEN.get())){
             return BarColor.GREEN;
-        }else if(colour.equals(BossBarColors.PINK)){
+        }else if(colour.equals(BossBarColors.PINK.get())){
             return BarColor.PINK;
-        }else if(colour.equals(BossBarColors.PURPLE)){
+        }else if(colour.equals(BossBarColors.PURPLE.get())){
             return BarColor.PURPLE;
-        }else if(colour.equals(BossBarColors.RED)){
+        }else if(colour.equals(BossBarColors.RED.get())){
             return BarColor.RED;
-        }else if(colour.equals(BossBarColors.WHITE)){
+        }else if(colour.equals(BossBarColors.WHITE.get())){
             return BarColor.WHITE;
-        }else if(colour.equals(BossBarColors.YELLOW)){
+        }else if(colour.equals(BossBarColors.YELLOW.get())){
             return BarColor.YELLOW;
         }else{
-            throw new IOException("Unknown bar colour of " + colour.getId());
+            throw new IOException("Unknown bar colour of " + colour.getKey().getFormatted());
         }
     }
 }

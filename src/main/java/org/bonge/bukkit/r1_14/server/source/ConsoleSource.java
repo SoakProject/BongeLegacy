@@ -1,6 +1,6 @@
 package org.bonge.bukkit.r1_14.server.source;
 
-import org.bonge.convert.text.TextConverter;
+import org.bonge.Bonge;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -14,19 +14,31 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.SystemSubject;
 import org.spongepowered.api.text.Text;
 
 import java.util.Set;
 
 public class ConsoleSource implements ConsoleCommandSender {
+
+    private final SystemSubject subject;
+
+    public ConsoleSource(){
+        this(Sponge.getSystemSubject());
+    }
+
+    public ConsoleSource(SystemSubject subject){
+        this.subject = subject;
+    }
+
     @Override
     public void sendMessage(@NotNull String message) {
-        Sponge.getServer().getConsole().sendMessage(TextConverter.CONVERTER.from(message));
+        this.subject.sendMessage(Bonge.getInstance().convertText(message));
     }
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        Sponge.getServer().getConsole().sendMessages(ArrayUtils.convert(Text.class, t -> TextConverter.CONVERTER.from(t), messages));
+        this.subject.sendMessages(ArrayUtils.convert(Text.class, t -> Bonge.getInstance().convertText(t), messages));
     }
 
     @Override
@@ -66,7 +78,7 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendRawMessage(@NotNull String message) {
-        Sponge.getServer().getConsole().sendMessage(TextConverter.CONVERTER.from(message));
+        this.subject.sendMessage(Bonge.getInstance().convertText(message));
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.bonge.bukkit.r1_14.entity.living;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.BongeBlock;
 import org.bonge.bukkit.r1_14.entity.BongeAbstractEntity;
+import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,7 +37,8 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
     @NotNull
     @Override
     public List<Block> getLineOfSight(@Nullable Set<Material> transparent, int maxDistance) {
-        List<Block> blocks = new ArrayList<>();
+        //TODO no idea how to do this
+        /*List<Block> blocks = new ArrayList<>();
         BlockRay<World> ray = BlockRay.from(this.spongeValue).distanceLimit(maxDistance).skipFilter(r -> {
             if(transparent == null){
                 return false;
@@ -52,7 +54,8 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
         while(ray.hasNext()){
             blocks.add(new BongeBlock(ray.next().getLocation()));
         }
-        return blocks;
+        return blocks;*/
+        throw new NotImplementedException("LivingEntity.getLineOfSight(Set<Material>, int) not got to yet");
     }
 
     @NotNull

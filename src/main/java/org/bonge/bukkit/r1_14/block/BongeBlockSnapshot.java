@@ -24,13 +24,15 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+//THIS IS JUST TOO INCOMPLETE FOR ANY USE
+@Deprecated
 public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block.BlockSnapshot> implements Block {
 
     public BongeBlockSnapshot(BlockSnapshot value) {
         super(value);
     }
 
-    public org.spongepowered.api.world.Location<org.spongepowered.api.world.World> getSpongeLocation(){
+    public org.spongepowered.api.world.Location<? extends org.spongepowered.api.world.World> getSpongeLocation(){
         return this.spongeValue.getLocation().get();
     }
 
@@ -41,9 +43,12 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public BlockData getBlockData() {
-        //TODO - other blockstates
-        return BongeAbstractBlockData.of(this.spongeValue.getExtendedState());
+    public @NotNull BlockData getBlockData() {
+        try {
+            return Bonge.getInstance().convert(BlockData.class, this.spongeValue.getState());
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @NotNull
@@ -73,9 +78,9 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public Material getType() {
+    public @NotNull Material getType() {
         try {
-            return Bonge.getInstance().convert(Material.class, this.spongeValue.getExtendedState().getType());
+            return Bonge.getInstance().convert(Material.class, this.spongeValue.getState().getType());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -97,8 +102,8 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public World getWorld() {
-        return new BongeWorld(this.getSpongeLocation().getExtent());
+    public @NotNull World getWorld() {
+        return new BongeWorld(this.getSpongeLocation().getWorld());
     }
 
     @Override
@@ -117,7 +122,7 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         return new BongeLocation(this.getSpongeLocation());
     }
 
@@ -127,17 +132,17 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public Chunk getChunk() {
+    public @NotNull Chunk getChunk() {
         return null;
     }
 
     @Override
-    public void setBlockData(BlockData data) {
+    public void setBlockData(@NotNull BlockData data) {
         this.setBlockData(data, true);
     }
 
     @Override
-    public void setBlockData(BlockData data, boolean applyPhysics) {
+    public void setBlockData(@NotNull BlockData data, boolean applyPhysics) {
         this.spongeValue.withState(((BongeAbstractBlockData)data).getSpongeValue());
     }
 
@@ -152,22 +157,22 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public BlockFace getFace(Block block) {
+    public BlockFace getFace(@NotNull Block block) {
         return null;
     }
 
     @Override
-    public BlockState getState() {
+    public @NotNull BlockState getState() {
         return null;
     }
 
     @Override
-    public Biome getBiome() {
+    public @NotNull Biome getBiome() {
         return null;
     }
 
     @Override
-    public void setBiome(Biome bio) {
+    public void setBiome(@NotNull Biome bio) {
 
     }
 
@@ -182,17 +187,17 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public boolean isBlockFacePowered(BlockFace face) {
+    public boolean isBlockFacePowered(@NotNull BlockFace face) {
         return false;
     }
 
     @Override
-    public boolean isBlockFaceIndirectlyPowered(BlockFace face) {
+    public boolean isBlockFaceIndirectlyPowered(@NotNull BlockFace face) {
         return false;
     }
 
     @Override
-    public int getBlockPower(BlockFace face) {
+    public int getBlockPower(@NotNull BlockFace face) {
         return 0;
     }
 
@@ -222,7 +227,7 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public PistonMoveReaction getPistonMoveReaction() {
+    public @NotNull PistonMoveReaction getPistonMoveReaction() {
         return null;
     }
 
@@ -232,17 +237,17 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public boolean breakNaturally(ItemStack tool) {
+    public boolean breakNaturally(@NotNull ItemStack tool) {
         return false;
     }
 
     @Override
-    public Collection<ItemStack> getDrops() {
+    public @NotNull Collection<ItemStack> getDrops() {
         return null;
     }
 
     @Override
-    public Collection<ItemStack> getDrops(ItemStack tool) {
+    public @NotNull Collection<ItemStack> getDrops(ItemStack tool) {
         return null;
     }
 
@@ -263,22 +268,22 @@ public class BongeBlockSnapshot extends BongeWrapper<org.spongepowered.api.block
     }
 
     @Override
-    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+    public void setMetadata(@NotNull String metadataKey, @NotNull MetadataValue newMetadataValue) {
 
     }
 
     @Override
-    public List<MetadataValue> getMetadata(String metadataKey) {
+    public @NotNull List<MetadataValue> getMetadata(@NotNull String metadataKey) {
         return null;
     }
 
     @Override
-    public boolean hasMetadata(String metadataKey) {
+    public boolean hasMetadata(@NotNull String metadataKey) {
         return false;
     }
 
     @Override
-    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+    public void removeMetadata(@NotNull String metadataKey, @NotNull Plugin owningPlugin) {
 
     }
 }

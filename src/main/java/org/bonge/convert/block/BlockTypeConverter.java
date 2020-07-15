@@ -22,26 +22,24 @@ public class BlockTypeConverter implements Converter<Material, BlockType> {
 
     @Override
     public BlockType from(Material value) throws IOException {
-        Optional<Material> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> t instanceof BongeMaterial)
+        Optional<BongeMaterial> opType = Bonge.getInstance().getMaterials().stream()
                 .filter(t -> t.isBlock())
-                .filter(t -> ((BongeMaterial)t).toBlock().get().getSpongeBlockType().equals(value))
+                .filter(t -> t.toBlock().get().getSpongeBlockType().equals(value))
                 .findAny();
         if(opType.isPresent()){
-            return ((BongeMaterial)opType.get()).toBlock().get().getSpongeBlockType();
+            return opType.get().toBlock().get().getSpongeBlockType();
         }
         throw new IOException("Unknown material converter for " + value.name());
     }
 
     @Override
     public Material to(BlockType value) throws IOException{
-        Optional<Material> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> t instanceof BongeMaterial)
+        Optional<BongeMaterial> opType = Bonge.getInstance().getMaterials().stream()
                 .filter(t -> t.isBlock())
-                .filter(t -> ((BongeMaterial) t).toBlock().get().getSpongeBlockType().equals(value))
+                .filter(t -> t.toBlock().get().getSpongeBlockType().equals(value))
                 .findAny();
         if(opType.isPresent()){
-            return opType.get();
+            return (Material)opType.get();
         }
         throw new IOException("Unknown material converter for " + value.getKey().getFormatted());
     }

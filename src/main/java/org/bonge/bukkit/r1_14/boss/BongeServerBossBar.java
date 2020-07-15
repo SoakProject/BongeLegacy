@@ -10,6 +10,7 @@ import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.boss.BossBarColor;
 import org.spongepowered.api.boss.BossBarOverlay;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -25,16 +26,16 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
 
     @Override
     public String getTitle() {
-        return TextConverter.CONVERTER.to(this.spongeValue.getName());
+        return Bonge.getInstance().convert(this.spongeValue.getName());
     }
 
     @Override
     public void setTitle(String title) {
-        this.spongeValue.setName(TextConverter.CONVERTER.from(title));
+        this.spongeValue.setName(Bonge.getInstance().convertText(title));
     }
 
     @Override
-    public BarColor getColor() {
+    public @NotNull BarColor getColor() {
         try {
             return Bonge.getInstance().convert(BarColor.class, this.spongeValue.getColor());
         } catch (IOException e) {
@@ -43,7 +44,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public void setColor(BarColor color) {
+    public void setColor(@NotNull BarColor color) {
         try {
             this.spongeValue.setColor(Bonge.getInstance().convert(color, BossBarColor.class));
         } catch (IOException e) {
@@ -52,7 +53,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public BarStyle getStyle() {
+    public @NotNull BarStyle getStyle() {
         try {
             return Bonge.getInstance().convert(BarStyle.class, this.spongeValue.getOverlay());
         } catch (IOException e) {
@@ -61,7 +62,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public void setStyle(BarStyle style) {
+    public void setStyle(@NotNull BarStyle style) {
         try {
             this.spongeValue.setOverlay(Bonge.getInstance().convert(style, BossBarOverlay.class));
         } catch (IOException e) {
@@ -70,17 +71,17 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public void removeFlag(BarFlag flag) {
+    public void removeFlag(@NotNull BarFlag flag) {
 
     }
 
     @Override
-    public void addFlag(BarFlag flag) {
+    public void addFlag(@NotNull BarFlag flag) {
 
     }
 
     @Override
-    public boolean hasFlag(BarFlag flag) {
+    public boolean hasFlag(@NotNull BarFlag flag) {
         return false;
     }
 
@@ -95,12 +96,12 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public void addPlayer(Player player) {
+    public void addPlayer(@NotNull Player player) {
         this.spongeValue.addPlayer((ServerPlayer) Bonge.getInstance().convert(player));
     }
 
     @Override
-    public void removePlayer(Player player) {
+    public void removePlayer(@NotNull Player player) {
         this.spongeValue.removePlayer((ServerPlayer) Bonge.getInstance().convert(player));
 
     }
@@ -111,7 +112,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     }
 
     @Override
-    public List<Player> getPlayers() {
+    public @NotNull List<Player> getPlayers() {
         return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getPlayers());
     }
 

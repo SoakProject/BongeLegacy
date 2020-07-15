@@ -1,6 +1,6 @@
 package org.bonge.bukkit.r1_14.scoreboard;
 
-import org.bonge.convert.text.TextConverter;
+import org.bonge.Bonge;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public class BongeScore extends BongeWrapper<org.spongepowered.api.scoreboard.Score> implements Score {
 
-    private BongeObjective objective;
+    private final BongeObjective objective;
 
     public BongeScore(org.spongepowered.api.scoreboard.Score value, BongeObjective objective) {
         super(value);
@@ -24,7 +24,7 @@ public class BongeScore extends BongeWrapper<org.spongepowered.api.scoreboard.Sc
 
     @Override
     public String getEntry() {
-        return TextConverter.CONVERTER.to(this.spongeValue.getName());
+        return Bonge.getInstance().convert(this.spongeValue.getName());
     }
 
     @Override

@@ -21,29 +21,29 @@ public class StyleConverter implements Converter<org.bukkit.boss.BarStyle, org.s
     @Override
     public BossBarOverlay from(BarStyle value) throws IOException {
         switch (value){
-            case SOLID: return BossBarOverlays.PROGRESS;
-            case SEGMENTED_6: return BossBarOverlays.NOTCHED_6;
-            case SEGMENTED_10: return BossBarOverlays.NOTCHED_10;
-            case SEGMENTED_12: return BossBarOverlays.NOTCHED_12;
-            case SEGMENTED_20: return BossBarOverlays.NOTCHED_20;
+            case SOLID: return BossBarOverlays.PROGRESS.get();
+            case SEGMENTED_6: return BossBarOverlays.NOTCHED_6.get();
+            case SEGMENTED_10: return BossBarOverlays.NOTCHED_10.get();
+            case SEGMENTED_12: return BossBarOverlays.NOTCHED_12.get();
+            case SEGMENTED_20: return BossBarOverlays.NOTCHED_20.get();
             default: throw new IOException("Unknown style of " + value.name());
         }
     }
 
     @Override
     public BarStyle to(BossBarOverlay overlay) throws IOException{
-        if(overlay.equals(BossBarOverlays.NOTCHED_6)){
+        if(overlay.equals(BossBarOverlays.NOTCHED_6.get())){
             return BarStyle.SEGMENTED_6;
-        }else if(overlay.equals(BossBarOverlays.NOTCHED_10)){
+        }else if(overlay.equals(BossBarOverlays.NOTCHED_10.get())){
             return BarStyle.SEGMENTED_10;
-        }else if(overlay.equals(BossBarOverlays.NOTCHED_12)){
+        }else if(overlay.equals(BossBarOverlays.NOTCHED_12.get())){
             return BarStyle.SEGMENTED_12;
-        }else if(overlay.equals(BossBarOverlays.NOTCHED_20)) {
+        }else if(overlay.equals(BossBarOverlays.NOTCHED_20.get())) {
             return BarStyle.SEGMENTED_20;
-        }else if(overlay.equals(BossBarOverlays.PROGRESS)){
+        }else if(overlay.equals(BossBarOverlays.PROGRESS.get())){
             return BarStyle.SOLID;
         }else{
-            throw new IOException("Unknown style of " + overlay.getId());
+            throw new IOException("Unknown style of " + overlay.getKey().getValue());
         }
     }
 }

@@ -1,16 +1,16 @@
 package org.bonge.bukkit.r1_14.command;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.world.BongeLocation;
 import org.bonge.launch.BongeLaunch;
 import org.bukkit.Location;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.channel.MessageReceiver;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,7 +49,8 @@ public class BongeCommandManager implements CommandMap {
                 commands[A] = modified;
             }
             try {
-                Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getInstance(), new SpongeCommandWrapping(state), commands);
+                //TODO alis
+                Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), new SpongeCommandWrapping(state).buildCommand(), commands[0]);
             }catch (IllegalArgumentException e){
                 System.err.println("Command could not be registered: " + state.getPluginTag() + ":" + state.getLabel() + " due to another command being registered with the same label");
             }
@@ -78,7 +79,13 @@ public class BongeCommandManager implements CommandMap {
     public boolean dispatch(@NotNull CommandSender sender, @NotNull String cmdLine) throws CommandException {
         CommandResult result = null;
         try {
-            result = Sponge.getCommandManager().process(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine);
+            Subject subject = Bonge.getInstance().convert(sender, Subject.class);
+            try {
+                result = Sponge.getCommandManager().process(subject, ((MessageReceiver) subject).getMessageChannel(), cmdLine);
+            }catch (org.spongepowered.api.command.exception.CommandException e) {
+                ((MessageReceiver) subject).sendMessage(e.getText());
+                return false;
+            }
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -87,15 +94,7 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public void clearCommands() {
-        Sponge
-                .getPluginManager()
-                .getPlugins()
-                .forEach(p -> Sponge
-                        .getCommandManager()
-                        .getOwnedBy(p)
-                        .forEach(m -> Sponge
-                                .getCommandManager()
-                                .removeMapping(m)));
+        Sponge.getCommandManager().getStandardRegistrar().reset();
         this.commands.clear();
     }
 
@@ -111,18 +110,16 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull String cmdLine) throws IllegalArgumentException {
-        try {
-            return Sponge.getCommandManager().suggest(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine,  ((sender instanceof Player) ? new BongeLocation(((Player)sender).getLocation()).getSpongeLocation() : null));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return tabComplete(sender, cmdLine, null);
     }
 
     @Override
     public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull String cmdLine, @Nullable Location location) throws IllegalArgumentException {
-        assert location != null;
+        //TODO give location?
         try {
-            return Sponge.getCommandManager().suggest(Bonge.getInstance().convert(sender, CommandSource.class), cmdLine,  new BongeLocation(location).getSpongeLocation());
+            Subject subject = Bonge.getInstance().convert(sender, Subject.class);
+
+            return Sponge.getCommandManager().suggest(subject, ((MessageReceiver)subject).getMessageChannel(), cmdLine);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

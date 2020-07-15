@@ -6,7 +6,6 @@ import org.bonge.bukkit.r1_14.server.BongeServer;
 import org.bonge.bukkit.r1_14.server.plugin.event.EventData;
 import org.bonge.bukkit.r1_14.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_14.server.plugin.loader.IBongePluginLoader;
-import org.bonge.convert.text.TextConverter;
 import org.bonge.launch.BongeLaunch;
 import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -17,6 +16,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionService;
 
@@ -31,10 +31,10 @@ import java.util.stream.Stream;
 
 public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
-    private Set<IBongePluginLoader> plugins = new HashSet<>();
-    private List<Class<?>> eventClasses = new ArrayList<>();
-    private Set<EventData<?>> datas = new HashSet<>();
-    private Set<Permission> permissions = new HashSet<>();
+    private final Set<IBongePluginLoader> plugins = new HashSet<>();
+    private final List<Class<?>> eventClasses = new ArrayList<>();
+    private final Set<EventData<?>> datas = new HashSet<>();
+    private final Set<Permission> permissions = new HashSet<>();
     private BongeURLClassLoader loader;
 
     public Set<IBongePluginLoader> getBongePlugins(){
@@ -59,8 +59,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                     return opPlugin.get().equals(plugin);
                 }
             }
-            boolean isIns = pl.getPluginClass().get().isInstance(plugin);
-            return isIns;
+            return pl.getPluginClass().get().isInstance(plugin);
         }).findAny();
     }
 
@@ -99,7 +98,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                 System.out.println("Order: " + loader.getPlugin().get().getName());
             }
         }
-        plugins.stream().forEach(p -> {
+        plugins.forEach(p -> {
             BongeCommandManager cmdManager = ((BongeServer)Bukkit.getServer()).getCommandManager();
             JavaPlugin plugin = (JavaPlugin) p.getPlugin().get();
             Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
@@ -148,7 +147,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public Plugin getPlugin(String s) {
+    public Plugin getPlugin(@NotNull String s) {
         Optional<IBongePluginLoader> opLoader = this.plugins.stream()
                 .filter(p -> p.getPlugin().isPresent())
                 .filter(p -> {
@@ -170,7 +169,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public boolean isPluginEnabled(String s) {
+    public boolean isPluginEnabled(@NotNull String s) {
         Plugin plugin = getPlugin(s);
         if(plugin == null){
             System.err.println("Unknown plugin of '" + s + "'. A plugin checked if was enabled");
@@ -185,7 +184,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public Plugin loadPlugin(File file) {
+    public Plugin loadPlugin(@NotNull File file) {
         JavaPluginLoader loader = new JavaPluginLoader(file, this.loader);
         try {
             this.plugins.add(loader);
@@ -282,7 +281,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public void registerEvents(Listener listener, Plugin plugin) {
+    public void registerEvents(Listener listener, @NotNull Plugin plugin) {
         Stream.of(listener.getClass().getMethods())
                 .filter(m -> Stream.of(m.getAnnotations()).anyMatch(a -> a.annotationType().isAssignableFrom(EventHandler.class)))
                 .filter(m -> m.getParameterCount() == 1)
@@ -295,17 +294,17 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public void registerEvent(Class<? extends Event> aClass, Listener listener, EventPriority eventPriority, EventExecutor eventExecutor, Plugin plugin) {
+    public void registerEvent(@NotNull Class<? extends Event> aClass, @NotNull Listener listener, @NotNull EventPriority eventPriority, @NotNull EventExecutor eventExecutor, @NotNull Plugin plugin) {
         this.datas.add(new EventData<>(aClass, eventPriority, listener, eventExecutor, plugin));
     }
 
     @Override
-    public void registerEvent(Class<? extends Event> aClass, Listener listener, EventPriority eventPriority, EventExecutor eventExecutor, Plugin plugin, boolean b) {
+    public void registerEvent(@NotNull Class<? extends Event> aClass, @NotNull Listener listener, @NotNull EventPriority eventPriority, @NotNull EventExecutor eventExecutor, @NotNull Plugin plugin, boolean b) {
         this.registerEvent(aClass, listener, eventPriority, eventExecutor, plugin);
     }
 
     @Override
-    public void enablePlugin(Plugin plugin) {
+    public void enablePlugin(@NotNull Plugin plugin) {
         if(!(plugin instanceof JavaPlugin)){
             return;
         }
@@ -318,7 +317,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public void disablePlugin(Plugin plugin) {
+    public void disablePlugin(@NotNull Plugin plugin) {
         if(!(plugin instanceof JavaPlugin)){
             return;
         }
@@ -331,25 +330,25 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public Permission getPermission(String s) {
+    public Permission getPermission(@NotNull String s) {
         return null;
     }
 
     @Override
-    public void addPermission(Permission permission) {
-        PermissionService permissionProvider = Sponge.getServiceManager().getRegistration(PermissionService.class).get().getProvider();
+    public void addPermission(@NotNull Permission permission) {
+        PermissionService permissionProvider = Sponge.getServiceProvider().getRegistration(PermissionService.class).get().service();
         if (this.permissions.add(permission)) {
             permissionProvider
-                    .newDescriptionBuilder(BongeLaunch.getInstance())
+                    .newDescriptionBuilder(BongeLaunch.getContainer())
                     .id(permission.getName())
-                    .description(TextConverter.CONVERTER.from(permission.getDescription()))
+                    .description(Bonge.getInstance().convertText(permission.getDescription()))
                     .register();
         }
 
     }
 
     @Override
-    public void removePermission(Permission permission) {
+    public void removePermission(@NotNull Permission permission) {
 
     }
 
@@ -359,47 +358,47 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
     }
 
     @Override
-    public Set<Permission> getDefaultPermissions(boolean b) {
+    public @NotNull Set<Permission> getDefaultPermissions(boolean b) {
         return null;
     }
 
     @Override
-    public void recalculatePermissionDefaults(Permission permission) {
+    public void recalculatePermissionDefaults(@NotNull Permission permission) {
 
     }
 
     @Override
-    public void subscribeToPermission(String s, Permissible permissible) {
+    public void subscribeToPermission(@NotNull String s, @NotNull Permissible permissible) {
 
     }
 
     @Override
-    public void unsubscribeFromPermission(String s, Permissible permissible) {
+    public void unsubscribeFromPermission(@NotNull String s, @NotNull Permissible permissible) {
 
     }
 
     @Override
-    public Set<Permissible> getPermissionSubscriptions(String s) {
+    public @NotNull Set<Permissible> getPermissionSubscriptions(String s) {
         return Bukkit.getServer().getOnlinePlayers().stream().filter(p -> p.hasPermission(s)).collect(Collectors.toSet());
     }
 
     @Override
-    public void subscribeToDefaultPerms(boolean b, Permissible permissible) {
+    public void subscribeToDefaultPerms(boolean b, @NotNull Permissible permissible) {
 
     }
 
     @Override
-    public void unsubscribeFromDefaultPerms(boolean b, Permissible permissible) {
+    public void unsubscribeFromDefaultPerms(boolean b, @NotNull Permissible permissible) {
 
     }
 
     @Override
-    public Set<Permissible> getDefaultPermSubscriptions(boolean b) {
+    public @NotNull Set<Permissible> getDefaultPermSubscriptions(boolean b) {
         return null;
     }
 
     @Override
-    public Set<Permission> getPermissions() {
+    public @NotNull Set<Permission> getPermissions() {
         return this.permissions;
     }
 

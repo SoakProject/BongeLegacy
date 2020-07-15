@@ -1,6 +1,5 @@
 package org.bonge.launch;
 
-import com.sun.istack.internal.logging.Logger;
 import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
 import org.spongepowered.api.Client;
@@ -16,6 +15,7 @@ import org.spongepowered.plugin.jvm.Plugin;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Plugin(BongeLaunch.PLUGIN_ID)
 public class BongeLaunch {

@@ -1,6 +1,6 @@
 package org.bonge.bukkit.r1_14.block.state;
 
-import org.bonge.convert.InventoryConvert;
+import org.bonge.Bonge;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.block.Container;
 import org.bukkit.inventory.Inventory;
@@ -8,16 +8,18 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 
+import java.io.IOException;
+
 public abstract class BongeContainerBlockState<T extends org.spongepowered.api.block.entity.carrier.CarrierBlockEntity> extends BongeBlockState<T> implements Container {
 
     public static final String INVENTORY = "INVENTORY";
     public static final String LOCK = "LOCK";
     public static final String INVENTORY_SNAPSHOT = "INVENTORY_SNAPSHOT";
 
-    public BongeContainerBlockState(T value) {
+    public BongeContainerBlockState(T value) throws IOException {
         super(value);
-        this.changes.put(INVENTORY_SNAPSHOT, InventoryConvert.getInventory(this, value.getInventory()));
-        this.changes.put(INVENTORY, InventoryConvert.getInventory(this, value.getInventory()));
+        this.changes.put(INVENTORY_SNAPSHOT, Bonge.getInstance().convert(value.getInventory()));
+        this.changes.put(INVENTORY, Bonge.getInstance().convert(value.getInventory()));
         this.changes.put(LOCK, value.get(Keys.LOCK_TOKEN).orElse(null));
     }
 
@@ -27,12 +29,12 @@ public abstract class BongeContainerBlockState<T extends org.spongepowered.api.b
     }
 
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         return (Inventory)this.changes.get(INVENTORY);
     }
 
     @Override
-    public Inventory getSnapshotInventory() {
+    public @NotNull Inventory getSnapshotInventory() {
         return (Inventory)this.changes.get(INVENTORY_SNAPSHOT);
     }
 
@@ -42,7 +44,7 @@ public abstract class BongeContainerBlockState<T extends org.spongepowered.api.b
     }
 
     @Override
-    public String getLock() {
+    public @NotNull String getLock() {
         return (String)this.changes.get(LOCK);
     }
 

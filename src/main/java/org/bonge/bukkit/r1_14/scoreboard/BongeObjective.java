@@ -4,10 +4,8 @@ import org.bonge.Bonge;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -21,22 +19,22 @@ public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboar
     }
 
     @Override
-    public String getName() throws IllegalStateException {
+    public @NotNull String getName() throws IllegalStateException {
         return this.spongeValue.getName();
     }
 
     @Override
-    public String getDisplayName() throws IllegalStateException {
-        return TextConverter.CONVERTER.to(this.spongeValue.getDisplayName());
+    public @NotNull String getDisplayName() throws IllegalStateException {
+        return Bonge.getInstance().convert(this.spongeValue.getDisplayName());
     }
 
     @Override
-    public void setDisplayName(String displayName) throws IllegalStateException, IllegalArgumentException {
-        this.spongeValue.setDisplayName(TextConverter.CONVERTER.from(displayName));
+    public void setDisplayName(@NotNull String displayName) throws IllegalStateException, IllegalArgumentException {
+        this.spongeValue.setDisplayName(Bonge.getInstance().convertText(displayName));
     }
 
     @Override
-    public String getCriteria() throws IllegalStateException {
+    public @NotNull String getCriteria() throws IllegalStateException {
         try {
             return Bonge.getInstance().convert(String.class, this.spongeValue.getCriterion());
         } catch (IOException e) {
@@ -69,13 +67,23 @@ public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboar
     }
 
     @Override
+    public void setRenderType(@NotNull RenderType renderType) throws IllegalStateException {
+
+    }
+
+    @Override
+    public @NotNull RenderType getRenderType() throws IllegalStateException {
+        return null;
+    }
+
+    @Override
     public Score getScore(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
         return this.getScore(player.getName());
     }
 
     @Override
     public Score getScore(String entry) throws IllegalArgumentException, IllegalStateException {
-        org.spongepowered.api.scoreboard.Score score = this.spongeValue.getOrCreateScore(TextConverter.CONVERTER.from(entry));
+        org.spongepowered.api.scoreboard.Score score = this.spongeValue.getOrCreateScore(Bonge.getInstance().convertText(entry));
         return new BongeScore(score, this);
 
     }
