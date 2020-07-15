@@ -1,23 +1,24 @@
 package org.bonge.convert.command;
 
-import org.bonge.bukkit.r1_13.command.rcon.RconCommandSource;
-import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_13.server.source.ConsoleSource;
+import org.bonge.bukkit.r1_14.command.rcon.RconCommandSource;
+import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_14.server.source.ConsoleSource;
 import org.bonge.convert.Converter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.source.RconSource;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.SystemSubject;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.network.RconConnection;
+import org.spongepowered.api.service.permission.Subject;
 
 import java.io.IOException;
 
-public class CommandSourceConverter implements Converter<CommandSender, CommandSource> {
+public class CommandSourceConverter implements Converter<CommandSender, Subject> {
     @Override
-    public Class<CommandSource> getSpongeClass() {
-        return CommandSource.class;
+    public Class<Subject> getSpongeClass() {
+        return Subject.class;
     }
 
     @Override
@@ -26,12 +27,16 @@ public class CommandSourceConverter implements Converter<CommandSender, CommandS
     }
 
     @Override
-    public CommandSource from(CommandSender sender) throws IOException{
+    public Subject from(CommandSender sender) throws IOException{
         if(sender instanceof BongePlayer){
-            return ((BongePlayer)sender).getSpongeValue();
+            Player player = ((BongePlayer)sender).getSpongeValue();
+            if(player instanceof ServerPlayer){
+                return (ServerPlayer)player;
+            }
+            throw new IllegalStateException("CommandSource only works on a server");
         }
         if(sender instanceof ConsoleCommandSender){
-            return Sponge.getServer().getConsole();
+            return Sponge.getSystemSubject();
         }
         if(sender instanceof RconCommandSource){
             return ((RconCommandSource)sender).getSpongeValue();
@@ -40,16 +45,16 @@ public class CommandSourceConverter implements Converter<CommandSender, CommandS
     }
 
     @Override
-    public CommandSender to(CommandSource source) throws IOException {
+    public CommandSender to(Subject source) throws IOException {
         if(source instanceof org.spongepowered.api.entity.living.player.Player){
             return BongePlayer.getPlayer((org.spongepowered.api.entity.living.player.Player)source);
         }
-        if(source instanceof org.spongepowered.api.command.source.ConsoleSource){
+        if(source instanceof SystemSubject){
             return new ConsoleSource();
         }
-        if(source instanceof RconSource){
-            return new RconCommandSource((RconSource) source);
+        if(source instanceof RconConnection){
+            return new RconCommandSource((RconConnection) source);
         }
-        throw new IOException("Unknown source of " + source.getName());
+        throw new IOException("Unknown source of " + source.getFriendlyIdentifier().orElse(source.getIdentifier()));
     }
 }

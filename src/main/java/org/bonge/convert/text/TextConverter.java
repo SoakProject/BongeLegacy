@@ -12,8 +12,6 @@ import java.net.URL;
 
 public class TextConverter implements Converter<String, Text> {
 
-    public static final TextConverter CONVERTER = new TextConverter();
-
     @Override
     public Class<Text> getSpongeClass() {
         return Text.class;
@@ -26,7 +24,7 @@ public class TextConverter implements Converter<String, Text> {
 
     @Override
     public Text from(String value){
-        Text text = TextSerializers.FORMATTING_CODE.deserialize(value);
+        Text text = TextSerializers.FORMATTING_CODE.get().deserialize(value);
         try{
             URL url = new URL(ChatColor.stripColor(value));
             return text.toBuilder().onClick(TextActions.openUrl(url)).build();
@@ -37,6 +35,6 @@ public class TextConverter implements Converter<String, Text> {
 
     @Override
     public String to(Text value) {
-        return TextSerializers.FORMATTING_CODE.serialize(value);
+        return TextSerializers.FORMATTING_CODE.get().serialize(value);
     }
 }

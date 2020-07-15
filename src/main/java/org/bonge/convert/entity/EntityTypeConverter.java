@@ -91,13 +91,9 @@ public class EntityTypeConverter implements Converter<EntityType, org.spongepowe
             case COW:
             case CHICKEN:
             case SQUID:
-            case TIPPED_ARROW:
-            case COMPLEX_PART:
             case PLAYER:
-            case WEATHER:
             case LIGHTNING:
             case FISHING_HOOK:
-            case LINGERING_POTION:
             case DOLPHIN:
             case DROWNED:
             case TROPICAL_FISH:
@@ -122,7 +118,7 @@ public class EntityTypeConverter implements Converter<EntityType, org.spongepowe
             case WOLF:
                 throw new NotImplementedException("Not got to yet");
             default:
-                throw new IllegalStateException("Unknown EntityType of " + value.name());
+                throw new IOException("Unknown EntityType of " + value.name());
         }
     }
 

@@ -2,8 +2,8 @@ package org.bonge.convert.world;
 
 import org.bonge.convert.Converter;
 import org.bukkit.World;
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.world.dimension.DimensionType;
+import org.spongepowered.api.world.dimension.DimensionTypes;
 
 import java.io.IOException;
 
@@ -21,22 +21,22 @@ public class DimensionConverter implements Converter<World.Environment, Dimensio
     @Override
     public DimensionType from(World.Environment value) throws IOException {
         if(value.equals(World.Environment.NORMAL)){
-            return DimensionTypes.OVERWORLD;
+            return DimensionTypes.OVERWORLD.get();
         }else if(value.equals(World.Environment.NETHER)){
-            return DimensionTypes.NETHER;
+            return DimensionTypes.THE_NETHER.get();
         }else if(value.equals(World.Environment.THE_END)){
-            return DimensionTypes.THE_END;
+            return DimensionTypes.THE_END.get();
         }
         throw new IOException("Unknown dimension");
     }
 
     @Override
     public World.Environment to(DimensionType value) throws IOException{
-        if(value.equals(DimensionTypes.OVERWORLD)){
+        if(value.equals(DimensionTypes.OVERWORLD.get())){
             return World.Environment.NORMAL;
-        }else if(value.equals(DimensionTypes.NETHER)){
+        }else if(value.equals(DimensionTypes.THE_NETHER.get())){
             return World.Environment.NETHER;
-        }else if(value.equals(DimensionTypes.THE_END)){
+        }else if(value.equals(DimensionTypes.THE_END.get())){
             return World.Environment.THE_END;
         }
         throw new IOException("Unknown dimension");

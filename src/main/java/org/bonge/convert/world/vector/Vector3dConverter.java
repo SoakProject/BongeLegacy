@@ -1,8 +1,8 @@
 package org.bonge.convert.world.vector;
 
-import com.flowpowered.math.vector.Vector3d;
 import org.bonge.convert.Converter;
 import org.bukkit.util.Vector;
+import org.spongepowered.math.vector.Vector3d;
 
 public class Vector3dConverter implements Converter<Vector, Vector3d> {
     @Override

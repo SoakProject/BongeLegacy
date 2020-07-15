@@ -1,6 +1,7 @@
 package org.bonge.convert.world;
 
 import org.bonge.convert.Converter;
+import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.block.BlockFace;
 import org.spongepowered.api.util.Direction;
 
@@ -18,7 +19,7 @@ public class DirectionConverter implements Converter<BlockFace, Direction> {
     }
 
     @Override
-    public Direction from(BlockFace direction) throws IOException {
+    public Direction from(BlockFace direction) {
         switch (direction){
             case NORTH: return Direction.NORTH;
             case NORTH_NORTH_EAST: return Direction.NORTH_NORTHEAST;
@@ -39,12 +40,12 @@ public class DirectionConverter implements Converter<BlockFace, Direction> {
             case UP: return Direction.UP;
             case DOWN: return Direction.DOWN;
             case SELF: return Direction.NONE;
-            default: throw new IOException("Unknown direction of " + direction.name());
+            default: throw new NotImplementedException("Unknown direction of " + direction.name());
         }
     }
 
     @Override
-    public BlockFace to(Direction direction) throws IOException{
+    public BlockFace to(Direction direction) {
         switch (direction){
             case NORTH: return BlockFace.NORTH;
             case NORTH_NORTHEAST: return BlockFace.NORTH_NORTH_EAST;
@@ -65,7 +66,7 @@ public class DirectionConverter implements Converter<BlockFace, Direction> {
             case UP: return BlockFace.UP;
             case DOWN: return BlockFace.DOWN;
             case NONE: return BlockFace.SELF;
-            default: throw new IOException("Unknown direction of " + direction.name());
+            default: throw new NotImplementedException("Unknown direction of " + direction.name());
         }
     }
 }

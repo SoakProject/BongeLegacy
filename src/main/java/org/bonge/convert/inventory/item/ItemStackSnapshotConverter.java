@@ -1,7 +1,7 @@
 package org.bonge.convert.inventory.item;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_13.entity.living.human.BongeOfflinePlayer;
+import org.bonge.bukkit.r1_14.entity.living.human.BongeOfflinePlayer;
 import org.bonge.convert.Converter;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
@@ -11,15 +11,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.type.SkullTypes;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.enchantment.Enchantment;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.service.user.UserStorageService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +32,7 @@ public class ItemStackSnapshotConverter implements Converter<ItemStack, ItemStac
     }
 
     @Override
-    public ItemStackSnapshot from(ItemStack stack) throws IOException{
+    public ItemStackSnapshot from(ItemStack stack) throws IOException {
         ItemType type = Bonge.getInstance().convert(stack.getType(), ItemType.class);
         org.spongepowered.api.item.inventory.ItemStack.Builder item = org.spongepowered.api.item.inventory.ItemStack.builder()
                 .itemType(type)

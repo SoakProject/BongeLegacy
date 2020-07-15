@@ -1,12 +1,8 @@
 package org.bonge.bukkitloader;
 
-import org.bonge.bukkit.r1_13.server.plugin.loader.BongeURLClassLoader;
-
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;

@@ -2,8 +2,8 @@ package org.bonge.convert.world;
 
 import org.bonge.convert.Converter;
 import org.bukkit.WorldType;
-import org.spongepowered.api.world.GeneratorType;
-import org.spongepowered.api.world.GeneratorTypes;
+import org.spongepowered.api.world.gen.GeneratorType;
+import org.spongepowered.api.world.gen.GeneratorTypes;
 
 import java.io.IOException;
 
@@ -21,11 +21,11 @@ public class GeneratorTypeConverter implements Converter<WorldType, GeneratorTyp
     @Override
     public GeneratorType from(WorldType value) throws IOException {
         switch (value){
-            case NORMAL: return GeneratorTypes.DEFAULT;
-            case FLAT: return GeneratorTypes.FLAT;
+            case NORMAL: return GeneratorTypes.DEFAULT.get();
+            case FLAT: return GeneratorTypes.FLAT.get();
             case VERSION_1_1: break;
-            case LARGE_BIOMES: return GeneratorTypes.LARGE_BIOMES;
-            case AMPLIFIED: return GeneratorTypes.AMPLIFIED;
+            case LARGE_BIOMES: return GeneratorTypes.LARGE_BIOMES.get();
+            case AMPLIFIED: return GeneratorTypes.AMPLIFIED.get();
             case CUSTOMIZED: break;
             case BUFFET: break;
             default: throw new IOException("Unknown Generator Type");

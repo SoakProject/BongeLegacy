@@ -24,7 +24,13 @@
 
     <repositories>
         <repository>
-            <id>Sponge</id>
+            <id>new-sponge-repo</id>
+            <name>New Sponge Maven Repository</name>
+            <url>https://repo-new.spongepowered.org/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>sponge-repo</id>
+            <name>Sponge Maven Repository</name>
             <url>https://repo.spongepowered.org/maven</url>
         </repository>
     </repositories>
@@ -33,7 +39,7 @@
         <dependency>
             <groupId>org.bonge</groupId>
             <artifactId>ModifiedBukkitAPI</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -43,8 +49,13 @@
         </dependency>
         <dependency>
             <groupId>org.spongepowered</groupId>
+            <artifactId>math</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.2.0</version>
+            <version>8.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

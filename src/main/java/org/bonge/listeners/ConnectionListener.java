@@ -1,14 +1,14 @@
 package org.bonge.listeners;
 
-import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.convert.text.TextConverter;
+import org.bonge.Bonge;
+import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.living.humanoid.player.KickPlayerEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.event.entity.living.player.KickPlayerEvent;
+import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.event.server.ClientPingServerEvent;
 
 import java.net.InetAddress;
@@ -26,9 +26,9 @@ public class ConnectionListener {
             max = opPlayers.get().getMax();
             players = opPlayers.get().getOnline();
         }
-        ServerListPingEvent bEvent = new ServerListPingEvent(event.getClient().getAddress().getAddress(), TextConverter.CONVERTER.to(event.getResponse().getDescription()), players, max);
+        ServerListPingEvent bEvent = new ServerListPingEvent(event.getClient().getAddress().getAddress(), Bonge.getInstance().convert(event.getResponse().getDescription()), players, max);
         Bukkit.getPluginManager().callEvent(bEvent);
-        event.getResponse().setDescription(TextConverter.CONVERTER.from(bEvent.getMotd()));
+        event.getResponse().setDescription(Bonge.getInstance().convertText(bEvent.getMotd()));
         if(opPlayers.isPresent()){
             opPlayers.get().setMax(bEvent.getMaxPlayers());
             opPlayers.get().setOnline(bEvent.getNumPlayers());
@@ -36,10 +36,10 @@ public class ConnectionListener {
     }
 
     @org.spongepowered.api.event.Listener
-    public void onPlayerLogin(ClientConnectionEvent.Join event){
-        Player player = BongePlayer.getPlayer(event.getTargetEntity());
-        String hostName = event.getTargetEntity().getConnection().getVirtualHost().getHostName();
-        InetAddress address = event.getTargetEntity().getConnection().getAddress().getAddress();
+    public void onPlayerLogin(ServerSideConnectionEvent.Join event){
+        Player player = BongePlayer.getPlayer(event.getPlayer());
+        String hostName = event.getPlayer().getConnection().getVirtualHost().getHostName();
+        InetAddress address = event.getPlayer().getConnection().getAddress().getAddress();
         PlayerLoginEvent event1 = new PlayerLoginEvent(player, hostName, address);
         Bukkit.getServer().getPluginManager().callEvent(event1);
         switch (event1.getResult()){
@@ -52,35 +52,35 @@ public class ConnectionListener {
                 player.kickPlayer(event1.getKickMessage());
                 return;
         }
-        PlayerJoinEvent event2 = new PlayerJoinEvent(player, TextConverter.CONVERTER.to(event.getMessage()));
+        PlayerJoinEvent event2 = new PlayerJoinEvent(player, Bonge.getInstance().convert(event.getMessage()));
         Bukkit.getServer().getPluginManager().callEvent(event2);
-        event.setMessage(TextConverter.CONVERTER.from(event2.getJoinMessage()));
+        event.setMessage(Bonge.getInstance().convertText(event2.getJoinMessage()));
     }
 
     @Listener
     public void onPlayerKick(KickPlayerEvent event){
-        BongePlayer player = BongePlayer.getPlayer(event.getTargetEntity());
-        PlayerKickEvent quitEvent = new PlayerKickEvent(player, "Unknown", TextConverter.CONVERTER.to(event.getMessage()));
+        BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
+        PlayerKickEvent quitEvent = new PlayerKickEvent(player, "Unknown", Bonge.getInstance().convert(event.getMessage()));
         if(quitEvent.isCancelled()) {
             event.setMessageCancelled(true);
         }else {
-            event.setMessage(TextConverter.CONVERTER.from(quitEvent.getLeaveMessage()));
+            event.setMessage(Bonge.getInstance().convertText(quitEvent.getLeaveMessage()));
         }
     }
 
     @Listener
-    public void onPlayerLeave(ClientConnectionEvent.Disconnect event){
-        BongePlayer player = BongePlayer.getPlayer(event.getTargetEntity());
-        PlayerQuitEvent quitEvent = new PlayerQuitEvent(player, TextConverter.CONVERTER.to(event.getMessage()));
+    public void onPlayerLeave(ServerSideConnectionEvent.Disconnect event){
+        BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
+        PlayerQuitEvent quitEvent = new PlayerQuitEvent(player, Bonge.getInstance().convert(event.getMessage()));
         if(quitEvent.getQuitMessage() == null) {
             event.setMessageCancelled(true);
         }else {
-            event.setMessage(TextConverter.CONVERTER.from(quitEvent.getQuitMessage()));
+            event.setMessage(Bonge.getInstance().convertText(quitEvent.getQuitMessage()));
         }
     }
 
     @org.spongepowered.api.event.Listener
-    public void onPlayerConnectionPre(ClientConnectionEvent.Auth event){
+    public void onPlayerConnectionPre(ServerSideConnectionEvent.Auth event){
         String playerName = event.getProfile().getName().get();
         InetAddress address = event.getConnection().getAddress().getAddress();
         UUID uuid = event.getProfile().getUniqueId();
@@ -97,6 +97,6 @@ public class ConnectionListener {
                 break;
         }
         String message = asyncBEvent.getKickMessage();
-        event.setMessage(TextConverter.CONVERTER.from(message));
+        event.setMessage(Bonge.getInstance().convertText(message));
     }
 }

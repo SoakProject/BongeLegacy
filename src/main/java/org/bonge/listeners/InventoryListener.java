@@ -1,13 +1,13 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_13.block.state.BongeBlockState;
-import org.bonge.bukkit.r1_13.entity.BongeAbstractEntity;
-import org.bonge.bukkit.r1_13.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_13.inventory.inventory.BongeAbstractInventory;
-import org.bonge.bukkit.r1_13.inventory.inventory.BongeInventoryView;
-import org.bonge.convert.InventoryConvert;
+import org.bonge.bukkit.r1_14.block.state.BongeBlockState;
+import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_14.inventory.BongeInventory;
+import org.bonge.bukkit.r1_14.inventory.BongeInventoryView;
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Item;
 import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.inventory.ClickType;
@@ -17,18 +17,18 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.block.BlockSnapshot;
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.tileentity.carrier.TileEntityCarrier;
+import org.spongepowered.api.block.entity.BlockEntity;
+import org.spongepowered.api.block.entity.carrier.CarrierBlockEntity;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
-import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent;
+import org.spongepowered.api.event.item.inventory.container.InteractContainerEvent;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 import java.io.IOException;
@@ -61,62 +61,69 @@ public class InventoryListener {
     }
 
     @org.spongepowered.api.event.Listener
-    public void onInventoryOpen(InteractInventoryEvent.Open event, @First Player player){
+    public void onInventoryOpen(InteractContainerEvent.Open event, @First Player player){
         Optional<BlockSnapshot> opBlock = event.getCause().getContext().get(EventContextKeys.BLOCK_HIT);
-        BongeInventoryView biv = null;
         if(!opBlock.isPresent()){
             return;
         }
-        if(!opBlock.get().getLocation().get().getTileEntity().isPresent()){
+        if(!opBlock.get().getLocation().get().hasBlockEntity()){
             return;
         }
-        TileEntity tileEntity = opBlock.get().getLocation().get().getTileEntity().get();
-        if(!(tileEntity instanceof TileEntityCarrier)){
+        BlockEntity blockEntity = opBlock.get().getLocation().get().getBlockEntity().get();
+        if(!(blockEntity instanceof CarrierBlockEntity)){
             return;
         }
-        TileEntityCarrier tec = (TileEntityCarrier) tileEntity;
-        Optional<BongeBlockState<TileEntityCarrier>> opTile = BongeBlockState.of(tec);
-        if(!opTile.isPresent()){
+        CarrierBlockEntity cbe = (CarrierBlockEntity) blockEntity;
+        BlockState bs;
+        try {
+            bs = Bonge.getInstance().convert(BlockState.class, cbe);
+        } catch (IOException e) {
             return;
         }
-        biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory(opTile.get()));
-        /*if(opBlock.isPresent() && opBlock.get().getLocation().get().getTileEntity().isPresent()){
-            biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory((InventoryHolder) BongeBlockState.of(opBlock.get().getLocation().get().getTileEntity().get()).orElse(null), event.getTargetInventory()));
-        }else {
-            biv = new BongeInventoryView(BongePlayer.getPlayer(player), InventoryConvert.getInventory(event.getTargetInventory()));
-        }*/
+        Container container = (Container)bs;
+        BongeInventory<? extends Inventory> inv = (BongeInventory<? extends Inventory>) container.getInventory();
+        BongePlayer bPlayer = BongePlayer.getPlayer(player);
+        BongeInventoryView biv = new BongeInventoryView(bPlayer, inv, event.getContainer());
+        bPlayer.setInventoryView(biv);
         InventoryOpenEvent bEvent = new InventoryOpenEvent(biv);
         Bukkit.getPluginManager().callEvent(bEvent);
         event.setCancelled(bEvent.isCancelled());
     }
 
     @org.spongepowered.api.event.Listener
-    public void onPlayerClick(ClickInventoryEvent.Primary event, @First Player sPlayer){
+    public void onPlayerClick(ClickContainerEvent.Primary event, @First Player sPlayer){
         BongePlayer player = BongePlayer.getPlayer(sPlayer);
         BongeInventoryView view = player.getOpenInventory();
-        if(view == null){
-            view = new BongeInventoryView(player, InventoryConvert.getInventory(event.getTargetInventory()));
-        }else if(!((BongeAbstractInventory)view.getTopInventory()).getSpongeInventoryValue().equals(event.getTargetInventory())){
-            view = new BongeInventoryView(player, InventoryConvert.getInventory(event.getTargetInventory()));
+        BongeInventory<org.spongepowered.api.item.inventory.Container> bInv;
+        try {
+            bInv = Bonge.getInstance().convert(event.getInventory());
+        } catch (IOException e) {
+            //NOT SURE HOW IT FAILS BUT JUST IN CASE
+            throw new IllegalStateException(e);
         }
-        if(!event.getCursorTransaction().getFinal().equals(ItemStackSnapshot.NONE)){
+        if(view == null){
+            //WELP ... SOMETHING WENT WRONG
+            view = new BongeInventoryView(player, bInv, event.getContainer());
+            player.setInventoryView(view);
+        }
+        if(!event.getCursorTransaction().getFinal().equals(ItemStackSnapshot.empty())){
             try {
                 ItemStack stack = Bonge.getInstance().convert(ItemStack.class, event.getCursorTransaction().getFinal());
-                view.setCursorO(stack);
+                view.setCursor0(stack);
             } catch (IOException e) {
 
             }
         }
-        view.setEventReference(event);
+        //view.setEventReference(event);
         for (int A = 0; A < event.getTransactions().size(); A++){
             SlotTransaction transaction = event.getTransactions().get(A);
             InventoryAction action = null;
             Transaction<ItemStackSnapshot> cursorTrans = event.getCursorTransaction();
-            if(cursorTrans.getOriginal().equals(ItemStackSnapshot.NONE) && !cursorTrans.getFinal().equals(ItemStackSnapshot.NONE)){
+            if(cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && !cursorTrans.getFinal().equals(ItemStackSnapshot.empty())){
                 action = InventoryAction.PICKUP_ALL;
-            }else if(!cursorTrans.getOriginal().equals(ItemStackSnapshot.NONE) && cursorTrans.getFinal().equals(ItemStackSnapshot.NONE)) {
+            }else if(!cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && cursorTrans.getFinal().equals(ItemStackSnapshot.empty())) {
                 action = InventoryAction.PLACE_ALL;
-            }else if(cursorTrans.getOriginal().equals(ItemStackSnapshot.NONE) && cursorTrans.getFinal().equals(ItemStackSnapshot.NONE)) {
+            }else if(cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && cursorTrans.getFinal().equals(ItemStackSnapshot.empty())) {
                 action = InventoryAction.UNKNOWN;
             }else{
                 System.err.println("Could not work out InventoryAction:");
@@ -124,7 +131,8 @@ public class InventoryListener {
                 System.err.println("Final: " + cursorTrans.getFinal());
                 action = InventoryAction.UNKNOWN;
             }
-            InventoryClickEvent bEvent = new InventoryClickEvent(view, InventoryConvert.getSlotType(transaction.getSlot()), transaction.getSlot().getInventoryProperty(SlotIndex.class).get().getValue(), ClickType.RIGHT, action);
+            //TODO - Find how to get SlotIndex from Slot
+            /*InventoryClickEvent bEvent = new InventoryClickEvent(view, InventoryConvert.getSlotType(transaction.getSlot()), transaction.getSlot().getProperty(SlotIndex.class).get().getValue(), ClickType.RIGHT, action);
             Bukkit.getPluginManager().callEvent(bEvent);
             if(bEvent.isCancelled()){
                 if(action.equals(InventoryAction.PICKUP_ALL)){
@@ -132,7 +140,10 @@ public class InventoryListener {
                     cursorTrans.setCustom(cursorTrans.getOriginal());
                 }
                continue;
-            }
+            }*/
+
+
+
             /*if(action.equals(InventoryAction.PLACE_ALL)) {
                 try {
                     org.spongepowered.api.item.inventory.ItemStack item = Bonge.getInstance().convert(bEvent.getCurrentItem(), org.spongepowered.api.item.inventory.ItemStack.class);
@@ -142,6 +153,6 @@ public class InventoryListener {
                 }
             }*/
         }
-        view.setEventReference(null);
+        //view.setEventReference(null);
     }
 }

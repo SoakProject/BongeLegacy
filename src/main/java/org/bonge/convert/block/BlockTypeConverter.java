@@ -1,7 +1,7 @@
 package org.bonge.convert.block;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_13.material.BongeMaterial;
+import org.bonge.bukkit.r1_14.material.BongeMaterial;
 import org.bonge.convert.Converter;
 import org.bukkit.Material;
 import org.spongepowered.api.block.BlockType;
@@ -43,6 +43,6 @@ public class BlockTypeConverter implements Converter<Material, BlockType> {
         if(opType.isPresent()){
             return opType.get();
         }
-        throw new IOException("Unknown material converter for " + value.getId());
+        throw new IOException("Unknown material converter for " + value.getKey().getFormatted());
     }
 }
