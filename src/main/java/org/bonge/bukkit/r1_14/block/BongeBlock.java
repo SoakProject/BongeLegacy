@@ -29,9 +29,11 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.state.StateProperty;
 import org.spongepowered.api.util.Direction;
-import org.spongepowered.api.world.*;
+import org.spongepowered.api.world.BlockChangeFlags;
+import org.spongepowered.api.world.LightTypes;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
 
@@ -186,7 +188,12 @@ public class BongeBlock extends BongeWrapper<Location<? extends World>> implemen
         if(!opTile.isPresent()){
             return new BongeBasicBlockState(this);
         }
-        Optional<BongeBlockState<BlockEntity>> opState = BongeBlockState.of(opTile.get());
+        Optional<BongeBlockState<BlockEntity>> opState = null;
+        try {
+            opState = BongeBlockState.of(opTile.get());
+        } catch (IOException e) {
+            new IllegalStateException("Found the conversion, however could not supply a Snapshot version of the Inventory", e);
+        }
         if(opState.isPresent()){
             return opState.get();
         }

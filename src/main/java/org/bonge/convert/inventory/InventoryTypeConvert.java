@@ -2,7 +2,6 @@ package org.bonge.convert.inventory;
 
 import org.bonge.convert.Converter;
 import org.bonge.util.exception.NotImplementedException;
-import org.bukkit.block.Container;
 import org.bukkit.event.inventory.InventoryType;
 import org.spongepowered.api.item.inventory.ContainerType;
 import org.spongepowered.api.item.inventory.ContainerTypes;

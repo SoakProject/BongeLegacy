@@ -6,7 +6,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.metadata.MetadataValue;
 import org.spongepowered.api.item.inventory.Inventory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class EntityManager {
 

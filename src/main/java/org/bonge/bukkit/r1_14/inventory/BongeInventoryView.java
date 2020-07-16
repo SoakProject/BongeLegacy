@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.inventory.Container;
-import org.spongepowered.api.item.inventory.type.ViewableInventory;
 
 import java.util.Optional;
 

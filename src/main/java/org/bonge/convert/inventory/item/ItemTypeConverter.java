@@ -1,7 +1,6 @@
 package org.bonge.convert.inventory.item;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.material.BongeMaterial;
 import org.bonge.convert.Converter;
 import org.bukkit.Material;
 import org.spongepowered.api.item.ItemType;
@@ -22,27 +21,15 @@ public class ItemTypeConverter implements Converter<Material, ItemType> {
 
     @Override
     public ItemType from(Material value) throws IOException {
-        Optional<Material> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> (t instanceof BongeMaterial))
-                .filter(Material::isItem)
-                .filter(t -> ((BongeMaterial)t).toItem().get().equals(value))
-                .findAny();
-        if(opType.isPresent()){
-            return ((BongeMaterial)opType.get()).toItem().get().getSpongeItemType();
-        }
-        throw new IOException("Unknown material converter for " + value.name());
-    }
-
-    @Override
-    public Material to(ItemType value) throws IOException{
-        Optional<Material> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> (t instanceof BongeMaterial))
-                .filter(Material::isItem)
-                .filter(t -> ((BongeMaterial) t).toItem().get().getSpongeItemType().equals(value))
-                .findAny();
+        Optional<ItemType> opType = Bonge.getInstance().convertItem(value);
         if(opType.isPresent()){
             return opType.get();
         }
-        throw new IOException("Unknown material converter for " + value.getId());
+        throw new IOException("Material is not a ItemType");
+    }
+
+    @Override
+    public Material to(ItemType value){
+        return (Material)Bonge.getInstance().convert(value);
     }
 }

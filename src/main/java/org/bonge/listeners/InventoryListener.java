@@ -1,7 +1,6 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.block.state.BongeBlockState;
 import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_14.inventory.BongeInventory;
 import org.bonge.bukkit.r1_14.inventory.BongeInventoryView;
@@ -10,9 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Item;
 import org.bukkit.event.entity.EntityDropItemEvent;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;

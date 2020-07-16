@@ -5,8 +5,6 @@ import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.block.BlockFace;
 import org.spongepowered.api.util.Direction;
 
-import java.io.IOException;
-
 public class DirectionConverter implements Converter<BlockFace, Direction> {
     @Override
     public Class<Direction> getSpongeClass() {

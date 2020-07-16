@@ -3,7 +3,6 @@ package org.bonge.bukkit.r1_14.entity.other.arrow;
 import org.bukkit.Color;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.TippedArrow;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;

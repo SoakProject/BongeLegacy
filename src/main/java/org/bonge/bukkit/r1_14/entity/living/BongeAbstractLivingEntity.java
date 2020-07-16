@@ -1,11 +1,8 @@
 package org.bonge.bukkit.r1_14.entity.living;
 
-import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.block.BongeBlock;
 import org.bonge.bukkit.r1_14.entity.BongeAbstractEntity;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -23,10 +20,10 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
-import org.spongepowered.api.world.World;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.entity.living.Living> extends BongeAbstractEntity<T> implements LivingEntity {
 

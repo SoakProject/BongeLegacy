@@ -1,6 +1,5 @@
 package org.bonge.patcher;
 
-import org.bonge.Bonge;
 import org.bukkit.util.Consumer;
 
 import javax.swing.*;

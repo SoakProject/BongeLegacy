@@ -4,8 +4,6 @@ import org.bonge.convert.Converter;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
-import java.io.IOException;
-
 public class GameModeConverter implements Converter<org.bukkit.GameMode, GameMode> {
     @Override
     public Class<GameMode> getSpongeClass() {
@@ -20,22 +18,22 @@ public class GameModeConverter implements Converter<org.bukkit.GameMode, GameMod
     @Override
     public GameMode from(org.bukkit.GameMode mode) {
         switch (mode){
-            case ADVENTURE: return GameModes.ADVENTURE;
-            case CREATIVE: return GameModes.CREATIVE;
-            case SPECTATOR: return GameModes.SPECTATOR;
-            default: return GameModes.SURVIVAL;
+            case ADVENTURE: return GameModes.ADVENTURE.get();
+            case CREATIVE: return GameModes.CREATIVE.get();
+            case SPECTATOR: return GameModes.SPECTATOR.get();
+            default: return GameModes.SURVIVAL.get();
         }
     }
 
     @Override
     public org.bukkit.GameMode to(GameMode gamemode){
-        if (gamemode == GameModes.ADVENTURE){
+        if (gamemode == GameModes.ADVENTURE.get()){
             return org.bukkit.GameMode.ADVENTURE;
         }
-        if (gamemode == GameModes.CREATIVE){
+        if (gamemode == GameModes.CREATIVE.get()){
             return org.bukkit.GameMode.CREATIVE;
         }
-        if (gamemode == GameModes.SPECTATOR){
+        if (gamemode == GameModes.SPECTATOR.get()){
             return org.bukkit.GameMode.SPECTATOR;
         }
         return org.bukkit.GameMode.SURVIVAL;

@@ -21,7 +21,7 @@ public class WrappedArrayList<T> extends ArrayList<T> {
                 T fin = to.apply(orig);
                 if (fin == null) {
                     if (orig instanceof CatalogType) {
-                        System.err.println("Could not convert " + ((CatalogType) orig).getId());
+                        System.err.println("Could not convert " + ((CatalogType) orig).getKey().getValue());
                     } else {
                         System.err.println("Could not convert " + orig.toString());
                     }

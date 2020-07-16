@@ -1,9 +1,9 @@
 package org.bonge.convert.inventory.item;
 
-import org.bonge.Bonge;
+import org.bonge.bukkit.r1_14.inventory.item.holder.ItemHolder;
+import org.bonge.bukkit.r1_14.inventory.item.holder.ItemStackHolder;
 import org.bonge.convert.Converter;
 import org.bukkit.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.IOException;
 
@@ -20,11 +20,15 @@ public class ItemStackConverter implements Converter<ItemStack, org.spongepowere
 
     @Override
     public org.spongepowered.api.item.inventory.ItemStack from(ItemStack value) throws IOException{
-        return Bonge.getInstance().convert(value, ItemStackSnapshot.class).createStack();
+        ItemHolder holder = value.getItemMeta().getHolder();
+        if(holder instanceof ItemStackHolder){
+            return ((ItemStackHolder)holder).getSpongeValue();
+        }
+        throw new IOException("ItemStack's holder is not a Sponge itemstack");
     }
 
     @Override
-    public ItemStack to(org.spongepowered.api.item.inventory.ItemStack value) throws IOException{
-        return Bonge.getInstance().convert(ItemStack.class, value.createSnapshot());
+    public ItemStack to(org.spongepowered.api.item.inventory.ItemStack value){
+        return new ItemStack(value);
     }
 }

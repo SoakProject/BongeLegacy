@@ -11,6 +11,7 @@ import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.world.BlockChangeFlags;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class BongeChestBlockState extends BongeContainerBlockState<org.spongepowered.api.block.entity.carrier.chest.Chest> implements Chest {
@@ -19,7 +20,7 @@ public class BongeChestBlockState extends BongeContainerBlockState<org.spongepow
     public static final String LOOT_TABLE = "LOOT_TABLE";
     public static final String SPEED = "SEED";
 
-    public BongeChestBlockState(org.spongepowered.api.block.entity.carrier.chest.Chest value) {
+    public BongeChestBlockState(org.spongepowered.api.block.entity.carrier.chest.Chest value) throws IOException {
         super(value);
     }
 

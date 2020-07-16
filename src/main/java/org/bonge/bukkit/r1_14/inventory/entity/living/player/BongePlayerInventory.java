@@ -8,19 +8,13 @@ import org.bonge.bukkit.r1_14.inventory.item.holder.ItemHolder;
 import org.bonge.bukkit.r1_14.inventory.item.holder.ItemStackHolder;
 import org.bonge.bukkit.r1_14.inventory.item.holder.ItemStackSnapshotHolder;
 import org.bonge.util.exception.NotImplementedException;
-import org.bukkit.Location;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.equipment.EquipmentType;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 

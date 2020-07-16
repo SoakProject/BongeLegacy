@@ -1,7 +1,6 @@
 package org.bonge.bukkit.r1_14.scoreboard;
 
 import org.bonge.Bonge;
-import org.bonge.convert.text.TextConverter;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.*;

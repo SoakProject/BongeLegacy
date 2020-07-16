@@ -200,7 +200,7 @@ public abstract class BongeBlockState<T extends BlockEntity> extends BongeWrappe
         return update(force, true);
     }
 
-    public static <T extends BlockEntity> Optional<BongeBlockState<T>> of(T tile){
+    public static <T extends BlockEntity> Optional<BongeBlockState<T>> of(T tile) throws IOException {
         if(tile instanceof Sign){
             return Optional.of((BongeBlockState<T>) new BongeSignBlockState((Sign)tile));
         }

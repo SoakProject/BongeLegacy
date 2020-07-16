@@ -45,8 +45,7 @@ public class ItemMaterial extends Material implements BongeMaterial.Item {
     }
 
     @Override
-    @NotNull
-    public NamespacedKey getKey() {
+    public @NotNull NamespacedKey getKey() {
         return NamespacedKey.minecraft(this.spongeValue.getKey().getValue().substring(10));
     }
 

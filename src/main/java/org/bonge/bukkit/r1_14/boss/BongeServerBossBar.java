@@ -2,7 +2,6 @@ package org.bonge.bukkit.r1_14.boss;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
-import org.bonge.convert.text.TextConverter;
 import org.bonge.util.ArrayUtils;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.boss.BarColor;

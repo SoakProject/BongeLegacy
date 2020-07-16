@@ -6,7 +6,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
