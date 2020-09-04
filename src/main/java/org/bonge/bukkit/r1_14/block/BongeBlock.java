@@ -38,6 +38,7 @@ import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,11 @@ public class BongeBlock extends BongeWrapper<Location<? extends World>> implemen
     @NotNull
     @Override
     public BlockData getBlockData() {
-        return BongeAbstractBlockData.of(this.spongeValue.getBlock());
+        try {
+            return BongeAbstractBlockData.findDynamicClass(this.spongeValue.getBlock());
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("This should not happen. Is a mod/plugin failing to interact with Bonge correctly? If not report to Bonge", e);
+        }
     }
 
     @NotNull
@@ -184,7 +189,7 @@ public class BongeBlock extends BongeWrapper<Location<? extends World>> implemen
     @NotNull
     @Override
     public BlockState getState() {
-        Optional<BlockEntity> opTile = this.spongeValue.getBlockEntity();
+        Optional<? extends BlockEntity> opTile = this.spongeValue.getBlockEntity();
         if(!opTile.isPresent()){
             return new BongeBasicBlockState(this);
         }

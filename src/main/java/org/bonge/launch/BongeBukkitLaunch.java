@@ -2,7 +2,6 @@ package org.bonge.launch;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.data.BongeAbstractBlockData;
-import org.bonge.bukkit.r1_14.block.data.blocks.directional.sign.BongeWallSign;
 import org.bonge.bukkit.r1_14.material.BongeMaterial;
 import org.bonge.bukkit.r1_14.server.BongeServer;
 import org.bonge.bukkit.r1_14.server.plugin.BongePluginManager;
@@ -48,7 +47,7 @@ public class BongeBukkitLaunch {
         BongeServer server = new BongeServer(Sponge.getServer());
         Bukkit.setServer(server);
         Bukkit.getPluginManager().loadPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
-        Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), BongeControlCommand.createCommand(), "control", "bongecontrol");
+        //Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), BongeControlCommand.createCommand(), "control", "bongecontrol");
         Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new BlockListener());
         Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new ConnectionListener());
         Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new InventoryListener());
@@ -57,7 +56,6 @@ public class BongeBukkitLaunch {
     }
 
     private static void registerBlockData(){
-        BongeAbstractBlockData.register(new BongeWallSign(BlockTypes.OAK_WALL_SIGN.get().getDefaultState()));
     }
 
     static void registerMaterials(){

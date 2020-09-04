@@ -7,5 +7,6 @@ public interface IBongeBlockData extends BlockData {
 
     BongeAbstractBlockData newInstance(BlockState state);
     BlockState getSpongeValue();
+    IBongeBlockData setSpongeValue(BlockState state);
 
 }

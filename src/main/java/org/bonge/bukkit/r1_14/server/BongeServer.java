@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_14.server;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.BongeTag;
 import org.bonge.bukkit.r1_14.block.data.BongeAbstractBlockData;
@@ -20,7 +21,6 @@ import org.bonge.bukkit.r1_14.toremove.BongeUnsafeValues;
 import org.bonge.bukkit.r1_14.world.BongeWorld;
 import org.bonge.command.Permissions;
 import org.bonge.launch.BongeLaunch;
-import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
@@ -47,9 +47,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.boss.BossBarColor;
-import org.spongepowered.api.boss.BossBarOverlay;
-import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
@@ -57,9 +54,11 @@ import org.spongepowered.api.world.server.ServerWorld;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> implements Server {
 
@@ -71,7 +70,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     private final BongeHelpMap helpMap;
 
     private final Set<BongeTag<? extends Keyed>> tags = new HashSet<>(Arrays.asList(
-            new BongeTag<>(NamespacedKey.minecraft("wool"), Tag.REGISTRY_BLOCKS),
+            new BongeTag<>(NamespacedKey.minecraft("wool"), Tag.REGISTRY_BLOCKS, Material.BLACK_WOOL, Material.BLUE_WOOL),
             new BongeTag<>(NamespacedKey.minecraft("planks"), Tag.REGISTRY_BLOCKS),
             new BongeTag<>(NamespacedKey.minecraft("stone_bricks"), Tag.REGISTRY_BLOCKS),
             new BongeTag<>(NamespacedKey.minecraft("wooden_buttons"), Tag.REGISTRY_BLOCKS),
@@ -128,7 +127,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     }
 
     public ServerWorld getDefaultWorld(){
-        return Sponge.getServer().getWorldManager().getWorld(Sponge.getServer().getWorldManager().getDefaultProperties().get().getUniqueId()).get();
+        return Sponge.getServer().getWorldManager().getWorld(Sponge.getServer().getWorldManager().getDefaultProperties().get().getKey()).get();
     }
 
     @Override
@@ -181,7 +180,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull String getWorldType() {
-        return this.getDefaultWorld().getDimension().getType().getKey().getValue();
+        return this.getDefaultWorld().getDimensionType().getKey().getValue();
     }
 
     @Override
@@ -191,12 +190,12 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public boolean getAllowEnd() {
-        return Sponge.getServer().getWorldManager().getWorld("DIM-1").isPresent();
+        return Sponge.getServer().getWorldManager().getProperties(ResourceKey.builder().value("DIM-1").build()).isPresent();
     }
 
     @Override
     public boolean getAllowNether() {
-        return Sponge.getServer().getWorldManager().getWorld("DIM1").isPresent();
+        return Sponge.getServer().getWorldManager().getWorld(ResourceKey.builder().value("DIM1").build()).isPresent();
     }
 
     @Override
@@ -220,8 +219,8 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public int broadcastMessage(String s) {
-        Sponge.getServer().getBroadcastChannel().send(Bonge.getInstance().convertText(s));
-        return Sponge.getServer().getBroadcastChannel().getMembers().size();
+        Sponge.getServer().getBroadcastAudience().sendMessage(Bonge.getInstance().convertText(s));
+        return Sponge.getServer().getOnlinePlayers().size();
     }
 
     @Override
@@ -309,22 +308,17 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         return false;
     }
 
+    //this has become 10X harder
     @Override
     public World getWorld(@NotNull String s) {
-        ServerWorld world = this.getSpongeValue().getWorldManager().getWorld(s).orElse(null);
-        if(world == null){
-            return null;
-        }
-        return new BongeWorld(world);
+        Optional<ServerWorld> opWorld = this.getSpongeValue().getWorldManager().getWorlds().stream().filter(w -> w.getKey().getValue().equalsIgnoreCase(s)).findAny();
+        return opWorld.map(BongeWorld::new).orElse(null);
     }
 
     @Override
     public World getWorld(@NotNull UUID uuid) {
-        ServerWorld world = this.getSpongeValue().getWorldManager().getWorld(uuid).orElse(null);
-        if(world == null){
-            return null;
-        }
-        return new BongeWorld(world);
+        Optional<ServerWorld> opWorld = this.getSpongeValue().getWorldManager().getWorlds().stream().filter(w -> w.getUniqueId().equals(uuid)).findAny();
+        return opWorld.map(BongeWorld::new).orElse(null);
     }
 
     public @Nullable  MapView getMap(int id) {
@@ -358,7 +352,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull Logger getLogger() {
-        return BongeLaunch.getLogger();
+        return BongeLaunch.getLogger(null);
     }
 
     @Override
@@ -656,23 +650,15 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull BossBar createBossBar(String s, @NotNull BarColor barColor, @NotNull BarStyle barStyle, BarFlag... barFlags) {
-        BossBarColor colour;
-        BossBarOverlay overlay;
+        net.kyori.adventure.bossbar.BossBar.Color colour;
+        net.kyori.adventure.bossbar.BossBar.Overlay overlay;
         try {
-            colour = Bonge.getInstance().convert(barColor, BossBarColor.class);
-            overlay = Bonge.getInstance().convert(barStyle, BossBarOverlay.class);
+            colour = Bonge.getInstance().convert(barColor, net.kyori.adventure.bossbar.BossBar.Color.class);
+            overlay = Bonge.getInstance().convert(barStyle, net.kyori.adventure.bossbar.BossBar.Overlay.class);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return new BongeServerBossBar(ServerBossBar
-                .builder()
-                .name(Bonge.getInstance().convertText(s))
-                .color(colour)
-                .overlay(overlay)
-                .createFog(containsFlag(BarFlag.CREATE_FOG, barFlags))
-                .darkenSky(containsFlag(BarFlag.DARKEN_SKY, barFlags))
-                .playEndBossMusic(containsFlag(BarFlag.PLAY_BOSS_MUSIC, barFlags))
-                .build());
+        return new BongeServerBossBar(net.kyori.adventure.bossbar.BossBar.of(Bonge.getInstance().convertText(s), 0, colour, overlay));
     }
 
     @Override
@@ -744,7 +730,11 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         String[] split = s.split(":");
         Optional<BlockState> opBlock = Sponge.getRegistry().getCatalogRegistry().get(BlockState.class, ResourceKey.builder().namespace(split[0]).value(split[1]).build());
         if(opBlock.isPresent()){
-            return BongeAbstractBlockData.of(opBlock.get());
+            try {
+                return BongeAbstractBlockData.findDynamicClass(opBlock.get());
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
         }
         throw new IllegalArgumentException("Unknown BlockState of " + s);
     }
@@ -756,18 +746,24 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public <T extends Keyed> Tag<T> getTag(@NotNull String s, @NotNull NamespacedKey namespacedKey, @NotNull Class<T> aClass) {
-        return new BongeTag<>(namespacedKey, s);
-        /*for (Tag<T> value : this.getTags(s, aClass)){
+        //return new BongeTag<>(namespacedKey, s);
+        for (Tag<T> value : this.getTags(s, aClass)){
             if(value.getKey().equals(namespacedKey)){
                 return value;
             }
         }
-        throw new IllegalStateException("Unknown Tag namespace of " + namespacedKey.toString() + " in extra: " + s);*/
+        throw new IllegalStateException("Unknown Tag namespace of " + namespacedKey.toString() + " in extra: " + s);
     }
 
     @Override
     public @NotNull <T extends Keyed> Iterable<Tag<T>> getTags(@NotNull String registry, @NotNull Class<T> clazz) {
-        return null;
+        return (Iterable<Tag<T>>) (Object) this.tags.stream().filter(t -> t.getExtra().equalsIgnoreCase(registry)).filter(t -> {
+            if(t.getValues().isEmpty()){
+                System.err.println(t.getKey().toString() + " (Tag) does not have any values assigned to it, ignoring");
+                return false;
+            }
+            return clazz.isInstance(t.getValues().iterator().next());
+        }).collect(Collectors.toSet());
     }
 
     @Override

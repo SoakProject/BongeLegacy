@@ -62,7 +62,7 @@ public class InventoryTypeConvert implements Converter<InventoryType, ContainerT
             case LOOM:
                 return ContainerTypes.LOOM.get();
             case CARTOGRAPHY:
-                return ContainerTypes.CARTOGRAPHY.get();
+                return ContainerTypes.CARTOGRAPHY_TABLE.get();
             case GRINDSTONE:
                 return ContainerTypes.GRINDSTONE.get();
             case STONECUTTER:

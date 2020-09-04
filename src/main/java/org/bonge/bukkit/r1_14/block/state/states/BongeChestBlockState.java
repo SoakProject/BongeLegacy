@@ -31,7 +31,7 @@ public class BongeChestBlockState extends BongeContainerBlockState<org.spongepow
 
     @Override
     public boolean update(boolean force, boolean applyPhysics) {
-        Optional<BlockEntity> opTile = this.position.getBlockEntity();
+        Optional<? extends BlockEntity> opTile = this.position.getBlockEntity();
         if (!force && !opTile.isPresent()) {
             return false;
         }else if(force){

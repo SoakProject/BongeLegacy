@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_14.server.plugin;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.command.BongeCommandManager;
 import org.bonge.bukkit.r1_14.server.BongeServer;
@@ -7,7 +8,6 @@ import org.bonge.bukkit.r1_14.server.plugin.event.EventData;
 import org.bonge.bukkit.r1_14.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_14.server.plugin.loader.IBongePluginLoader;
 import org.bonge.launch.BongeLaunch;
-import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.*;
@@ -102,28 +102,26 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             BongeCommandManager cmdManager = ((BongeServer)Bukkit.getServer()).getCommandManager();
             JavaPlugin plugin = (JavaPlugin) p.getPlugin().get();
             Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
-            if(commands != null){
-                commands.forEach((key, value) -> {
-                    PluginCommand command = new PluginCommand(key, plugin);
-                    String description = (String) value.get("description");
-                    if (description != null) {
-                        command.setDescription(description);
-                    }
-                    String usage = (String) value.get("usage");
-                    if (usage != null) {
-                        command.setUsage(usage);
-                    }
-                    List<String> aliases = (List<String>) value.get("aliases");
-                    if (aliases != null) {
-                        command.setAliases(aliases);
-                    }
-                    cmdManager.register(command);
-                });
-            }
+            commands.forEach((key, value) -> {
+                PluginCommand command = new PluginCommand(key, plugin);
+                String description = (String) value.get("description");
+                if (description != null) {
+                    command.setDescription(description);
+                }
+                String usage = (String) value.get("usage");
+                if (usage != null) {
+                    command.setUsage(usage);
+                }
+                List<String> aliases = (List<String>) value.get("aliases");
+                if (aliases != null) {
+                    command.setAliases(aliases);
+                }
+                cmdManager.register(command);
+            });
             plugin.getDescription().getPermissions().forEach(this::addPermission);
             String api = plugin.getDescription().getAPIVersion();
             if(api == null){
-                BongeLaunch.getLogger().warning("The plugin '" + plugin.getName() + "' was built for Legacy Bukkit API, this is not (and will never be) supported by Bonge. While this plugin may still work, if there is an issue caused by a legacy call then the plugin will never work.");
+                BongeLaunch.getLogger().warn("The plugin '" + plugin.getName() + "' was built for Legacy Bukkit API, this is not (and will never be) supported by Bonge. While this plugin may still work, if there is an issue caused by a legacy call then the plugin will never work.");
             }
             try {
                 plugin.onEnable();
@@ -134,7 +132,6 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
                 Bonge.createCrashFile(plugin, "OnEnable", e);
                 e.printStackTrace();
             }
-            cmdManager.registerWithSponge();
         });
     }
 
@@ -224,7 +221,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         try {
             Class.forName("org.apache.commons.lang.Validate");
         } catch (ClassNotFoundException e) {
-            BongeLaunch.getLogger().severe("Your launcher requires patching to allow Apache Commons 2.6 to run. Run Bonge as a program to launch the patcher.");
+            BongeLaunch.getLogger().error("Your launcher requires patching to allow Apache Commons 2.6 to run. Run Bonge as a program to launch the patcher.");
             return new Plugin[0];
         }
 

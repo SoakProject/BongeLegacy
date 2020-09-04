@@ -1,28 +1,33 @@
 package org.bonge;
 
 
+import net.kyori.adventure.text.Component;
+import org.bonge.bukkit.r1_14.block.data.BongeAbstractBlockData;
+import org.bonge.bukkit.r1_14.block.data.IBongeBlockData;
 import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_14.inventory.BongeInventory;
 import org.bonge.bukkit.r1_14.inventory.chest.CustomChestInventory;
 import org.bonge.bukkit.r1_14.material.BongeMaterial;
 import org.bonge.convert.Converter;
+import org.bonge.convert.block.AxisConverter;
 import org.bonge.convert.inventory.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.convert.world.DirectionConverter;
 import org.bonge.convert.world.LocationConverter;
 import org.bonge.convert.world.vector.Vector3dConverter;
 import org.bonge.convert.world.vector.Vector3iConverter;
+import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ContainerTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.type.ViewableInventory;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -35,12 +40,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Bonge {
 
-    private Set<Converter<?, ?>> converts = new HashSet<>();
-    private Set<BongeMaterial> materials = new HashSet<>();
+    private final Set<Converter<?, ?>> converts = new HashSet<>();
+    private final Set<BongeMaterial> materials = new HashSet<>();
+    private Map<Predicate<BlockState>, Class<IBongeBlockData>> blockData = new HashMap<>();
+    private Map<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>> blockCreator = new HashMap<>();
 
     private static final Bonge instance = new Bonge();
 
@@ -50,6 +59,7 @@ public class Bonge {
     public static final LocationConverter LOCATION = instance.register(new LocationConverter());
     public static final TextConverter TEXT = instance.register(new TextConverter());
     public static final InventoryConvert INVENTORY = instance.register(new InventoryConvert());
+    public static final AxisConverter AXIS = instance.register(new AxisConverter());
 
     public <B, S> Set<Converter<B, S>> getConverts(Class<B> bClass, Class<S> sClass){
         return (Set<Converter<B, S>>)(Object)this.getConverts().stream().filter(c -> c.getBukkitClass().isAssignableFrom(bClass) && c.getSpongeClass().isAssignableFrom(sClass)).collect(Collectors.toSet());
@@ -102,6 +112,14 @@ public class Bonge {
     }
 
     //START OF COMMON CONVERTS
+
+    public Axis convert(org.spongepowered.api.util.Axis axis){
+        return AXIS.to(axis);
+    }
+
+    public org.spongepowered.api.util.Axis convert(Axis axis){
+        return AXIS.from(axis);
+    }
 
     public <I extends Inventory> BongeInventory<I> convert(I inv) throws IOException{
         try {
@@ -166,11 +184,11 @@ public class Bonge {
         return Optional.empty();
     }
 
-    public String convert(Text text){
+    public String convert(Component text){
         return TEXT.to(text);
     }
 
-    public Text convertText(String text){
+    public Component convertText(String text){
         return TEXT.from(text);
     }
 
@@ -226,6 +244,14 @@ public class Bonge {
 
     public Set<BongeMaterial> getMaterials(){
         return Collections.unmodifiableSet(this.materials);
+    }
+
+    public Map<Predicate<BlockState>, Class<IBongeBlockData>> getBlockDataInterfaces(){
+        return Collections.unmodifiableMap(this.blockData);
+    }
+
+    public Map<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>> getKnownBlockDataInterfaces(){
+        return Collections.unmodifiableMap(this.blockCreator);
     }
 
     public Set<Converter<?, ?>> getConverts(){

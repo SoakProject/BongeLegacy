@@ -1,12 +1,12 @@
 package org.bonge.bukkit.r1_14.world;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.BongeBlock;
 import org.bonge.bukkit.r1_14.entity.other.arrow.BongeAbstractArrowEntity;
 import org.bonge.bukkit.r1_14.entity.other.arrow.BongeTippedArrowEntity;
 import org.bonge.bukkit.r1_14.entity.other.item.BongeItem;
 import org.bonge.bukkit.r1_14.world.chunk.BongeChunk;
-import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.*;
@@ -435,20 +435,23 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public @NotNull String getName() {
         if(this.spongeValue instanceof ServerWorld){
-            ((ServerWorld)this.spongeValue).getProperties().getDirectoryName();
+            return ((ServerWorld)this.spongeValue).getKey().getValue();
         }
         return this.spongeValue.getContext().getValue();
     }
 
     @Override
     public @NotNull UUID getUID() {
-        return this.spongeValue.getUniqueId();
+        if(this.spongeValue instanceof ServerWorld){
+            return ((ServerWorld)this.spongeValue).getUniqueId();
+        }
+        throw new IllegalStateException("World UUID is not present in client mode");
     }
 
     @Override
     public @NotNull Location getSpawnLocation() {
         if(this.spongeValue instanceof ServerWorld){
-            return Bonge.getInstance().convert(((ServerWorld) this.spongeValue).getSpawnLocation());
+            return Bonge.getInstance().convert(this.spongeValue.getLocation(((ServerWorld) this.spongeValue).getProperties().getSpawnPosition()));
         }
         throw new NotImplementedException("World.getSpawnLocation() doesn't work on client");
     }
@@ -571,7 +574,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public @NotNull Environment getEnvironment() {
         try {
-            return Bonge.getInstance().convert(Environment.class, this.spongeValue.getDimension().getType());
+            return Bonge.getInstance().convert(Environment.class, this.spongeValue.getDimensionType());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -803,7 +806,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public WorldType getWorldType(){
         try {
-            return Bonge.getInstance().convert(WorldType.class, this.spongeValue.getDimension().getType());
+            return Bonge.getInstance().convert(WorldType.class, this.spongeValue.getDimensionType());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

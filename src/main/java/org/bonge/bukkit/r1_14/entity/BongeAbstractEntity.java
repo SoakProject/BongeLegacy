@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_14.entity;
 
+import net.kyori.adventure.text.Component;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.server.BongeServer;
 import org.bonge.bukkit.r1_14.world.BongeLocation;
@@ -25,7 +26,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.value.Value;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.ServerLocation;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -41,6 +41,8 @@ public abstract class BongeAbstractEntity<T extends org.spongepowered.api.entity
     public EntityManager.KeyHashMap getData(){
         return ((BongeServer)Bukkit.getServer()).getEntityManager().getData(this);
     }
+
+
 
     @Override
     public @NotNull Location getLocation() {
@@ -167,7 +169,7 @@ public abstract class BongeAbstractEntity<T extends org.spongepowered.api.entity
 
     @Override
     public String getName() {
-        Value.Mutable<Text> name = this.getSpongeValue().displayName();
+        Value.Mutable<Component> name = this.getSpongeValue().displayName();
         return Bonge.getInstance().convert(name.get());
     }
 

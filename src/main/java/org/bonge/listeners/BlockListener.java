@@ -1,10 +1,11 @@
 package org.bonge.listeners;
 
+import net.kyori.adventure.text.Component;
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.BongeBlock;
 import org.bonge.bukkit.r1_14.block.BongeBlockSnapshot;
 import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
-import org.bonge.util.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -19,7 +20,6 @@ import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.entity.ChangeSignEvent;
 import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.util.List;
@@ -99,7 +99,7 @@ public class BlockListener {
         }
         SignChangeEvent bukkitEvent = new SignChangeEvent(block, bPlayer, lines);
         Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);
-        ListValue.Mutable<Text> data = event.getText();
+        ListValue.Mutable<Component> data = event.getText();
         for(int A = 0; A < 4; A++){
             data.set(A, Bonge.getInstance().convertText(bukkitEvent.getLine(A)));
         }

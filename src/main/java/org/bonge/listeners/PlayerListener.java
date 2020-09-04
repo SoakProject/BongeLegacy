@@ -102,11 +102,11 @@ public class PlayerListener {
         }
         BongePlayer player = BongePlayer.getPlayer((Player) event.getEntity());
         try {
-            Location from = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getFromPosition()));
-            Location to = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getToPosition()));
+            Location from = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getDestinationPosition()));
+            Location to = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getDestinationPosition()));
             PlayerMoveEvent event1 = new PlayerMoveEvent(player, from, to);
             Bukkit.getPluginManager().callEvent(event1);
-            event.setToPosition(Bonge.getInstance().convert(event1.getTo()).getPosition());
+            event.setDestinationPosition(Bonge.getInstance().convert(event1.getTo()).getPosition());
             event.setCancelled(event1.isCancelled());
         } catch (IOException ignored) {
         }

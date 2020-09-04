@@ -1,8 +1,10 @@
 package org.bonge.bukkit.r1_14.entity.living;
 
+import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.entity.BongeAbstractEntity;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -29,6 +31,22 @@ public abstract class BongeAbstractLivingEntity<T extends org.spongepowered.api.
 
     public BongeAbstractLivingEntity(T entity) {
         super(entity);
+    }
+
+    @Override
+    public double getEyeHeight() {
+        return this.getSpongeValue().get(Keys.EYE_HEIGHT).get();
+    }
+
+    @Override
+    public double getEyeHeight(boolean ignorePose) {
+        //TODO check ignorePose
+        return this.getEyeHeight();
+    }
+
+    @Override
+    public @NotNull Location getEyeLocation() {
+        return Bonge.getInstance().convert(this.getSpongeValue().getWorld().getLocation(this.getSpongeValue().get(Keys.EYE_POSITION).get()));
     }
 
     @NotNull

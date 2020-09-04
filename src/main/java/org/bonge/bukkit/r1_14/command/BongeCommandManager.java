@@ -1,5 +1,7 @@
 package org.bonge.bukkit.r1_14.command;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.bonge.Bonge;
 import org.bonge.launch.BongeLaunch;
 import org.bukkit.Location;
@@ -9,15 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.text.channel.MessageReceiver;
 
 import java.io.IOException;
 import java.util.*;
 
 public class BongeCommandManager implements CommandMap {
 
-    private Set<CommandState> commands = new HashSet<>();
+    private final Set<CommandState> commands = new HashSet<>();
 
     public Set<PluginCommand> getCommands(Plugin plugin){
         Set<PluginCommand> commands = new HashSet<>();
@@ -25,11 +27,11 @@ public class BongeCommandManager implements CommandMap {
         return commands;
     }
 
-    public void registerWithSponge(){
-        this.commands.forEach(this::registerWithSponge);
+    public void registerWithSponge(RegisterCommandEvent<org.spongepowered.api.command.Command.Parameterized> event){
+        this.commands.forEach(c -> registerWithSponge(event, c));
     }
 
-    public void registerWithSponge(CommandState state){
+    public void registerWithSponge(RegisterCommandEvent<org.spongepowered.api.command.Command.Parameterized> event, CommandState state){
             @NotNull List<String> list = new ArrayList<>(state.getCmd().getAliases());
             for(int A = list.size() - 1; A >= 0; A--){
                 String alis = list.get(A);
@@ -50,7 +52,7 @@ public class BongeCommandManager implements CommandMap {
             }
             try {
                 //TODO alis
-                Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), new SpongeCommandWrapping(state).buildCommand(), commands[0]);
+                event.register(BongeLaunch.getContainer(), new SpongeCommandWrapping(state).buildCommand(), commands[0]);
             }catch (IllegalArgumentException e){
                 System.err.println("Command could not be registered: " + state.getPluginTag() + ":" + state.getLabel() + " due to another command being registered with the same label");
             }
@@ -77,13 +79,17 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public boolean dispatch(@NotNull CommandSender sender, @NotNull String cmdLine) throws CommandException {
-        CommandResult result = null;
+        CommandResult result;
         try {
             Subject subject = Bonge.getInstance().convert(sender, Subject.class);
             try {
-                result = Sponge.getCommandManager().process(subject, ((MessageReceiver) subject).getMessageChannel(), cmdLine);
+                result = Sponge.getCommandManager().process(subject, ((Audience) subject), cmdLine);
             }catch (org.spongepowered.api.command.exception.CommandException e) {
-                ((MessageReceiver) subject).sendMessage(e.getText());
+                Component text = e.getText();
+                if(text == null){
+                    return false;
+                }
+                ((Audience)subject).sendMessage(text);
                 return false;
             }
         } catch (IOException e) {
@@ -94,8 +100,8 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public void clearCommands() {
-        Sponge.getCommandManager().getStandardRegistrar().reset();
-        this.commands.clear();
+        //Sponge.getCommandManager().getStandardRegistrar().reset();
+        //this.commands.clear();
     }
 
     @Override
@@ -119,7 +125,7 @@ public class BongeCommandManager implements CommandMap {
         try {
             Subject subject = Bonge.getInstance().convert(sender, Subject.class);
 
-            return Sponge.getCommandManager().suggest(subject, ((MessageReceiver)subject).getMessageChannel(), cmdLine);
+            return Sponge.getCommandManager().suggest(subject, ((Audience)subject), cmdLine);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

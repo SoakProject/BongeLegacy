@@ -47,7 +47,7 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
 
     @Override
     public @NotNull ItemStack getBoots() {
-        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getBoots();
+        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getFeet();
         try {
             return Bonge.getInstance().convert(ItemStack.class, stack);
         } catch (IOException e) {
@@ -63,12 +63,12 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setBoots(is);
+        this.spongeValue.setFeet(is);
     }
 
     @Override
     public @NotNull ItemStack getLeggings() {
-        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getLeggings();
+        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getLegs();
         try {
             return Bonge.getInstance().convert(ItemStack.class, stack);
         } catch (IOException e) {
@@ -84,12 +84,12 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setLeggings(is);
+        this.spongeValue.setLegs(is);
     }
 
     @Override
     public @NotNull ItemStack getChestplate() {
-        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getChestplate();
+        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getChest();
         try {
             return Bonge.getInstance().convert(ItemStack.class, stack);
         } catch (IOException e) {
@@ -105,12 +105,12 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setChestplate(is);
+        this.spongeValue.setChest(is);
     }
 
     @Override
     public @NotNull ItemStack getHelmet() {
-        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getHelmet();
+        org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.getHead();
         try {
             return Bonge.getInstance().convert(ItemStack.class, stack);
         } catch (IOException e) {
@@ -126,7 +126,7 @@ public class BongeArmorStandEntity extends BongeAbstractLivingEntity<org.spongep
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        this.spongeValue.setHelmet(is);
+        this.spongeValue.setHead(is);
     }
 
     @Override

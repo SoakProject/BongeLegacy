@@ -1,9 +1,10 @@
 package org.bonge.bukkit.r1_14.inventory.item.meta;
 
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.inventory.item.holder.ItemHolder;
-import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
-import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +60,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
+    @Deprecated
     public @NotNull CustomItemTagContainer getCustomTagContainer() {
         throw new NotImplementedException("ItemMeta.getCustomTagContainer() not looked at yet");
     }
@@ -70,12 +71,9 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public String getDisplayName() {
-        Optional<Text> opName = this.stack.get(Keys.DISPLAY_NAME.get());
-        if(!opName.isPresent()){
-            return null;
-        }
-        return Bonge.getInstance().convert(opName.get());
+    public @NotNull String getDisplayName() {
+        Optional<Component> opName = this.stack.get(Keys.DISPLAY_NAME.get());
+        return opName.map(text -> Bonge.getInstance().convert(text)).orElse(null);
     }
 
     @Override
@@ -89,7 +87,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public String getLocalizedName() {
+    public @NotNull String getLocalizedName() {
         throw new NotImplementedException("ItemMeta.getLocalizedName() has not been looked at");
     }
 
@@ -110,7 +108,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public void setLore(List<String> lore) {
-        List<Text> list = ArrayUtils.convert(e -> Bonge.getInstance().convertText(e), lore);
+        List<Component> list = ArrayUtils.convert(e -> Bonge.getInstance().convertText(e), lore);
         this.stack.offer(Keys.LORE, list);
     }
 
@@ -120,7 +118,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public boolean hasEnchant(Enchantment ench) {
+    public boolean hasEnchant(@NotNull Enchantment ench) {
         EnchantmentType type;
         try {
             type = Bonge.getInstance().convert(ench, EnchantmentType.class);
@@ -139,14 +137,11 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
             return -1;
         }
         Optional<org.spongepowered.api.item.enchantment.Enchantment> opEnchantment = this.stack.get(Keys.STORED_ENCHANTMENTS).get().stream().filter(e -> e.getType().equals(type)).findAny();
-        if(opEnchantment.isPresent()){
-            return opEnchantment.get().getLevel();
-        }
-        return -1;
+        return opEnchantment.map(org.spongepowered.api.item.enchantment.Enchantment::getLevel).orElse(-1);
     }
 
     @Override
-    public Map<Enchantment, Integer> getEnchants() {
+    public @NotNull Map<Enchantment, Integer> getEnchants() {
         Map<Enchantment, Integer> map = new HashMap<>();
         this.stack.get(Keys.STORED_ENCHANTMENTS).get().forEach(e -> {
             Enchantment enchantment;
@@ -161,7 +156,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public boolean addEnchant(Enchantment ench, int level, boolean ignoreLevelRestriction) {
+    public boolean addEnchant(@NotNull Enchantment ench, int level, boolean ignoreLevelRestriction) {
         if(!ignoreLevelRestriction && level > ench.getMaxLevel()){
             return false;
         }
@@ -179,7 +174,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public boolean removeEnchant(Enchantment ench) {
+    public boolean removeEnchant(@NotNull Enchantment ench) {
         EnchantmentType enchantment;
         try {
             enchantment = Bonge.getInstance().convert(ench, EnchantmentType.class);
@@ -194,7 +189,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public boolean hasConflictingEnchant(Enchantment ench) {
+    public boolean hasConflictingEnchant(@NotNull Enchantment ench) {
         return false;
     }
 
@@ -209,12 +204,12 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public Set<ItemFlag> getItemFlags() {
+    public @NotNull Set<ItemFlag> getItemFlags() {
         throw new NotImplementedException("ItemMeta.getItemFlags() not looked at yet");
     }
 
     @Override
-    public boolean hasItemFlag(ItemFlag flag) {
+    public boolean hasItemFlag(@NotNull ItemFlag flag) {
         throw new NotImplementedException("ItemMeta.hasItemFlags(ItemFlag) not looked at yet");
     }
 
@@ -239,17 +234,17 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+    public @NotNull Multimap<Attribute, AttributeModifier> getAttributeModifiers(@NotNull EquipmentSlot slot) {
         throw new NotImplementedException("ItemMeta.getAttributeModifiers(EquipmentSlot) not looked at yet");
     }
 
     @Override
-    public Collection<AttributeModifier> getAttributeModifiers(Attribute attribute) {
+    public Collection<AttributeModifier> getAttributeModifiers(@NotNull Attribute attribute) {
         throw new NotImplementedException("ItemMeta.getAttributeModifiers(Attribute) not looked at yet");
     }
 
     @Override
-    public boolean addAttributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public boolean addAttributeModifier(@NotNull Attribute attribute, @NotNull AttributeModifier modifier) {
         throw new NotImplementedException("ItemMeta.addAttributeModifiers(Attribute, AttributeModifier) not looked at yet");
     }
 
@@ -259,17 +254,17 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public boolean removeAttributeModifier(Attribute attribute) {
+    public boolean removeAttributeModifier(@NotNull Attribute attribute) {
         throw new NotImplementedException("ItemMeta.removeAttributeModifier(Attribute) not looked at yet");
     }
 
     @Override
-    public boolean removeAttributeModifier(EquipmentSlot slot) {
+    public boolean removeAttributeModifier(@NotNull EquipmentSlot slot) {
         throw new NotImplementedException("ItemMeta.removeAttributeModifier(EquipmentSlot) not looked at yet");
     }
 
     @Override
-    public boolean removeAttributeModifier(Attribute attribute, AttributeModifier modifier) {
+    public boolean removeAttributeModifier(@NotNull Attribute attribute, @NotNull AttributeModifier modifier) {
         throw new NotImplementedException("ItemMeta.removeAttributeModifier(Attribute, AttributeModifier) not looked at yet");
 
     }

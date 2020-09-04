@@ -1,5 +1,8 @@
 package org.bonge.bukkit.r1_14.entity.living.human;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_14.entity.BongeAbstractEntity;
@@ -7,7 +10,6 @@ import org.bonge.bukkit.r1_14.inventory.BongeInventory;
 import org.bonge.bukkit.r1_14.inventory.BongeInventoryView;
 import org.bonge.bukkit.r1_14.scoreboard.BongeScoreboard;
 import org.bonge.command.Permissions;
-import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -40,14 +42,15 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.SubjectData;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.title.Title;
+import org.spongepowered.api.util.TemporalUnits;
 import org.spongepowered.api.util.Tristate;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -171,7 +174,9 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        this.spongeValue.sendMessages(ArrayUtils.convert(Text.class, t -> Bonge.getInstance().convertText(t), messages));
+        for(String message : messages){
+            this.sendMessage(message);
+        }
     }
 
     @Override
@@ -751,15 +756,8 @@ public class BongePlayer extends BongeAbstractHuman<org.spongepowered.api.entity
 
     @Override
     public void sendTitle(@Nullable String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
-        Title sTitle = Title.builder()
-                .fadeIn(((fadeIn == -1) ? null : fadeIn))
-                .fadeOut(((fadeOut == -1) ? null : fadeOut))
-                .stay(((stay == -1) ? null : stay))
-                .title(Bonge.getInstance().convertText(title))
-                .subtitle(Bonge.getInstance().convertText(subtitle))
-                .build();
-        this.spongeValue.sendTitle(sTitle);
-
+        Title sTitle = Title.of(Bonge.getInstance().convertText(title), Bonge.getInstance().convertText(subtitle), Title.Times.of(Duration.of(fadeIn, TemporalUnits.MINECRAFT_TICKS), Duration.of(stay, TemporalUnits.MINECRAFT_TICKS), Duration.of(fadeOut, TemporalUnits.MINECRAFT_TICKS)));
+        this.spongeValue.showTitle(sTitle);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.bonge.command;
 
+import net.kyori.adventure.text.TextComponent;
 import org.bonge.bukkit.r1_14.scheduler.BongeScheduler;
 import org.bonge.bukkit.r1_14.scheduler.BongeTaskData;
 import org.bukkit.Bukkit;
@@ -8,7 +9,6 @@ import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
-import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ public class BongeControlCommand {
             int taskId = context.getOne(TASK).get();
             Optional<BongeTaskData> opTask = ((BongeScheduler)Bukkit.getScheduler()).getTasks().stream().filter(d -> d.getTaskId() == taskId).findAny();
             if(!opTask.isPresent()){
-                context.sendMessage(Text.of("Unknown task id to kill"));
+                context.sendMessage(TextComponent.of("Unknown task id to kill"));
                 return CommandResult.empty();
             }
             opTask.get().cancel();
@@ -35,7 +35,7 @@ public class BongeControlCommand {
 
         @Override
         public CommandResult execute(CommandContext context) {
-            ((BongeScheduler)Bukkit.getScheduler()).getTasks().forEach(t -> context.sendMessage(Text.of("- Id: " + t.getTaskId() + " | Plugin: " + t.getOwner().getName() + " | async: " + !t.isSync() + " | Class: " + t.getTask().getName())));
+            ((BongeScheduler)Bukkit.getScheduler()).getTasks().forEach(t -> context.sendMessage(TextComponent.of("- Id: " + t.getTaskId() + " | Plugin: " + t.getOwner().getName() + " | async: " + !t.isSync() + " | Class: " + t.getTask().getName())));
             return CommandResult.empty();
         }
     }

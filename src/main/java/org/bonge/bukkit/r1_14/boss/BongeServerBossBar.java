@@ -1,8 +1,9 @@
 package org.bonge.bukkit.r1_14.boss;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
-import org.bonge.util.ArrayUtils;
+import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -10,33 +11,31 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.boss.BossBarColor;
-import org.spongepowered.api.boss.BossBarOverlay;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.Sponge;
 
 import java.io.IOException;
 import java.util.List;
 
-public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.ServerBossBar> implements BossBar {
+public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar.BossBar> implements BossBar {
 
-    public BongeServerBossBar(org.spongepowered.api.boss.ServerBossBar value) {
+    public BongeServerBossBar(net.kyori.adventure.bossbar.BossBar value) {
         super(value);
     }
 
     @Override
     public String getTitle() {
-        return Bonge.getInstance().convert(this.spongeValue.getName());
+        return Bonge.getInstance().convert(this.spongeValue.name());
     }
 
     @Override
     public void setTitle(String title) {
-        this.spongeValue.setName(Bonge.getInstance().convertText(title));
+        this.spongeValue.name(Bonge.getInstance().convertText(title));
     }
 
     @Override
     public @NotNull BarColor getColor() {
         try {
-            return Bonge.getInstance().convert(BarColor.class, this.spongeValue.getColor());
+            return Bonge.getInstance().convert(BarColor.class, this.spongeValue.color());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -45,7 +44,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     @Override
     public void setColor(@NotNull BarColor color) {
         try {
-            this.spongeValue.setColor(Bonge.getInstance().convert(color, BossBarColor.class));
+            this.spongeValue.color(Bonge.getInstance().convert(color, net.kyori.adventure.bossbar.BossBar.Color.class));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -54,7 +53,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     @Override
     public @NotNull BarStyle getStyle() {
         try {
-            return Bonge.getInstance().convert(BarStyle.class, this.spongeValue.getOverlay());
+            return Bonge.getInstance().convert(BarStyle.class, this.spongeValue.overlay());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -63,7 +62,7 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
     @Override
     public void setStyle(@NotNull BarStyle style) {
         try {
-            this.spongeValue.setOverlay(Bonge.getInstance().convert(style, BossBarOverlay.class));
+            this.spongeValue.overlay(Bonge.getInstance().convert(style, net.kyori.adventure.bossbar.BossBar.Overlay.class));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -86,43 +85,44 @@ public class BongeServerBossBar extends BongeWrapper<org.spongepowered.api.boss.
 
     @Override
     public void setProgress(double progress) {
-        this.spongeValue.setPercent((float)progress);
+        this.spongeValue.percent((float)progress);
     }
 
     @Override
     public double getProgress() {
-        return this.spongeValue.getPercent();
+        return this.spongeValue.percent();
     }
 
     @Override
     public void addPlayer(@NotNull Player player) {
-        this.spongeValue.addPlayer((ServerPlayer) Bonge.getInstance().convert(player));
+        ((BongePlayer)player).getSpongeValue().showBossBar(this.spongeValue);
     }
 
     @Override
     public void removePlayer(@NotNull Player player) {
-        this.spongeValue.removePlayer((ServerPlayer) Bonge.getInstance().convert(player));
-
+        ((BongePlayer)player).getSpongeValue().hideBossBar(this.spongeValue);
     }
 
     @Override
     public void removeAll() {
-        this.spongeValue.removePlayers(this.spongeValue.getPlayers());
+        Sponge.getServer().getOnlinePlayers().forEach(p -> p.hideBossBar(this.spongeValue));
+
     }
 
     @Override
     public @NotNull List<Player> getPlayers() {
-        return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getPlayers());
+        throw new NotImplementedException("ServerBossBar.getPlayers() Sponge has no alternative");
+        //return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getPlayers());
     }
 
     @Override
     public void setVisible(boolean visible) {
-        this.spongeValue.setVisible(visible);
+        throw new NotImplementedException("ServerBossBar.setVisible(boolean) Sponge has no alternative");
     }
 
     @Override
     public boolean isVisible() {
-        return this.spongeValue.isVisible();
+        throw new NotImplementedException("ServerBossBar.isVisble() Sponge has no alternative");
     }
 
     @Override

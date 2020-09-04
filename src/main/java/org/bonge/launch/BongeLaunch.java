@@ -1,18 +1,24 @@
 package org.bonge.launch;
 
+import com.google.inject.Inject;
+import org.bonge.bukkit.r1_14.command.BongeCommandManager;
+import org.bonge.bukkit.r1_14.server.BongeServer;
 import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
+import org.bonge.util.PluginLogger;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.api.Client;
 import org.spongepowered.api.Server;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.jvm.Plugin;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -23,9 +29,9 @@ public class BongeLaunch {
     public static final String PLUGIN_ID ="bonge";
     public static final String PLUGIN_NAME = "Bonge";
     public static final String PLUGIN_VERSION = "1.0-SNAPSHOT";
-    public static final String IMPLEMENTATION_VERSION = "1.13.2";
+    public static final String IMPLEMENTATION_VERSION = "1.14.4";
 
-    private final Logger logger;
+    private final org.slf4j.Logger logger;
     private final PluginContainer container;
 
     private BongeConfig config;
@@ -36,10 +42,17 @@ public class BongeLaunch {
     private static BongeLaunch instance;
 
     @Inject
-    public BongeLaunch(final Logger logger, final PluginContainer container){
+    public BongeLaunch(final org.slf4j.Logger logger, final PluginContainer container){
         instance = this;
         this.logger = logger;
         this.container = container;
+    }
+
+    @Listener
+    public void onRegisterCommand(RegisterCommandEvent<Command.Parameterized> event){
+        event.register(this.container, BongeCommand.build(), "bonge", "bukkit");
+        BongeCommandManager cmdManager = ((BongeServer) Bukkit.getServer()).getCommandManager();
+        cmdManager.registerWithSponge(event);
     }
 
     @Listener
@@ -57,7 +70,6 @@ public class BongeLaunch {
         this.config = new BongeConfig(file);
         File pluginsFile = this.config.getOrElse(BongeConfig.PATH_PLUGINS_FILE);
         pluginsFile.mkdirs();
-        Sponge.getCommandManager().getStandardRegistrar().register(container, BongeCommand.build(), "bonge", "bukkit");
         if(this.isBukkitAPILoaded) {
             BongeBukkitLaunch.onLoad(this);
         }
@@ -89,8 +101,12 @@ public class BongeLaunch {
         BongeBukkitLaunch.onDisable(this);
     }
 
-    public static Logger getLogger(){
+    public static org.slf4j.Logger getLogger(){
         return instance.logger;
+    }
+
+    public static Logger getLogger(JavaPlugin plugin){
+        return PluginLogger.createLogger(plugin);
     }
 
     public static BongeConfig getConfig(){

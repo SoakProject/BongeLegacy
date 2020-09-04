@@ -1,8 +1,8 @@
 package org.bonge.bukkit.r1_14.inventory.chest;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.inventory.BongeInventory;
-import org.bonge.util.ArrayUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;

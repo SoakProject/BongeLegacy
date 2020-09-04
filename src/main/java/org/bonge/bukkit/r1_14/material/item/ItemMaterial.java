@@ -90,7 +90,7 @@ public class ItemMaterial extends Material implements BongeMaterial.Item {
 
     @Override
     public boolean isRecord() {
-        return this.spongeValue.supports(Keys.MUSIC_DISK);
+        return this.spongeValue.supports(Keys.MUSIC_DISC);
     }
 
     @Override

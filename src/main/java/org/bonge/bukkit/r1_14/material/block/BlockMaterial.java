@@ -15,6 +15,7 @@ import org.spongepowered.api.data.type.MatterState;
 import org.spongepowered.api.data.type.MatterStates;
 import org.spongepowered.api.item.ItemType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -70,7 +71,11 @@ public class BlockMaterial extends Material implements BongeMaterial.Block {
 
     @Override
     public BlockData createBlockData() {
-        return BongeAbstractBlockData.of(this.spongeValue.getDefaultState());
+        try {
+            return BongeAbstractBlockData.findDynamicClass(this.spongeValue.getDefaultState());
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override

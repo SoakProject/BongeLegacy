@@ -2,15 +2,15 @@ package org.bonge.convert.world;
 
 import org.bonge.convert.Converter;
 import org.bukkit.WorldType;
-import org.spongepowered.api.world.gen.GeneratorType;
-import org.spongepowered.api.world.gen.GeneratorTypes;
+import org.spongepowered.api.world.gen.GeneratorModifierType;
+import org.spongepowered.api.world.gen.GeneratorModifierTypes;
 
 import java.io.IOException;
 
-public class GeneratorTypeConverter implements Converter<WorldType, GeneratorType> {
+public class GeneratorTypeConverter implements Converter<WorldType, GeneratorModifierType> {
     @Override
-    public Class<GeneratorType> getSpongeClass() {
-        return GeneratorType.class;
+    public Class<GeneratorModifierType> getSpongeClass() {
+        return GeneratorModifierType.class;
     }
 
     @Override
@@ -19,13 +19,13 @@ public class GeneratorTypeConverter implements Converter<WorldType, GeneratorTyp
     }
 
     @Override
-    public GeneratorType from(WorldType value) throws IOException {
+    public GeneratorModifierType from(WorldType value) throws IOException {
         switch (value){
-            case NORMAL: return GeneratorTypes.DEFAULT.get();
-            case FLAT: return GeneratorTypes.FLAT.get();
+            case NORMAL: return GeneratorModifierTypes.NONE.get();
+            case FLAT: return GeneratorModifierTypes.FLAT.get();
             case VERSION_1_1: break;
-            case LARGE_BIOMES: return GeneratorTypes.LARGE_BIOMES.get();
-            case AMPLIFIED: return GeneratorTypes.AMPLIFIED.get();
+            case LARGE_BIOMES: return GeneratorModifierTypes.LARGE_BIOMES.get();
+            case AMPLIFIED: return GeneratorModifierTypes.AMPLIFIED.get();
             case CUSTOMIZED: break;
             case BUFFET: break;
             default: throw new IOException("Unknown Generator Type");
@@ -34,17 +34,17 @@ public class GeneratorTypeConverter implements Converter<WorldType, GeneratorTyp
     }
 
     @Override
-    public WorldType to(GeneratorType value) throws IOException{
-        if(value.equals(GeneratorTypes.AMPLIFIED)){
+    public WorldType to(GeneratorModifierType value) throws IOException{
+        if(value.equals(GeneratorModifierTypes.AMPLIFIED.get())){
             return WorldType.AMPLIFIED;
         }
-        if(value.equals(GeneratorTypes.DEFAULT)){
+        if(value.equals(GeneratorModifierTypes.NONE.get())){
             return WorldType.NORMAL;
         }
-        if(value.equals(GeneratorTypes.FLAT)){
+        if(value.equals(GeneratorModifierTypes.FLAT.get())){
             return WorldType.FLAT;
         }
-        if(value.equals(GeneratorTypes.LARGE_BIOMES)){
+        if(value.equals(GeneratorModifierTypes.LARGE_BIOMES.get())){
             return WorldType.LARGE_BIOMES;
         }
         throw new IOException("Unknown GeneratorType");

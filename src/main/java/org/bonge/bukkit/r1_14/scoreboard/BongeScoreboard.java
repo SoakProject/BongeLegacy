@@ -1,7 +1,7 @@
 package org.bonge.bukkit.r1_14.scoreboard;
 
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
-import org.bonge.util.ArrayUtils;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Bukkit;

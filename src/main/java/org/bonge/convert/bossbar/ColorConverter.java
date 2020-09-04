@@ -1,16 +1,15 @@
 package org.bonge.convert.bossbar;
 
+import net.kyori.adventure.bossbar.BossBar;
 import org.bonge.convert.Converter;
 import org.bukkit.boss.BarColor;
-import org.spongepowered.api.boss.BossBarColor;
-import org.spongepowered.api.boss.BossBarColors;
 
 import java.io.IOException;
 
-public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.spongepowered.api.boss.BossBarColor> {
+public class ColorConverter implements Converter<org.bukkit.boss.BarColor, BossBar.Color> {
     @Override
-    public Class<BossBarColor> getSpongeClass() {
-        return BossBarColor.class;
+    public Class<BossBar.Color> getSpongeClass() {
+        return BossBar.Color.class;
     }
 
     @Override
@@ -19,37 +18,37 @@ public class ColorConverter implements Converter<org.bukkit.boss.BarColor, org.s
     }
 
     @Override
-    public BossBarColor from(BarColor colour) throws IOException {
+    public BossBar.Color from(BarColor colour) throws IOException {
         switch (colour){
-            case PINK: return BossBarColors.PINK.get();
-            case BLUE: return BossBarColors.BLUE.get();
-            case RED: return BossBarColors.RED.get();
-            case GREEN: return BossBarColors.GREEN.get();
-            case YELLOW: return BossBarColors.YELLOW.get();
-            case PURPLE: return BossBarColors.PURPLE.get();
-            case WHITE: return BossBarColors.WHITE.get();
+            case PINK: return BossBar.Color.PINK;
+            case BLUE: return BossBar.Color.BLUE;
+            case RED: return BossBar.Color.RED;
+            case GREEN: return BossBar.Color.GREEN;
+            case YELLOW: return BossBar.Color.YELLOW;
+            case PURPLE: return BossBar.Color.PURPLE;
+            case WHITE: return BossBar.Color.WHITE;
             default: throw new IOException("Unknown bar colour of " + colour.name());
         }
     }
 
     @Override
-    public BarColor to(BossBarColor colour) throws IOException{
-        if(colour.equals(BossBarColors.BLUE.get())){
+    public BarColor to(BossBar.Color colour) throws IOException{
+        if(colour.equals(BossBar.Color.BLUE)){
             return BarColor.BLUE;
-        }else if(colour.equals(BossBarColors.GREEN.get())){
+        }else if(colour.equals(BossBar.Color.GREEN)){
             return BarColor.GREEN;
-        }else if(colour.equals(BossBarColors.PINK.get())){
+        }else if(colour.equals(BossBar.Color.PINK)){
             return BarColor.PINK;
-        }else if(colour.equals(BossBarColors.PURPLE.get())){
+        }else if(colour.equals(BossBar.Color.PURPLE)){
             return BarColor.PURPLE;
-        }else if(colour.equals(BossBarColors.RED.get())){
+        }else if(colour.equals(BossBar.Color.RED)){
             return BarColor.RED;
-        }else if(colour.equals(BossBarColors.WHITE.get())){
+        }else if(colour.equals(BossBar.Color.WHITE)){
             return BarColor.WHITE;
-        }else if(colour.equals(BossBarColors.YELLOW.get())){
+        }else if(colour.equals(BossBar.Color.YELLOW)){
             return BarColor.YELLOW;
         }else{
-            throw new IOException("Unknown bar colour of " + colour.getKey().getFormatted());
+            throw new IOException("Unknown bar colour of " + colour.name());
         }
     }
 }

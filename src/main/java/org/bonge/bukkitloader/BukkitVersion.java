@@ -29,6 +29,13 @@ public class BukkitVersion {
         return Optional.of(new URL(this.download));
     }
 
+    public Optional<String> getDownloadURL(){
+        if(this.download == null){
+            return Optional.empty();
+        }
+        return Optional.of(this.download);
+    }
+
     public BukkitType getType(){
         return this.type;
     }

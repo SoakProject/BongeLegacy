@@ -42,22 +42,22 @@ public class BongePlayerInventory extends BongeInventory<org.spongepowered.api.i
 
     @Override
     public @Nullable ItemStack getHelmet() {
-        return this.getEquipment(EquipmentTypes.HEADWEAR);
+        return this.getEquipment(EquipmentTypes.HEAD);
     }
 
     @Override
     public @Nullable ItemStack getChestplate() {
-        return this.getEquipment(EquipmentTypes.CHESTPLATE);
+        return this.getEquipment(EquipmentTypes.CHEST);
     }
 
     @Override
     public @Nullable ItemStack getLeggings() {
-        return this.getEquipment(EquipmentTypes.LEGGINGS);
+        return this.getEquipment(EquipmentTypes.LEGS);
     }
 
     @Override
     public @Nullable ItemStack getBoots() {
-        return this.getEquipment(EquipmentTypes.BOOTS);
+        return this.getEquipment(EquipmentTypes.FEET);
     }
 
     @Override
@@ -82,22 +82,22 @@ public class BongePlayerInventory extends BongeInventory<org.spongepowered.api.i
 
     @Override
     public void setHelmet(@Nullable ItemStack helmet) {
-        this.setEquipment(EquipmentTypes.HEADWEAR, helmet);
+        this.setEquipment(EquipmentTypes.HEAD, helmet);
     }
 
     @Override
     public void setChestplate(@Nullable ItemStack chestplate) {
-        this.setEquipment(EquipmentTypes.CHESTPLATE, chestplate);
+        this.setEquipment(EquipmentTypes.CHEST, chestplate);
     }
 
     @Override
     public void setLeggings(@Nullable ItemStack leggings) {
-        this.setEquipment(EquipmentTypes.LEGGINGS, leggings);
+        this.setEquipment(EquipmentTypes.LEGS, leggings);
     }
 
     @Override
     public void setBoots(@Nullable ItemStack boots) {
-        this.setEquipment(EquipmentTypes.BOOTS, boots);
+        this.setEquipment(EquipmentTypes.FEET, boots);
     }
 
     @Override

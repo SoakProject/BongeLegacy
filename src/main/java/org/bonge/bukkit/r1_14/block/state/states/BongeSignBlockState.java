@@ -1,5 +1,6 @@
 package org.bonge.bukkit.r1_14.block.state.states;
 
+import net.kyori.adventure.text.Component;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_14.block.state.BongeBlockState;
 import org.bonge.util.exception.NotImplementedException;
@@ -10,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.value.ListValue;
-import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class BongeSignBlockState extends BongeBlockState<org.spongepowered.api.b
 
     @Override
     public String[] getLines() {
-        ListValue.Mutable<Text> lines = this.spongeValue.lines();
+        ListValue.Mutable<Component> lines = this.spongeValue.lines();
         String line1 = this.<String>getChanges(LINES_1).orElse(Bonge.getInstance().convert(lines.get(0)));
         String line2 = this.<String>getChanges(LINES_2).orElse(Bonge.getInstance().convert(lines.get(1)));
         String line3 = this.<String>getChanges(LINES_3).orElse(Bonge.getInstance().convert(lines.get(2)));
@@ -39,7 +39,7 @@ public class BongeSignBlockState extends BongeBlockState<org.spongepowered.api.b
 
     @Override
     public @NotNull String getLine(int index) throws IndexOutOfBoundsException {
-        ListValue.Mutable<Text> lines = this.spongeValue.lines();
+        ListValue.Mutable<Component> lines = this.spongeValue.lines();
         switch (index){
             case 0: return this.<String>getChanges(LINES_1).orElse(Bonge.getInstance().convert(lines.get(0)));
             case 1: return this.<String>getChanges(LINES_2).orElse(Bonge.getInstance().convert(lines.get(1)));
@@ -82,7 +82,7 @@ public class BongeSignBlockState extends BongeBlockState<org.spongepowered.api.b
 
     @Override
     public boolean update(boolean force, boolean applyPhysics) {
-        ListValue.Mutable<Text> lines = this.spongeValue.lines();
+        ListValue.Mutable<Component> lines = this.spongeValue.lines();
         Optional<String> opLine1 = this.getChanges(LINES_1);
         opLine1.ifPresent(s -> lines.set(0, Bonge.getInstance().convertText(s)));
         Optional<String> opLine2 = this.getChanges(LINES_2);
