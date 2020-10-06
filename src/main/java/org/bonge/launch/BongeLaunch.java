@@ -1,8 +1,8 @@
 package org.bonge.launch;
 
 import com.google.inject.Inject;
-import org.bonge.bukkit.r1_14.command.BongeCommandManager;
-import org.bonge.bukkit.r1_14.server.BongeServer;
+import org.bonge.bukkit.r1_15.command.BongeCommandManager;
+import org.bonge.bukkit.r1_15.server.BongeServer;
 import org.bonge.command.BongeCommand;
 import org.bonge.config.BongeConfig;
 import org.bonge.util.PluginLogger;

@@ -1,9 +1,9 @@
 package org.bonge.convert.inventory;
 
-import org.bonge.bukkit.r1_14.inventory.BongeInventory;
-import org.bonge.bukkit.r1_14.inventory.chest.BongeChestInventory;
-import org.bonge.bukkit.r1_14.inventory.chest.CustomChestInventory;
-import org.bonge.bukkit.r1_14.inventory.entity.living.player.BongePlayerInventory;
+import org.bonge.bukkit.r1_15.inventory.BongeInventory;
+import org.bonge.bukkit.r1_15.inventory.chest.BongeChestInventory;
+import org.bonge.bukkit.r1_15.inventory.chest.CustomChestInventory;
+import org.bonge.bukkit.r1_15.inventory.entity.living.player.BongePlayerInventory;
 import org.bonge.convert.Converter;
 import org.bukkit.inventory.Inventory;
 import org.spongepowered.api.block.entity.carrier.chest.Chest;

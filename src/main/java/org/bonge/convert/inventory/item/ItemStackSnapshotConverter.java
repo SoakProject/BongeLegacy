@@ -1,7 +1,7 @@
 package org.bonge.convert.inventory.item;
 
-import org.bonge.bukkit.r1_14.inventory.item.holder.ItemHolder;
-import org.bonge.bukkit.r1_14.inventory.item.holder.ItemStackSnapshotHolder;
+import org.bonge.bukkit.r1_15.inventory.item.holder.ItemHolder;
+import org.bonge.bukkit.r1_15.inventory.item.holder.ItemStackSnapshotHolder;
 import org.bonge.convert.Converter;
 import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;

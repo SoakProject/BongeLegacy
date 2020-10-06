@@ -1,8 +1,8 @@
 package org.bonge.convert.command;
 
-import org.bonge.bukkit.r1_14.command.rcon.RconCommandSource;
-import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_14.server.source.ConsoleSource;
+import org.bonge.bukkit.r1_15.command.rcon.RconCommandSource;
+import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_15.server.source.ConsoleSource;
 import org.bonge.convert.Converter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

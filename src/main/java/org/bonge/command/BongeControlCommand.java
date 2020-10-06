@@ -1,8 +1,8 @@
 package org.bonge.command;
 
 import net.kyori.adventure.text.TextComponent;
-import org.bonge.bukkit.r1_14.scheduler.BongeScheduler;
-import org.bonge.bukkit.r1_14.scheduler.BongeTaskData;
+import org.bonge.bukkit.r1_15.scheduler.BongeScheduler;
+import org.bonge.bukkit.r1_15.scheduler.BongeTaskData;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandExecutor;

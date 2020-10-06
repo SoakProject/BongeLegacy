@@ -35,7 +35,7 @@ public class BlockHalfConverter implements Converter<Bisected.Half, SlabPortion>
             return Bisected.Half.TOP;
         }else if(value.equals(SlabPortions.BOTTOM.get())){
             return Bisected.Half.BOTTOM;
-        }else if(value.equals(SlabPortions.FULL.get())){
+        }else if(value.equals(SlabPortions.DOUBLE.get())){
             throw new IOException("Have not got round to converting Full slab to Bisected.Half");
         }
         throw new IOException("Unknown half");

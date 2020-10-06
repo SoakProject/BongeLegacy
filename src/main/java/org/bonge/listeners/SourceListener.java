@@ -2,7 +2,7 @@ package org.bonge.listeners;
 
 import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.player.PlayerCommandSendEvent;

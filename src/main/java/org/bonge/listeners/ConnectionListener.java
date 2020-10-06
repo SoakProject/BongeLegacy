@@ -1,7 +1,7 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_14.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
@@ -62,7 +62,7 @@ public class ConnectionListener {
         BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
         PlayerKickEvent quitEvent = new PlayerKickEvent(player, "Unknown", Bonge.getInstance().convert(event.getMessage()));
         if(quitEvent.isCancelled()) {
-            event.setMessageCancelled(true);
+            event.setMessage(null);
         }else {
             event.setMessage(Bonge.getInstance().convertText(quitEvent.getLeaveMessage()));
         }
@@ -73,7 +73,7 @@ public class ConnectionListener {
         BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
         PlayerQuitEvent quitEvent = new PlayerQuitEvent(player, Bonge.getInstance().convert(event.getMessage()));
         if(quitEvent.getQuitMessage() == null) {
-            event.setMessageCancelled(true);
+            event.setMessage(null);
         }else {
             event.setMessage(Bonge.getInstance().convertText(quitEvent.getQuitMessage()));
         }
