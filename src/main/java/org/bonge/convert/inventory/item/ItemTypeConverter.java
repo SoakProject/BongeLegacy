@@ -30,6 +30,6 @@ public class ItemTypeConverter implements Converter<Material, ItemType> {
 
     @Override
     public Material to(ItemType value){
-        return (Material)Bonge.getInstance().convert(value);
+        return Material.valueOf(value);
     }
 }

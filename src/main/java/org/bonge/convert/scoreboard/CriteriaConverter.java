@@ -21,9 +21,9 @@ public class CriteriaConverter implements Converter<String, Criterion> {
     public Criterion from(String criteria) throws IOException {
         switch (criteria){
             case "dummy": return Criteria.DUMMY.get();
-            case "deathCount": return Criteria.DEATHS.get();
-            case "playerKillCount": return Criteria.PLAYER_KILLS.get();
-            case "totalKillCount": return Criteria.TOTAL_KILLS.get();
+            case "deathCount": return Criteria.DEATH_COUNT.get();
+            case "playerKillCount": return Criteria.PLAYER_KILL_COUNT.get();
+            case "totalKillCount": return Criteria.TOTAL_KILL_COUNT.get();
             case "health": return Criteria.HEALTH.get();
             case "trigger": return Criteria.TRIGGER.get();
             default: throw new IOException("Unknown criteria of '" + criteria + "'");
@@ -32,7 +32,7 @@ public class CriteriaConverter implements Converter<String, Criterion> {
 
     @Override
     public String to(Criterion criterion) throws IOException{
-        if(criterion.equals(Criteria.DEATHS.get())){
+        if(criterion.equals(Criteria.DEATH_COUNT.get())){
             return "deathCount";
         }
         if(criterion.equals(Criteria.DUMMY.get())){
@@ -41,15 +41,15 @@ public class CriteriaConverter implements Converter<String, Criterion> {
         if(criterion.equals(Criteria.HEALTH.get())){
             return "health";
         }
-        if(criterion.equals(Criteria.PLAYER_KILLS.get())){
+        if(criterion.equals(Criteria.PLAYER_KILL_COUNT.get())){
             return "playerKillCount";
         }
-        if(criterion.equals(Criteria.TOTAL_KILLS.get())){
+        if(criterion.equals(Criteria.TOTAL_KILL_COUNT.get())){
             return "totalKillCount";
         }
         if(criterion.equals(Criteria.TRIGGER.get())){
             return "trigger";
         }
-        throw new IOException("Unknown criteria of " + criterion.getKey().getFormatted());
+        throw new IOException("Unknown criteria of " + criterion.toString());
     }
 }

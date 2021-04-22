@@ -68,6 +68,6 @@ public class RailShapeConverter implements Converter<Rail.Shape, RailDirection> 
         if(value.equals(RailDirections.ASCENDING_EAST.get())){
             return Rail.Shape.ASCENDING_EAST;
         }
-        throw new IOException("Unknown conversion for Sponge '" + value.getKey().getValue() + "'");
+        throw new IOException("Unknown conversion for Sponge '" + value.toString() + "'");
     }
 }

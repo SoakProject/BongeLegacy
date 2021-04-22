@@ -1,7 +1,7 @@
 package org.bonge.convert.entity;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.entity.BongeAbstractEntity;
+import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
 import org.bonge.convert.Converter;
 import org.bukkit.entity.Entity;
 import org.bukkit.projectiles.ProjectileSource;

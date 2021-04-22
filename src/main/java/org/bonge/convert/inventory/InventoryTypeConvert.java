@@ -23,10 +23,12 @@ public class InventoryTypeConvert implements Converter<InventoryType, ContainerT
     public ContainerType from(InventoryType value) throws IOException {
         switch (value){
             case CHEST:
-                return ContainerTypes.GENERIC_9x6.get();
+                return ContainerTypes.GENERIC_9X6.get();
             case DISPENSER:
             case DROPPER:
-                return ContainerTypes.GENERIC_3x3.get();
+            case ENDER_CHEST:
+            case BARREL:
+                return ContainerTypes.GENERIC_9X3.get();
             case FURNACE:
                 return ContainerTypes.FURNACE.get();
             case WORKBENCH:
@@ -42,9 +44,6 @@ public class InventoryTypeConvert implements Converter<InventoryType, ContainerT
                 throw new NotImplementedException("Unknown CreativeInventory type for Sponge");
             case MERCHANT:
                 return ContainerTypes.MERCHANT.get();
-            case ENDER_CHEST:
-            case BARREL:
-                return ContainerTypes.GENERIC_9x3.get();
             case ANVIL:
                 return ContainerTypes.ANVIL.get();
             case BEACON:

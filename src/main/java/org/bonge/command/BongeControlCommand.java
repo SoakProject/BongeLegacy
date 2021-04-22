@@ -1,8 +1,9 @@
 package org.bonge.command;
 
-import net.kyori.adventure.text.TextComponent;
-import org.bonge.bukkit.r1_15.scheduler.BongeScheduler;
-import org.bonge.bukkit.r1_15.scheduler.BongeTaskData;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import org.bonge.bukkit.r1_16.scheduler.BongeScheduler;
+import org.bonge.bukkit.r1_16.scheduler.BongeTaskData;
 import org.bukkit.Bukkit;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandExecutor;
@@ -14,16 +15,16 @@ import java.util.Optional;
 
 public class BongeControlCommand {
 
-    private static final Parameter.Value<Integer> TASK = Parameter.integerNumber().setKey("Task").build();
+    private static final Parameter.Value<Integer> TASK = Parameter.integerNumber().key("Task").build();
 
     public static class TaskKill implements CommandExecutor {
 
         @Override
         public CommandResult execute(CommandContext context){
-            int taskId = context.getOne(TASK).get();
+            int taskId = context.one(TASK).get();
             Optional<BongeTaskData> opTask = ((BongeScheduler)Bukkit.getScheduler()).getTasks().stream().filter(d -> d.getTaskId() == taskId).findAny();
             if(!opTask.isPresent()){
-                context.sendMessage(TextComponent.of("Unknown task id to kill"));
+                context.sendMessage(Identity.nil(), Component.text("Unknown task id to kill"));
                 return CommandResult.empty();
             }
             opTask.get().cancel();
@@ -35,24 +36,24 @@ public class BongeControlCommand {
 
         @Override
         public CommandResult execute(CommandContext context) {
-            ((BongeScheduler)Bukkit.getScheduler()).getTasks().forEach(t -> context.sendMessage(TextComponent.of("- Id: " + t.getTaskId() + " | Plugin: " + t.getOwner().getName() + " | async: " + !t.isSync() + " | Class: " + t.getTask().getName())));
+            ((BongeScheduler)Bukkit.getScheduler()).getTasks().forEach(t -> context.sendMessage(Identity.nil(), Component.text("- Id: " + t.getTaskId() + " | Plugin: " + t.getOwner().getName() + " | async: " + !t.isSync() + " | Class: " + t.getTask().name())));
             return CommandResult.empty();
         }
     }
 
     public static Command.Parameterized createCommand(){
         Command.Parameterized taskKill = Command.builder()
-                .setExecutor(new TaskKill())
-                .setPermission(Permissions.BONGE_CONTROL_TASK_KILL)
-                .parameter(TASK)
+                .executor(new TaskKill())
+                .permission(Permissions.BONGE_CONTROL_TASK_KILL)
+                .addParameter(TASK)
                 .build();
         Command.Parameterized tasks = Command.builder()
-                .setExecutor(new Tasks())
-                .setPermission(Permissions.BONGE_CONTROL_TASKS)
+                .executor(new Tasks())
+                .permission(Permissions.BONGE_CONTROL_TASKS)
                 .build();
         return Command.builder()
-                .child(taskKill, "taskkill", "kill")
-                .child(tasks, "tasks", "task")
+                .addChild(taskKill, "taskkill", "kill")
+                .addChild(tasks, "tasks", "task")
                 .build();
     }
 }

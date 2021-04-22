@@ -1,10 +1,12 @@
 package org.bonge.command;
 
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.array.utils.ArrayUtils;
-import org.bonge.bukkit.r1_15.server.BongeServer;
-import org.bonge.bukkit.r1_15.server.plugin.BongePluginManager;
+import org.bonge.bukkit.r1_16.server.BongeServer;
+import org.bonge.bukkit.r1_16.server.plugin.BongePluginManager;
 import org.bonge.command.argument.PluginArgument;
 import org.bonge.launch.BongeLaunch;
 import org.bukkit.Bukkit;
@@ -24,37 +26,39 @@ import java.util.stream.Stream;
 
 public class BongeCommand {
 
-    private static final Parameter.Value<Plugin> PLUGIN = Parameter.builder(Plugin.class).parser(new PluginArgument()).build();
-    private static final Parameter.Value<String> FLAG = Parameter.string().setKey("flag").optional().build();
+    private static final Parameter.Value<Plugin> PLUGIN_OPTIONAL = Parameter.builder(Plugin.class).key(Parameter.key("plugin", Plugin.class)).optional().addParser(new PluginArgument()).build();
+    private static final Parameter.Value<Plugin> PLUGIN = Parameter.builder(Plugin.class).key(Parameter.key("plugin", Plugin.class)).addParser(new PluginArgument()).build();
+
+    private static final Parameter.Value<String> FLAG = Parameter.string().key("flag").optional().build();
 
     private static class DumpCMD implements CommandExecutor {
 
         @Override
         public CommandResult execute(CommandContext args) {
-            Optional<String> opFlag = args.getOne(FLAG);
-            Subject src = args.getSubject();
-            if(!opFlag.isPresent()) {
+            Optional<String> opFlag = args.one(FLAG);
+            Subject src = args.subject();
+            if (!opFlag.isPresent()) {
                 ((BongeServer) Bukkit.getServer()).getPluginManager().getBongePlugins().stream().filter(l -> l instanceof JavaPluginLoader).forEach(l -> {
-                    args.sendMessage(TextComponent.of(((JavaPluginLoader) l).getYaml().getFullName()));
-                    ((JavaPluginLoader) l).getClasses().forEach(c -> args.sendMessage(TextComponent.of(" - " + c.getName())));
+                    args.sendMessage(Identity.nil(), Component.text((((JavaPluginLoader) l).getYaml().getFullName())));
+                    ((JavaPluginLoader) l).getClasses().forEach(c -> args.sendMessage(Identity.nil(), Component.text(" - " + c.getName())));
                 });
                 return CommandResult.success();
             }
             String flag = opFlag.get();
-            if(flag.equalsIgnoreCase("listeners")){
-                ((BongePluginManager)Bukkit.getServer().getPluginManager()).getEventData().forEach(e -> Stream.of(e.getListener().getClass().getDeclaredMethods())
+            if (flag.equalsIgnoreCase("listeners")) {
+                ((BongePluginManager) Bukkit.getServer().getPluginManager()).getEventData().forEach(e -> Stream.of(e.getListener().getClass().getDeclaredMethods())
                         .filter(m -> m.isAnnotationPresent(EventHandler.class))
                         .filter(m -> m.getParameterCount() == 1)
                         .filter(m -> m.getParameters()[0].getType().isAssignableFrom(e.getEvent()))
                         .forEach(m -> {
-                            args.sendMessage(TextComponent.of("- " + m.getName() + " | " + m.getParameters()[0].getType().getSimpleName() + " | " + e.getHolder().getName() + " | " + m.getDeclaringClass().getSimpleName()));
+                            args.sendMessage(Identity.nil(), Component.text("- " + m.getName() + " | " + m.getParameters()[0].getType().getSimpleName() + " | " + e.getHolder().getName() + " | " + m.getDeclaringClass().getSimpleName()));
                         }));
                 return CommandResult.success();
             }
-            if(flag.equalsIgnoreCase("fired-events")){
-                List<Class<?>> list = ((BongePluginManager)Bukkit.getServer().getPluginManager()).getFiredEvents();
-                for(int A = list.size() - 5; A < list.size(); A++){
-                    args.sendMessage(TextComponent.of("- " + list.get(A).getSimpleName()));
+            if (flag.equalsIgnoreCase("fired-events")) {
+                List<Class<?>> list = ((BongePluginManager) Bukkit.getServer().getPluginManager()).getFiredEvents();
+                for (int A = list.size() - 5; A < list.size(); A++) {
+                    args.sendMessage(Identity.nil(), Component.text("- " + list.get(A).getSimpleName()));
                 }
                 return CommandResult.success();
             }
@@ -65,9 +69,20 @@ public class BongeCommand {
     static class ShowCMD implements CommandExecutor {
 
         @Override
-        public CommandResult execute(CommandContext args){
-            Plugin plugin = args.<Plugin>getOne(PLUGIN).get();
-            ((BongeServer) Bukkit.getServer()).getCommandManager().getCommands(plugin).forEach(c -> args.sendMessage(TextComponent.join(TextComponent.builder("Command: " + c.getName() + " ").color(TextColor.of(11)).build(), TextComponent.builder(c.getDescription()).build())));
+        public CommandResult execute(CommandContext args) {
+            Optional<Plugin> opPlugin = args.one(PLUGIN);
+            if (!opPlugin.isPresent()) {
+                return CommandResult.error(Component.text("Unknown plugin"));
+            }
+            ((BongeServer) Bukkit.getServer())
+                    .getCommandManager()
+                    .getCommands(opPlugin.get())
+                    .forEach(c -> args.sendMessage(Identity.nil(), Component
+                            .join(Component
+                                            .text("Command: " + c.getName() + ": ")
+                                            .color(TextColor.color(11)),
+                                    Component
+                                            .text(c.getDescription()))));
             return CommandResult.success();
         }
     }
@@ -76,11 +91,11 @@ public class BongeCommand {
 
         @Override
         public CommandResult execute(CommandContext args) throws CommandException {
-            if(BongeLaunch.isBukkitAPILoaded()) {
-                args.sendMessage(TextComponent.join(TextComponent.builder("version: ").build(), TextComponent.builder(Bukkit.getServer().getVersion()).build()));
-            }else{
-                args.sendMessage(TextComponent.builder("warning: The Bukkit API has not been loaded, make sure it is downloaded and then restart the server to use Bukkit plugins").build());
-                args.sendMessage(TextComponent.join(TextComponent.builder("version: ").build(), TextComponent.builder(BongeLaunch.PLUGIN_VERSION + "(" + BongeLaunch.IMPLEMENTATION_VERSION + ")").build()));
+            if (BongeLaunch.isBukkitAPILoaded()) {
+                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(Bukkit.getServer().getVersion())));
+            } else {
+                args.sendMessage(Identity.nil(), Component.text("warning: The Bukkit API has not been loaded, make sure it is downloaded and then restart the server to use Bukkit plugins"));
+                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(BongeLaunch.PLUGIN_VERSION + "(" + BongeLaunch.IMPLEMENTATION_VERSION + ")")));
             }
             return CommandResult.success();
         }
@@ -90,65 +105,67 @@ public class BongeCommand {
 
         @Override
         public CommandResult execute(CommandContext args) throws CommandException {
-            Optional<Plugin> opPlugin = args.getOne(PLUGIN);
+            Optional<Plugin> opPlugin = args.one(PLUGIN_OPTIONAL);
             if (opPlugin.isPresent()) {
                 String api = opPlugin.get().getDescription().getAPIVersion();
                 String website = opPlugin.get().getDescription().getWebsite();
                 Map<String, Map<String, Object>> cmds = opPlugin.get().getDescription().getCommands();
-                args.sendMessage(TextComponent.builder("Plugin: " + opPlugin.get().getDescription().getFullName()).build());
-                args.sendMessage(TextComponent.builder("Version: " + opPlugin.get().getDescription().getVersion()).build());
-                args.sendMessage(TextComponent.builder("Description: " + opPlugin.get().getDescription().getDescription()).build());
-                args.sendMessage(TextComponent.builder("Bukkit API version: " + (api == null ? "Legacy" : api)).build());
-                args.sendMessage(TextComponent.builder("Website: " + (website == null ? "Unknown" : website)).build());
+                args.sendMessage(Identity.nil(), Component.text("Plugin: " + opPlugin.get().getDescription().getFullName()));
+                args.sendMessage(Identity.nil(), Component.text("Version: " + opPlugin.get().getDescription().getVersion()));
+                args.sendMessage(Identity.nil(), Component.text("Description: " + opPlugin.get().getDescription().getDescription()));
+                args.sendMessage(Identity.nil(), Component.text("Bukkit API version: " + (api == null ? "Legacy" : api)));
+                args.sendMessage(Identity.nil(), Component.text("Website: " + (website == null ? "Unknown" : website)));
                 if (cmds == null) {
-                    args.sendMessage(TextComponent.builder("Commands: None").build());
+                    args.sendMessage(Identity.nil(), Component.text("Commands: None"));
                 } else {
-                    args.sendMessage(TextComponent.builder("Commands: " + ArrayUtils.toString(", ", n -> n, cmds.keySet())).build());
+                    args.sendMessage(Identity.nil(), Component.text("Commands: " + ArrayUtils.toString(", ", n -> n, cmds.keySet())));
                 }
                 return CommandResult.success();
             }
 
             List<Plugin> plugins = Arrays.asList(Bukkit.getPluginManager().getPlugins());
             plugins.sort(Comparator.comparing(Plugin::getName, Comparator.naturalOrder()));
-            TextComponent text = TextComponent.of("Plugins(" + plugins.size() + "): ");
+            TextComponent text = Component.text("Plugins(" + plugins.size() + "): ");
             for (int A = 0; A < plugins.size(); A++) {
                 Plugin plugin = plugins.get(A);
-                text = TextComponent.join(text, TextComponent.builder(plugin.getName() + (A == (plugins.size() - 1) ? "" : ", ")).color(plugin.isEnabled() ? TextColor.of(10) : TextColor.of(12)).build());
+                text = Component.join(text, Component.text(plugin.getName() + (A == (plugins.size() - 1) ? "" : ", ")).color(plugin.isEnabled() ? TextColor.color(10) : TextColor.color(12)));
             }
-            args.sendMessage(text);
+            args.sendMessage(Identity.nil(), text);
             return CommandResult.success();
         }
     }
 
     public static Command.Parameterized build() {
         Command.Parameterized pluginsCMD = Command.builder()
-                .setShortDescription(TextComponent.builder("List all Bukkit plugins running").build())
-                .setExecutor(new PluginsCMD())
-                .parameter(PLUGIN)
-                .setPermission(Permissions.BONGE_PLUGINS)
+                .shortDescription(Component.text("List all Bukkit plugins running"))
+                .executor(new PluginsCMD())
+                .addParameter(PLUGIN_OPTIONAL)
+                .permission(Permissions.BONGE_PLUGINS)
                 .build();
+
         Command.Parameterized infoCMD = Command.builder()
-                .setShortDescription(TextComponent.builder("Info about Bonge").build())
-                .setExecutor(new InfoCMD())
+                .shortDescription(Component.text("Info about Bonge"))
+                .executor(new InfoCMD())
                 .build();
 
         Command.Parameterized commandShowCMD = Command.builder()
-                .setShortDescription(TextComponent.builder("Bukkit commands").build())
-                .setExecutor(new ShowCMD())
-                .parameter(PLUGIN)
+                .shortDescription(Component.text("Bukkit commands"))
+                .executor(new ShowCMD())
+                .addParameter(PLUGIN)
                 .build();
 
-        Command.Parameterized dumpCMD = Command.builder()
-                .setShortDescription(TextComponent.builder("Display all loaded classes").build())
+        /*Command.Parameterized dumpCMD = Command.builder()
+                .setShortDescription(Component.text("Display all loaded classes"))
                 .setExecutor(new DumpCMD())
                 .parameter(FLAG)
-                .build();
+                .build();*/
+
 
         return Command.builder()
-                .child(pluginsCMD, "plugins")
-                .child(infoCMD, "info")
-                .child(commandShowCMD, "show")
-                .child(dumpCMD, "dump")
+                .addChild(pluginsCMD, "plugins")
+                .addChild(infoCMD, "info")
+                .addChild(commandShowCMD, "show")
+                /*.child(dumpCMD, "dump")*/
                 .build();
     }
 }

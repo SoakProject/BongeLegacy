@@ -73,7 +73,7 @@ public class EntityTypeConverter implements Converter<EntityType, org.spongepowe
             case ZOMBIE: return EntityTypes.ZOMBIE.get();
             case SLIME: return EntityTypes.SLIME.get();
             case GHAST: return EntityTypes.GHAST.get();
-            case PIG_ZOMBIE: return EntityTypes.ZOMBIE_PIGMAN.get();
+            //case PIG_ZOMBIE: return EntityTypes.ZOMBIE_PIGMAN.get();
             case ENDERMAN: return EntityTypes.ENDERMAN.get();
             case CAVE_SPIDER: return EntityTypes.CAVE_SPIDER.get();
             case SILVERFISH: return EntityTypes.SILVERFISH.get();

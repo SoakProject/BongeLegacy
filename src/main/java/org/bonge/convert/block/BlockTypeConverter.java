@@ -1,7 +1,8 @@
 package org.bonge.convert.block;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.material.BongeMaterial;
+import org.bonge.bukkit.r1_16.material.BongeMaterial;
+import org.bonge.bukkit.r1_16.material.block.BlockMaterial;
 import org.bonge.convert.Converter;
 import org.bukkit.Material;
 import org.spongepowered.api.block.BlockType;
@@ -34,13 +35,14 @@ public class BlockTypeConverter implements Converter<Material, BlockType> {
 
     @Override
     public Material to(BlockType value) throws IOException{
-        Optional<BongeMaterial> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> t.isBlock())
+        Optional<BlockMaterial> opType = Bonge.getInstance().getMaterials().stream()
+                .filter(BongeMaterial::isBlock)
+                .map(m -> (BlockMaterial)m)
                 .filter(t -> t.toBlock().get().getSpongeBlockType().equals(value))
                 .findAny();
         if(opType.isPresent()){
-            return (Material)opType.get();
+            return Material.valueOf(opType.get());
         }
-        throw new IOException("Unknown material converter for " + value.getKey().getFormatted());
+        throw new IOException("Unknown material converter for " + value.toString());
     }
 }

@@ -1,7 +1,7 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
@@ -21,14 +21,14 @@ public class ConnectionListener {
     public void onPing(ClientPingServerEvent event){
         int players = 0;
         int max = 0;
-        Optional<ClientPingServerEvent.Response.Players> opPlayers = event.getResponse().getPlayers();
+        Optional<ClientPingServerEvent.Response.Players> opPlayers = event.response().players();
         if(opPlayers.isPresent()){
-            max = opPlayers.get().getMax();
-            players = opPlayers.get().getOnline();
+            max = opPlayers.get().max();
+            players = opPlayers.get().online();
         }
-        ServerListPingEvent bEvent = new ServerListPingEvent(event.getClient().getAddress().getAddress(), Bonge.getInstance().convert(event.getResponse().getDescription()), players, max);
+        ServerListPingEvent bEvent = new ServerListPingEvent(event.client().address().getAddress(), Bonge.getInstance().convert(event.response().description()), players, max);
         Bukkit.getPluginManager().callEvent(bEvent);
-        event.getResponse().setDescription(Bonge.getInstance().convertText(bEvent.getMotd()));
+        event.response().setDescription(Bonge.getInstance().convertText(bEvent.getMotd()));
         if(opPlayers.isPresent()){
             opPlayers.get().setMax(bEvent.getMaxPlayers());
             opPlayers.get().setOnline(bEvent.getNumPlayers());
@@ -37,9 +37,9 @@ public class ConnectionListener {
 
     @org.spongepowered.api.event.Listener
     public void onPlayerLogin(ServerSideConnectionEvent.Join event){
-        Player player = BongePlayer.getPlayer(event.getPlayer());
-        String hostName = event.getPlayer().getConnection().getVirtualHost().getHostName();
-        InetAddress address = event.getPlayer().getConnection().getAddress().getAddress();
+        Player player = BongePlayer.getPlayer(event.player());
+        String hostName = event.player().connection().virtualHost().getHostName();
+        InetAddress address = event.player().connection().address().getAddress();
         PlayerLoginEvent event1 = new PlayerLoginEvent(player, hostName, address);
         Bukkit.getServer().getPluginManager().callEvent(event1);
         switch (event1.getResult()){
@@ -52,15 +52,15 @@ public class ConnectionListener {
                 player.kickPlayer(event1.getKickMessage());
                 return;
         }
-        PlayerJoinEvent event2 = new PlayerJoinEvent(player, Bonge.getInstance().convert(event.getMessage()));
+        PlayerJoinEvent event2 = new PlayerJoinEvent(player, Bonge.getInstance().convert(event.message()));
         Bukkit.getServer().getPluginManager().callEvent(event2);
         event.setMessage(Bonge.getInstance().convertText(event2.getJoinMessage()));
     }
 
     @Listener
     public void onPlayerKick(KickPlayerEvent event){
-        BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
-        PlayerKickEvent quitEvent = new PlayerKickEvent(player, "Unknown", Bonge.getInstance().convert(event.getMessage()));
+        BongePlayer player = BongePlayer.getPlayer(event.player());
+        PlayerKickEvent quitEvent = new PlayerKickEvent(player, "Unknown", Bonge.getInstance().convert(event.message()));
         if(quitEvent.isCancelled()) {
             event.setMessage(null);
         }else {
@@ -70,8 +70,8 @@ public class ConnectionListener {
 
     @Listener
     public void onPlayerLeave(ServerSideConnectionEvent.Disconnect event){
-        BongePlayer player = BongePlayer.getPlayer(event.getPlayer());
-        PlayerQuitEvent quitEvent = new PlayerQuitEvent(player, Bonge.getInstance().convert(event.getMessage()));
+        BongePlayer player = BongePlayer.getPlayer(event.player());
+        PlayerQuitEvent quitEvent = new PlayerQuitEvent(player, Bonge.getInstance().convert(event.message()));
         if(quitEvent.getQuitMessage() == null) {
             event.setMessage(null);
         }else {
@@ -81,9 +81,9 @@ public class ConnectionListener {
 
     @org.spongepowered.api.event.Listener
     public void onPlayerConnectionPre(ServerSideConnectionEvent.Auth event){
-        String playerName = event.getProfile().getName().get();
-        InetAddress address = event.getConnection().getAddress().getAddress();
-        UUID uuid = event.getProfile().getUniqueId();
+        String playerName = event.profile().name().get();
+        InetAddress address = event.connection().address().getAddress();
+        UUID uuid = event.profile().uniqueId();
         AsyncPlayerPreLoginEvent asyncBEvent = new AsyncPlayerPreLoginEvent(playerName, address, uuid);
         Bukkit.getServer().getPluginManager().callEvent(asyncBEvent);
         switch (asyncBEvent.getLoginResult()){

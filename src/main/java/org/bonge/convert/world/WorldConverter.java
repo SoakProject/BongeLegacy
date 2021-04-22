@@ -1,6 +1,6 @@
 package org.bonge.convert.world;
 
-import org.bonge.bukkit.r1_15.world.BongeWorld;
+import org.bonge.bukkit.r1_16.world.BongeWorld;
 import org.bonge.convert.Converter;
 import org.bukkit.World;
 

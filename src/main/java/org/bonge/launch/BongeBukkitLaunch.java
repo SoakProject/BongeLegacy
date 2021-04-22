@@ -1,9 +1,8 @@
 package org.bonge.launch;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.material.BongeMaterial;
-import org.bonge.bukkit.r1_15.server.BongeServer;
-import org.bonge.bukkit.r1_15.server.plugin.BongePluginManager;
+import org.bonge.bukkit.r1_16.server.BongeServer;
+import org.bonge.bukkit.r1_16.server.plugin.BongePluginManager;
 import org.bonge.config.BongeConfig;
 import org.bonge.convert.block.BlockTypeConverter;
 import org.bonge.convert.bossbar.ColorConverter;
@@ -18,8 +17,6 @@ import org.bonge.convert.inventory.item.ItemStackSnapshotConverter;
 import org.bonge.convert.inventory.item.ItemTypeConverter;
 import org.bonge.convert.scoreboard.CriteriaConverter;
 import org.bonge.convert.scoreboard.DisplaySlotConverter;
-import org.bonge.convert.world.DimensionConverter;
-import org.bonge.convert.world.GeneratorTypeConverter;
 import org.bonge.convert.world.WorldConverter;
 import org.bonge.listeners.*;
 import org.bukkit.Bukkit;
@@ -31,44 +28,50 @@ import java.util.stream.Stream;
 
 public class BongeBukkitLaunch {
 
-    static void onEnable(){
+    static void onEnable() {
         BongeServer server = (BongeServer) Bukkit.getServer();
         BongePluginManager manager = server.getPluginManager();
         manager.bootPlugins();
     }
 
-    static void onLoad(BongeLaunch launch){
+    static void onInit() {
+        System.out.println("Bonge init");
         registerMaterials();
         registerConverters();
         registerBlockData();
-        BongeServer server = new BongeServer(Sponge.getServer());
-        Bukkit.setServer(server);
+        ((BongePluginManager) Bukkit.getPluginManager()).initPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
+
+    }
+
+    static void onLoad(BongeLaunch launch) {
         Bukkit.getPluginManager().loadPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
         //Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), BongeControlCommand.createCommand(), "control", "bongecontrol");
-        Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new BlockListener());
-        Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new ConnectionListener());
-        Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new InventoryListener());
-        Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new PlayerListener());
-        Sponge.getEventManager().registerListeners(BongeLaunch.getContainer(), new SourceListener());
+        Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new BlockListener());
+        Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new ConnectionListener());
+        Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new InventoryListener());
+        Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new PlayerListener());
+        Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new SourceListener());
     }
 
-    private static void registerBlockData(){
+    private static void registerBlockData() {
     }
 
-    static void registerMaterials(){
+    static void registerMaterials() {
         Stream.of(Material.class.getDeclaredFields())
                 .filter(f -> Modifier.isStatic(f.getModifiers()))
                 .filter(f -> f.getDeclaringClass().isAssignableFrom(Material.class))
                 .forEach(f -> {
                     try {
-                        Bonge.getInstance().register((BongeMaterial) f.get(null));
+                        f.setAccessible(true);
+                        Object bMaterial = f.get(null);
+                        Bonge.getInstance().register(((Material) bMaterial).getWrapper());
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
                 });
     }
 
-    static void registerConverters(){
+    static void registerConverters() {
         Bonge.getInstance().register(new GameModeConverter());
         Bonge.getInstance().register(new EntityConverter());
         Bonge.getInstance().register(new EntityTypeConverter());
@@ -84,11 +87,10 @@ public class BongeBukkitLaunch {
         Bonge.getInstance().register(new WorldConverter());
         Bonge.getInstance().register(new BlockTypeConverter());
         Bonge.getInstance().register(new ItemTypeConverter());
-        Bonge.getInstance().register(new DimensionConverter());
-        Bonge.getInstance().register(new GeneratorTypeConverter());
+        //Bonge.getInstance().register(new GeneratorTypeConverter());
     }
 
-    static void onDisable(BongeLaunch launch){
+    static void onDisable(BongeLaunch launch) {
         BongeLaunch.getConfig().save();
     }
 }

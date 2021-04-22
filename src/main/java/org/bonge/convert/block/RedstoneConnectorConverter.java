@@ -2,7 +2,6 @@ package org.bonge.convert.block;
 
 import org.bonge.convert.Converter;
 import org.bukkit.block.data.type.RedstoneWire;
-import org.bukkit.material.Redstone;
 import org.spongepowered.api.data.type.WireAttachmentType;
 import org.spongepowered.api.data.type.WireAttachmentTypes;
 
@@ -38,6 +37,6 @@ public class RedstoneConnectorConverter implements Converter<RedstoneWire.Connec
         }else if(value.equals(WireAttachmentTypes.NONE.get())){
             return RedstoneWire.Connection.NONE;
         }
-        throw new IOException("Unknown Sponge WireAttachmentType." + value.getKey().getValue());
+        throw new IOException("Unknown Sponge WireAttachmentType." + value.toString());
     }
 }

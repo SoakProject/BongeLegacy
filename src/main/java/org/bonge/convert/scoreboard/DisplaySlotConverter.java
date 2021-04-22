@@ -23,22 +23,22 @@ public class DisplaySlotConverter implements Converter<DisplaySlot, org.spongepo
         switch (value){
             case BELOW_NAME: return DisplaySlots.BELOW_NAME.get();
             case PLAYER_LIST: return DisplaySlots.LIST.get();
-            case SIDEBAR: return DisplaySlots.SIDEBAR.get();
+            case SIDEBAR: return DisplaySlots.SIDEBAR_TEAM_BLACK.get();
             default: throw new IOException("Unknown Display Slot of " + value.name());
         }
     }
 
     @Override
     public DisplaySlot to(org.spongepowered.api.scoreboard.displayslot.DisplaySlot value) throws IOException{
-        if(value.equals(DisplaySlots.BELOW_NAME)){
+        if(value.equals(DisplaySlots.BELOW_NAME.get())){
             return DisplaySlot.BELOW_NAME;
         }
-        if(value.equals(DisplaySlots.LIST)){
+        if(value.equals(DisplaySlots.LIST.get())){
             return DisplaySlot.PLAYER_LIST;
         }
-        if(value.equals(DisplaySlots.SIDEBAR)){
+        if(value.equals(DisplaySlots.SIDEBAR_TEAM_BLACK.get())){
             return DisplaySlot.SIDEBAR;
         }
-        throw new IOException("Unknown Display Slot of " + value.getKey().getFormatted());
+        throw new IOException("Unknown Display Slot of " + value.toString());
     }
 }

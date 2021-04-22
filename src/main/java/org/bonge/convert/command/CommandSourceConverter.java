@@ -1,8 +1,8 @@
 package org.bonge.convert.command;
 
-import org.bonge.bukkit.r1_15.command.rcon.RconCommandSource;
-import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_15.server.source.ConsoleSource;
+import org.bonge.bukkit.r1_16.command.rcon.RconCommandSource;
+import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_16.server.source.ConsoleSource;
 import org.bonge.convert.Converter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -36,7 +36,7 @@ public class CommandSourceConverter implements Converter<CommandSender, Subject>
             throw new IllegalStateException("CommandSource only works on a server");
         }
         if(sender instanceof ConsoleCommandSender){
-            return Sponge.getSystemSubject();
+            return Sponge.systemSubject();
         }
         if(sender instanceof RconCommandSource){
             return ((RconCommandSource)sender).getSpongeValue();
@@ -55,6 +55,6 @@ public class CommandSourceConverter implements Converter<CommandSender, Subject>
         if(source instanceof RconConnection){
             return new RconCommandSource((RconConnection) source);
         }
-        throw new IOException("Unknown source of " + source.getFriendlyIdentifier().orElse(source.getIdentifier()));
+        throw new IOException("Unknown source of " + source.friendlyIdentifier().orElse(source.identifier()));
     }
 }

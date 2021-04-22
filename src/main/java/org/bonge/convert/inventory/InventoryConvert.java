@@ -1,9 +1,9 @@
 package org.bonge.convert.inventory;
 
-import org.bonge.bukkit.r1_15.inventory.BongeInventory;
-import org.bonge.bukkit.r1_15.inventory.chest.BongeChestInventory;
-import org.bonge.bukkit.r1_15.inventory.chest.CustomChestInventory;
-import org.bonge.bukkit.r1_15.inventory.entity.living.player.BongePlayerInventory;
+import org.bonge.bukkit.r1_16.inventory.BongeInventory;
+import org.bonge.bukkit.r1_16.inventory.chest.BongeChestInventory;
+import org.bonge.bukkit.r1_16.inventory.chest.CustomChestInventory;
+import org.bonge.bukkit.r1_16.inventory.entity.living.player.BongePlayerInventory;
 import org.bonge.convert.Converter;
 import org.bukkit.inventory.Inventory;
 import org.spongepowered.api.block.entity.carrier.chest.Chest;
@@ -41,12 +41,18 @@ public class InventoryConvert implements Converter<Inventory, org.spongepowered.
             throw new IOException("Unknown inventory");
         }
         Container container = (Container)value;
-        ContainerType type = container.getType();
-        if(type.equals(ContainerTypes.GENERIC_9x1) || type.equals(ContainerTypes.GENERIC_9x2) || type.equals(ContainerTypes.GENERIC_9x3) || type.equals(ContainerTypes.GENERIC_9x4) || type.equals(ContainerTypes.GENERIC_9x5) || type.equals(ContainerTypes.GENERIC_9x6)){
-            if(value instanceof BlockEntityInventory && ((BlockEntityInventory<Chest>)value).getBlockEntity().isPresent()){
+        ContainerType type = container.type();
+        if(
+                type.equals(ContainerTypes.GENERIC_9X1.get()) ||
+                type.equals(ContainerTypes.GENERIC_9X2.get()) ||
+                type.equals(ContainerTypes.GENERIC_9X3.get()) ||
+                type.equals(ContainerTypes.GENERIC_9X4.get()) ||
+                type.equals(ContainerTypes.GENERIC_9X5.get()) ||
+                type.equals(ContainerTypes.GENERIC_9X6.get())){
+            if(value instanceof BlockEntityInventory && ((BlockEntityInventory<Chest>)value).blockEntity().isPresent()){
                 return new BongeChestInventory((BlockEntityInventory<Chest>) value);
             }else if (value instanceof ViewableInventory){
-                return new CustomChestInventory((ViewableInventory) value);
+                return new CustomChestInventory<>((ViewableInventory) value);
             }
             throw new IOException("Wait what? That inventory was a chest like inventory but wasn't connected to a chest nor is it viewable????");
         }

@@ -15,10 +15,10 @@ public class BukkitDownloader {
 
     public static final BukkitVersion BUKKIT_1_13_2 = new BukkitVersion("https://hub.spigotmc.org/nexus/service/local/repositories/snapshots/content/org/bukkit/bukkit/1.13.2-R0.1-SNAPSHOT/bukkit-1.13.2-R0.1-20190423.030918-214.jar", 134392663, BukkitType.BUKKIT, 1, 13, 2);
     public static final BukkitVersion BUKKIT_1_14_4 = new BukkitVersion("https://hub.spigotmc.org/nexus/service/local/repositories/snapshots/content/org/bukkit/bukkit/1.14.4-R0.1-SNAPSHOT/bukkit-1.14.4-R0.1-20191210.224213-92.jar", 1184424, BukkitType.BUKKIT, 1, 14, 4);
-    public static final BukkitVersion BUKKIT_1_15_2 = new BukkitVersion("https://hub.spigotmc.org/nexus/service/local/repositories/snapshots/content/org/bukkit/bukkit/1.15.2-R0.1-SNAPSHOT/bukkit-1.15.2-R0.1-20200624.000052-123.jar", 1184424, BukkitType.BUKKIT, 1, 14, 4);
+    public static final BukkitVersion BUKKIT_1_15_2 = new BukkitVersion("https://hub.spigotmc.org/nexus/service/local/repositories/snapshots/content/org/bukkit/bukkit/1.15.2-R0.1-SNAPSHOT/bukkit-1.15.2-R0.1-20200624.000052-123.jar", 1184424, BukkitType.BUKKIT, 1, 15, 2);
 
 
-    public static final BukkitVersion DEFAULT_VERSION = BUKKIT_1_14_4;
+    public static final BukkitVersion DEFAULT_VERSION = BUKKIT_1_15_2;
     public static final File DEFAULT_OUTPUT = new File("config/bonge/API/");
 
     private final File exactOutput;

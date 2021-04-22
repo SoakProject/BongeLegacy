@@ -1,6 +1,6 @@
 package org.bonge.util;
 
-import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.ResourceKeyed;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,8 +20,8 @@ public class WrappedArrayList<T> extends ArrayList<T> {
             for (E orig : list) {
                 T fin = to.apply(orig);
                 if (fin == null) {
-                    if (orig instanceof CatalogType) {
-                        System.err.println("Could not convert " + ((CatalogType) orig).getKey().getValue());
+                    if (orig instanceof ResourceKeyed) {
+                        System.err.println("Could not convert " + ((ResourceKeyed) orig).key().value());
                     } else {
                         System.err.println("Could not convert " + orig.toString());
                     }

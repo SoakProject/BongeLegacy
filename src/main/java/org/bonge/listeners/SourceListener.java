@@ -2,7 +2,7 @@ package org.bonge.listeners;
 
 import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.player.PlayerCommandSendEvent;
@@ -41,7 +41,7 @@ public class SourceListener {
 
     @Listener
     public void onCommand(ExecuteCommandEvent.Pre event){
-        Optional<Subject> opSubject = event.getContext().get(EventContextKeys.SUBJECT);
+        Optional<Subject> opSubject = event.context().get(EventContextKeys.SUBJECT);
         if(!opSubject.isPresent()){
             //SHOULDNT FAIL BUT JUST INCASE
             return;
@@ -51,8 +51,8 @@ public class SourceListener {
             if(sender instanceof BongePlayer) {
                 BongePlayer player = (BongePlayer) sender;
                 List<String> list = new ArrayList<>();
-                list.add(event.getCommand());
-                list.addAll(Arrays.asList(event.getArguments().split(" ")));
+                list.add(event.command());
+                list.addAll(Arrays.asList(event.arguments().split(" ")));
                 PlayerCommandSendEvent pcse = new PlayerCommandSendEvent(player, list);
                 Bukkit.getPluginManager().callEvent(pcse);
                 if(list.isEmpty()){
@@ -63,7 +63,7 @@ public class SourceListener {
                 list.remove(0);
                 event.setArguments(ArrayUtils.toString(" ", t -> t, list));
             }else{
-                ServerCommandEvent bEvent = new ServerCommandEvent(sender, event.getCommand() + " " + event.getArguments());
+                ServerCommandEvent bEvent = new ServerCommandEvent(sender, event.command() + " " + event.arguments());
                 Bukkit.getPluginManager().callEvent(bEvent);
                 event.setCancelled(bEvent.isCancelled());
                 List<String> list = new ArrayList<>(Arrays.asList(bEvent.getCommand().split(" ")));

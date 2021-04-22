@@ -1,8 +1,9 @@
 package org.bonge.config;
 
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,11 +64,11 @@ public class BongeConfig {
 
     public BongeConfig(File file){
         this.file = file;
-        this.loader = HoconConfigurationLoader.builder().setFile(file).build();
+        this.loader = HoconConfigurationLoader.builder().file(file).build();
         try {
             this.root = this.loader.load();
         } catch (IOException e) {
-            this.root = this.loader.createEmptyNode();
+            this.root = this.loader.createNode();
         }
         updateDefaults();
     }
@@ -96,19 +97,27 @@ public class BongeConfig {
     }
 
     public void writeComment(String comment, Object... path){
-        this.root.getNode(path).setComment(comment);
+        this.root.node(path).comment(comment);
     }
 
     public void write(Object value, Object... path){
-        this.root.getNode(path).setValue(value);
+        try {
+            this.root.node(path).set(value);
+        } catch (SerializationException e) {
+            e.printStackTrace();
+        }
     }
 
     public <T> void write(Function<T, Object> convert, BongeNode<T> node){
-        this.root.getNode(node.getPath()).setValue(convert.apply(node.getValue()));
+        try {
+            this.root.node(node.getPath()).set(convert.apply(node.getValue()));
+        } catch (SerializationException e) {
+            e.printStackTrace();
+        }
     }
 
     public <T> Optional<T> get(Function<ConfigurationNode, T> function, Object... path){
-        return Optional.ofNullable(function.apply(this.root.getNode(path)));
+        return Optional.ofNullable(function.apply(this.root.node(path)));
     }
 
     public <T> Optional<T> get(BongeNode<T> node){
@@ -120,7 +129,7 @@ public class BongeConfig {
     }
 
     public <T, A, R> R getCollection(Collector<T, A, R> collector, Function<ConfigurationNode, T> function, Object... path){
-        return this.root.getNode(path).getChildrenList().stream().map(function).collect(collector);
+        return this.root.node(path).childrenList().stream().map(function).collect(collector);
     }
 
     public void save(){

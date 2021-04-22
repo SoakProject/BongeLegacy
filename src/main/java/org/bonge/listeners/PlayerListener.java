@@ -1,10 +1,10 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.block.BongeBlock;
-import org.bonge.bukkit.r1_15.entity.EntityManager;
-import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_15.inventory.entity.living.player.PlayerInventorySnapshot;
+import org.bonge.bukkit.r1_16.block.BongeBlock;
+import org.bonge.bukkit.r1_16.entity.EntityManager;
+import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_16.inventory.entity.living.player.PlayerInventorySnapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -20,19 +20,18 @@ import org.bukkit.util.Vector;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.*;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.world.World;
-import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class PlayerListener {
 
@@ -41,14 +40,14 @@ public class PlayerListener {
         if (!event.willCauseDeath()) {
             return;
         }
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.entity() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getEntity();
+        Player player = (Player) event.entity();
         BongePlayer bPlayer = BongePlayer.getPlayer(player);
         try {
             bPlayer.getData().putOrReplace(EntityManager.INVENTORY, PlayerInventorySnapshot.of(bPlayer));
-            bPlayer.getData().putOrReplace(EntityManager.LOCATION, Bonge.getInstance().convert(Location.class, player.getLocation()));
+            bPlayer.getData().putOrReplace(EntityManager.LOCATION, Bonge.getInstance().convert(Location.class, player.location()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,15 +56,15 @@ public class PlayerListener {
 
     @Listener
     public void onDeathEvent(DestructEntityEvent.Death event) {
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.entity() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getEntity();
+        Player player = (Player) event.entity();
         BongePlayer bPlayer = BongePlayer.getPlayer(player);
         List<ItemStack> list = new ArrayList<>();
         int exp = 0;
-        String deathMessage = Bonge.getInstance().convert(event.getMessage());
-        if (!event.getKeepInventory()) {
+        String deathMessage = Bonge.getInstance().convert(event.message());
+        if (!event.keepInventory()) {
             list.addAll(Arrays.asList(bPlayer.getInventory().getContents()));
             exp = bPlayer.getTotalExperience();
         }
@@ -80,13 +79,13 @@ public class PlayerListener {
 
     @Listener
     public void onPlayerRotate(RotateEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.entity() instanceof Player)) {
             return;
         }
-        BongePlayer player = BongePlayer.getPlayer((Player) event.getEntity());
+        BongePlayer player = BongePlayer.getPlayer((Player) event.entity());
         try {
-            Location from = Bonge.getInstance().convert(Location.class, event.getFromRotation());
-            Location to = Bonge.getInstance().convert(Location.class, event.getToRotation());
+            Location from = Bonge.getInstance().convert(Location.class, event.fromRotation());
+            Location to = Bonge.getInstance().convert(Location.class, event.toRotation());
             PlayerMoveEvent event1 = new PlayerMoveEvent(player, from, to);
             Bukkit.getPluginManager().callEvent(event1);
             event.setToRotation(Bonge.getInstance().convertDouble(event1.getTo().getDirection()));
@@ -97,16 +96,16 @@ public class PlayerListener {
 
     @Listener
     public void onPlayerMove(MoveEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
+        if (!(event.entity() instanceof Player)) {
             return;
         }
-        BongePlayer player = BongePlayer.getPlayer((Player) event.getEntity());
+        BongePlayer player = BongePlayer.getPlayer((Player) event.entity());
         try {
-            Location from = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getDestinationPosition()));
-            Location to = Bonge.getInstance().convert(Location.class, event.getEntity().getWorld().getLocation(event.getDestinationPosition()));
+            Location from = Bonge.getInstance().convert(Location.class, event.entity().world().location(event.destinationPosition()));
+            Location to = Bonge.getInstance().convert(Location.class, event.entity().world().location(event.destinationPosition()));
             PlayerMoveEvent event1 = new PlayerMoveEvent(player, from, to);
             Bukkit.getPluginManager().callEvent(event1);
-            event.setDestinationPosition(Bonge.getInstance().convert(event1.getTo()).getPosition());
+            event.setDestinationPosition(Bonge.getInstance().convert(event1.getTo()).position());
             event.setCancelled(event1.isCancelled());
         } catch (IOException ignored) {
         }
@@ -116,17 +115,17 @@ public class PlayerListener {
     public void onPlayerInteractWithEntity(InteractEntityEvent event, @Root org.spongepowered.api.entity.living.player.Player player) {
         BongePlayer bPlayer = BongePlayer.getPlayer(player);
         try {
-            Entity entity = Bonge.getInstance().convert(Entity.class, event.getEntity());
+            Entity entity = Bonge.getInstance().convert(Entity.class, event.entity());
             PlayerInteractEntityEvent piee = new PlayerInteractEntityEvent(bPlayer, entity);
             Bukkit.getPluginManager().callEvent(piee);
             event.setCancelled(piee.isCancelled());
             if (event.isCancelled()) {
                 return;
             }
-            if (!event.getInteractionPoint().isPresent()) {
+            if (!event.context().containsKey(EventContextKeys.LOCATION)) {
                 return;
             }
-            PlayerInteractAtEntityEvent piaee = new PlayerInteractAtEntityEvent(bPlayer, entity, Bonge.getInstance().convert(Vector.class, event.getInteractionPoint().get()));
+            PlayerInteractAtEntityEvent piaee = new PlayerInteractAtEntityEvent(bPlayer, entity, Bonge.getInstance().convert(Vector.class, event.context().get(EventContextKeys.LOCATION).get()));
         } catch (IOException e) {
 
         }
@@ -134,7 +133,7 @@ public class PlayerListener {
 
     @Listener
     public void onAirClick(InteractEvent event, @Root org.spongepowered.api.entity.living.player.Player player) {
-        if (event instanceof InteractBlockEvent) {
+        /*if (event instanceof InteractBlockEvent) {
             return;
         }
         if (event instanceof InteractEntityEvent) {
@@ -146,7 +145,7 @@ public class PlayerListener {
             action = Action.LEFT_CLICK_AIR;
             stack = player.getItemInHand(HandTypes.MAIN_HAND);
         }
-        org.spongepowered.api.world.Location<?> loc;
+        org.spongepowered.api.world.Location<?, ?> loc;
         Optional<Vector3d> opVector = event.getInteractionPoint();
         if (opVector.isPresent()) {
             loc = player.getWorld().getLocation(opVector.get());
@@ -163,34 +162,31 @@ public class PlayerListener {
                 event.setCancelled(true);
             }
         } catch (IOException ignored) {
-        }
+        }*/
     }
 
     @Listener
     public void onBlockClick(InteractBlockEvent event, @Root org.spongepowered.api.entity.living.player.Player player) {
         BongePlayer bPlayer = BongePlayer.getPlayer(player);
         Action action = Action.RIGHT_CLICK_BLOCK;
-        org.spongepowered.api.item.inventory.ItemStack stack = player.getItemInHand(HandTypes.OFF_HAND);
+        org.spongepowered.api.item.inventory.ItemStack stack = player.itemInHand(HandTypes.OFF_HAND);
         if (event instanceof InteractBlockEvent.Primary) {
             action = Action.LEFT_CLICK_BLOCK;
-            stack = player.getItemInHand(HandTypes.MAIN_HAND);
+            stack = player.itemInHand(HandTypes.MAIN_HAND);
         }
-        org.spongepowered.api.world.Location<? extends World> loc;
-        BlockSnapshot snapshot = event.getBlock();
-        if (snapshot.getLocation().isPresent()) {
-            loc = snapshot.getLocation().get();
+        org.spongepowered.api.world.Location<? extends World, ?> loc;
+        BlockSnapshot snapshot = event.block();
+        if (snapshot.location().isPresent()) {
+            loc = snapshot.location().get();
         } else {
-            loc = player.getWorld().getLocation(snapshot.getPosition());
+            loc = player.world().location(snapshot.position());
         }
         BongeBlock bbs = new BongeBlock(loc);
         try {
-            BlockFace face = Bonge.getInstance().convert(BlockFace.class, event.getTargetSide());
+            BlockFace face = Bonge.getInstance().convert(BlockFace.class, event.targetSide());
             ItemStack stack2 = Bonge.getInstance().convert(ItemStack.class, stack);
             PlayerInteractEvent bEvent = new PlayerInteractEvent(bPlayer, action, stack2, bbs, face);
             Bukkit.getServer().getPluginManager().callEvent(bEvent);
-            if (bEvent.isCancelled()) {
-                event.setCancelled(true);
-            }
         } catch (IOException ignored) {
         }
     }

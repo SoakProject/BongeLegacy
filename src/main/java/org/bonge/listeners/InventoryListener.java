@@ -1,9 +1,9 @@
 package org.bonge.listeners;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_15.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_15.inventory.BongeInventory;
-import org.bonge.bukkit.r1_15.inventory.BongeInventoryView;
+import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
+import org.bonge.bukkit.r1_16.inventory.BongeInventory;
+import org.bonge.bukkit.r1_16.inventory.BongeInventoryView;
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
@@ -35,11 +35,11 @@ public class InventoryListener {
 
     @org.spongepowered.api.event.Listener
     public void onDropItem(DropItemEvent.Destruct event){
-        if(!(event.getSource() instanceof Entity)){
+        if(!(event.source() instanceof Entity)){
             return;
         }
         try {
-            org.bukkit.entity.Entity entity = Bonge.getInstance().convert(org.bukkit.entity.Entity.class, event.getSource());
+            org.bukkit.entity.Entity entity = Bonge.getInstance().convert(org.bukkit.entity.Entity.class, event.source());
             for (Entity entity1 : event.filterEntities(e -> e instanceof org.spongepowered.api.entity.Item)) {
                 Item item = (Item) Bonge.getInstance().convert(org.bukkit.entity.Entity.class, entity1);
                 if (entity instanceof Player) {
@@ -59,14 +59,14 @@ public class InventoryListener {
 
     @org.spongepowered.api.event.Listener
     public void onInventoryOpen(InteractContainerEvent.Open event, @First Player player){
-        Optional<BlockSnapshot> opBlock = event.getCause().getContext().get(EventContextKeys.BLOCK_HIT);
+        Optional<BlockSnapshot> opBlock = event.cause().context().get(EventContextKeys.BLOCK_HIT);
         if(!opBlock.isPresent()){
             return;
         }
-        if(!opBlock.get().getLocation().get().hasBlockEntity()){
+        if(!opBlock.get().location().get().hasBlockEntity()){
             return;
         }
-        BlockEntity blockEntity = opBlock.get().getLocation().get().getBlockEntity().get();
+        BlockEntity blockEntity = opBlock.get().location().get().blockEntity().get();
         if(!(blockEntity instanceof CarrierBlockEntity)){
             return;
         }
@@ -80,7 +80,7 @@ public class InventoryListener {
         Container container = (Container)bs;
         BongeInventory<? extends Inventory> inv = (BongeInventory<? extends Inventory>) container.getInventory();
         BongePlayer bPlayer = BongePlayer.getPlayer(player);
-        BongeInventoryView biv = new BongeInventoryView(bPlayer, inv, event.getContainer());
+        BongeInventoryView biv = new BongeInventoryView(bPlayer, inv, event.container());
         bPlayer.setInventoryView(biv);
         InventoryOpenEvent bEvent = new InventoryOpenEvent(biv);
         Bukkit.getPluginManager().callEvent(bEvent);
@@ -93,39 +93,39 @@ public class InventoryListener {
         BongeInventoryView view = player.getOpenInventory();
         BongeInventory<org.spongepowered.api.item.inventory.Container> bInv;
         try {
-            bInv = Bonge.getInstance().convert(event.getInventory());
+            bInv = Bonge.getInstance().convert(event.inventory());
         } catch (IOException e) {
             //NOT SURE HOW IT FAILS BUT JUST IN CASE
             throw new IllegalStateException(e);
         }
         if(view == null){
             //WELP ... SOMETHING WENT WRONG
-            view = new BongeInventoryView(player, bInv, event.getContainer());
+            view = new BongeInventoryView(player, bInv, event.container());
             player.setInventoryView(view);
         }
-        if(!event.getCursorTransaction().getFinal().equals(ItemStackSnapshot.empty())){
+        if(!event.cursorTransaction().finalReplacement().equals(ItemStackSnapshot.empty())){
             try {
-                ItemStack stack = Bonge.getInstance().convert(ItemStack.class, event.getCursorTransaction().getFinal());
+                ItemStack stack = Bonge.getInstance().convert(ItemStack.class, event.cursorTransaction().finalReplacement());
                 view.setCursor0(stack);
             } catch (IOException e) {
 
             }
         }
         //view.setEventReference(event);
-        for (int A = 0; A < event.getTransactions().size(); A++){
-            SlotTransaction transaction = event.getTransactions().get(A);
+        for (int A = 0; A < event.transactions().size(); A++){
+            SlotTransaction transaction = event.transactions().get(A);
             InventoryAction action = null;
-            Transaction<ItemStackSnapshot> cursorTrans = event.getCursorTransaction();
-            if(cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && !cursorTrans.getFinal().equals(ItemStackSnapshot.empty())){
+            Transaction<ItemStackSnapshot> cursorTrans = event.cursorTransaction();
+            if(cursorTrans.original().equals(ItemStackSnapshot.empty()) && !cursorTrans.finalReplacement().equals(ItemStackSnapshot.empty())){
                 action = InventoryAction.PICKUP_ALL;
-            }else if(!cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && cursorTrans.getFinal().equals(ItemStackSnapshot.empty())) {
+            }else if(!cursorTrans.original().equals(ItemStackSnapshot.empty()) && cursorTrans.finalReplacement().equals(ItemStackSnapshot.empty())) {
                 action = InventoryAction.PLACE_ALL;
-            }else if(cursorTrans.getOriginal().equals(ItemStackSnapshot.empty()) && cursorTrans.getFinal().equals(ItemStackSnapshot.empty())) {
+            }else if(cursorTrans.original().equals(ItemStackSnapshot.empty()) && cursorTrans.finalReplacement().equals(ItemStackSnapshot.empty())) {
                 action = InventoryAction.UNKNOWN;
             }else{
                 System.err.println("Could not work out InventoryAction:");
-                System.err.println("Original: " + cursorTrans.getOriginal());
-                System.err.println("Final: " + cursorTrans.getFinal());
+                System.err.println("Original: " + cursorTrans.original());
+                System.err.println("Final: " + cursorTrans.finalReplacement());
                 action = InventoryAction.UNKNOWN;
             }
             //TODO - Find how to get SlotIndex from Slot

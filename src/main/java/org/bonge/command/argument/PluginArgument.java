@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class PluginArgument implements ValueParser<Plugin> {
 
     @Override
-    public Optional<? extends Plugin> getValue(Parameter.Key<? super Plugin> parameterKey, ArgumentReader.Mutable reader, CommandContext.Builder context) throws ArgumentParseException {
+    public Optional<? extends Plugin> parseValue(Parameter.Key<? super Plugin> parameterKey, ArgumentReader.Mutable reader, CommandContext.Builder context) throws ArgumentParseException {
         String pluginName = reader.parseString();
         return Stream.of(Bukkit.getServer().getPluginManager().getPlugins()).filter(p -> p.getName().equalsIgnoreCase(pluginName)).findAny();
     }

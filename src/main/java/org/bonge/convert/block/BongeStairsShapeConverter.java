@@ -44,6 +44,6 @@ public class BongeStairsShapeConverter implements Converter<Stairs.Shape, StairS
         if(value.equals(StairShapes.OUTER_RIGHT.get())){
             return Stairs.Shape.OUTER_RIGHT;
         }
-        throw new IOException("Unknown Sponge StairShape." + value.getKey().getValue());
+        throw new IOException("Unknown Sponge StairShape." + value.toString());
     }
 }
