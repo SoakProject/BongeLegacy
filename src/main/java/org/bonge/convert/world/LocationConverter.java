@@ -4,13 +4,14 @@ import org.bonge.Bonge;
 import org.bonge.convert.Converter;
 import org.bukkit.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.io.IOException;
 
-public class LocationConverter implements Converter<Location, org.spongepowered.api.world.Location<? extends World, ? extends org.spongepowered.api.world.Location<?, ?>>> {
+public class LocationConverter implements Converter<Location, org.spongepowered.api.world.Location<? extends World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>>> {
     @Override
-    public Class<org.spongepowered.api.world.Location<? extends World, ? extends org.spongepowered.api.world.Location<?, ?>>> getSpongeClass() {
-        return (Class<org.spongepowered.api.world.Location<? extends World, ? extends org.spongepowered.api.world.Location<?, ?>>>) (Object) org.spongepowered.api.world.Location.class;
+    public Class<org.spongepowered.api.world.Location<? extends World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>>> getSpongeClass() {
+        return (Class<org.spongepowered.api.world.Location<? extends World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>>>) (Object) org.spongepowered.api.world.Location.class;
     }
 
     @Override
@@ -19,13 +20,13 @@ public class LocationConverter implements Converter<Location, org.spongepowered.
     }
 
     @Override
-    public org.spongepowered.api.world.Location<? extends World, ? extends org.spongepowered.api.world.Location<?, ?>> from(Location value) throws IOException {
-        World world = Bonge.getInstance().convert(value.getWorld(), World.class);
-        return world.location(value.getX(), value.getY(), value.getZ());
+    public org.spongepowered.api.world.Location<? extends World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>> from(Location value) throws IOException {
+        World<?, ?> world = Bonge.getInstance().convert(value.getWorld(), World.class);
+        return world.location(new Vector3d(value.getX(), value.getY(), value.getZ()));
     }
 
     @Override
-    public Location to(org.spongepowered.api.world.Location<? extends World, ?> value) throws IOException {
+    public Location to(org.spongepowered.api.world.Location<? extends World<?, ?>, ?> value) throws IOException {
         org.bukkit.World world = Bonge.getInstance().convert(org.bukkit.World.class, value.world());
         return new Location(world, value.x(), value.y(), value.z());
     }

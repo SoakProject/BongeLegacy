@@ -13,7 +13,7 @@ import org.spongepowered.api.entity.living.Living;
 import java.io.IOException;
 import java.util.Optional;
 
-public interface BongeAbstractMonster<T extends org.spongepowered.api.entity.living.Monster> extends ILivingEntity<T>, Monster {
+public interface IMonster<T extends org.spongepowered.api.entity.living.Monster> extends ILivingEntity<T>, Monster {
 
     @Override
     default void setAware(boolean aware) {

@@ -52,7 +52,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entity.living.player.Player> implements BongeAbstractHuman<org.spongepowered.api.entity.living.player.Player>, Player {
+public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entity.living.player.Player> implements IHuman<org.spongepowered.api.entity.living.player.Player>, Player {
 
     private static Set<BongePlayer> PLAYERS = new HashSet<>();
 
@@ -1085,7 +1085,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
 
     @Override
     public String getName() {
-        return BongeAbstractHuman.super.getName();
+        return IHuman.super.getName();
     }
 
     @Override

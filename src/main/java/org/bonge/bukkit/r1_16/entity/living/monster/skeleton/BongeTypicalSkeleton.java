@@ -1,14 +1,14 @@
 package org.bonge.bukkit.r1_16.entity.living.monster.skeleton;
 
 import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
-import org.bonge.bukkit.r1_16.entity.living.monster.BongeAbstractMonster;
+import org.bonge.bukkit.r1_16.entity.living.monster.IMonster;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton;
 import org.jetbrains.annotations.NotNull;
 
-public class BongeTypicalSkeleton extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.skeleton.Skeleton> implements BongeAbstractMonster<org.spongepowered.api.entity.living.monster.skeleton.Skeleton>, Skeleton {
+public class BongeTypicalSkeleton extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.skeleton.Skeleton> implements IMonster<org.spongepowered.api.entity.living.monster.skeleton.Skeleton>, Skeleton {
 
     public BongeTypicalSkeleton(org.spongepowered.api.entity.living.monster.skeleton.Skeleton entity) {
         super(entity);

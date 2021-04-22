@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
-public interface BongeAbstractHuman<T extends org.spongepowered.api.entity.living.Humanoid> extends ILivingEntity<T>, HumanEntity {
+public interface IHuman<T extends org.spongepowered.api.entity.living.Humanoid> extends ILivingEntity<T>, HumanEntity {
 
     @Override
     default @NotNull UUID getUniqueId() {

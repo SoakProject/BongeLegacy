@@ -2,9 +2,7 @@ package org.bonge.listeners;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.block.BongeBlock;
-import org.bonge.bukkit.r1_16.entity.EntityManager;
 import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
-import org.bonge.bukkit.r1_16.inventory.entity.living.player.PlayerInventorySnapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -37,7 +35,7 @@ public class PlayerListener {
 
     @Listener
     public void onDamageEvent(DamageEntityEvent event) {
-        if (!event.willCauseDeath()) {
+        /*if (!event.willCauseDeath()) {
             return;
         }
         if (!(event.entity() instanceof Player)) {
@@ -50,8 +48,7 @@ public class PlayerListener {
             bPlayer.getData().putOrReplace(EntityManager.LOCATION, Bonge.getInstance().convert(Location.class, player.location()));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        }*/
     }
 
     @Listener
@@ -72,9 +69,9 @@ public class PlayerListener {
         Bukkit.getPluginManager().callEvent(dEvent);
         event.setMessage(Bonge.getInstance().convertText(dEvent.getDeathMessage()));
         event.setKeepInventory(dEvent.getKeepInventory());
-        EntityManager.KeyHashMap data = bPlayer.getData();
+        /*EntityManager.KeyHashMap data = bPlayer.getData();
         data.remove(EntityManager.LOCATION);
-        data.remove(EntityManager.INVENTORY);
+        data.remove(EntityManager.INVENTORY);*/
     }
 
     @Listener

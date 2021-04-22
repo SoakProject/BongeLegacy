@@ -1,13 +1,13 @@
 package org.bonge.bukkit.r1_16.entity.living.monster.spider;
 
 import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
-import org.bonge.bukkit.r1_16.entity.living.monster.BongeAbstractMonster;
+import org.bonge.bukkit.r1_16.entity.living.monster.IMonster;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Spider;
 import org.jetbrains.annotations.NotNull;
 
-public class BongeTypicalSpider extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.spider.Spider> implements BongeAbstractMonster<org.spongepowered.api.entity.living.monster.spider.Spider>, Spider {
+public class BongeTypicalSpider extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.spider.Spider> implements IMonster<org.spongepowered.api.entity.living.monster.spider.Spider>, Spider {
 
     public BongeTypicalSpider(org.spongepowered.api.entity.living.monster.spider.Spider entity) {
         super(entity);

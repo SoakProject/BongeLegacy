@@ -5,6 +5,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
@@ -12,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.registry.RegistryTypes;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowered.api.block.BlockState> implements IBongeBlockData {
 
@@ -43,19 +46,23 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
 
     @Override
     public @NotNull String getAsString() {
-        //return this.spongeValue.getKey().getValue();
-        throw new NotImplementedException("BlockData.getAsString() - Unable to get id from BlockState");
+        List<String> builder = this.spongeValue.statePropertyMap().entrySet().stream().map((entry) -> entry.getKey().name() + "=" + entry.getValue()).collect(Collectors.toList());
+        String properties = "[" + ArrayUtils.toString(", ", t -> t, builder) + "]";
+        if (properties.equals("[null]")) {
+            properties = "";
+        }
+        return this.spongeValue.type().key(RegistryTypes.BLOCK_TYPE).formatted() + properties;
     }
 
     @Override
-    public @NotNull String getAsString(boolean check){
+    public @NotNull String getAsString(boolean check) {
         return getAsString();
     }
 
     @Override
     public @NotNull BlockData merge(@NotNull BlockData data) {
         BlockState state = this.spongeValue;
-        BlockState state2 = ((BongeAbstractBlockData)data).spongeValue;
+        BlockState state2 = ((BongeAbstractBlockData) data).spongeValue;
         return this.newInstance(state.mergeWith(state2));
     }
 
@@ -66,14 +73,14 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
     }
 
     @Override
-    public @NotNull BlockData clone(){
+    public @NotNull BlockData clone() {
         return newInstance(this.spongeValue);
     }
 
     public static BongeAbstractBlockData findDynamicClass(BlockState state) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Set<Map.Entry<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>>> entries = Bonge.getInstance().getKnownBlockDataInterfaces().entrySet();
         Optional<Map.Entry<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>>> opData = entries.stream().filter(e -> e.getKey().test(state)).findAny();
-        if(opData.isPresent()){
+        if (opData.isPresent()) {
             return opData.get().getValue().apply(state);
         }
         return buildDynamicClass(state);

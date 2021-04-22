@@ -9,7 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.material.MaterialData;
 import org.jetbrains.annotations.NotNull;
 
-public class BongeEnderman extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.Enderman> implements BongeAbstractMonster<org.spongepowered.api.entity.living.monster.Enderman>, Enderman {
+public class BongeEnderman extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.Enderman> implements IMonster<org.spongepowered.api.entity.living.monster.Enderman>, Enderman {
 
     public BongeEnderman(org.spongepowered.api.entity.living.monster.Enderman entity) {
         super(entity);

@@ -12,7 +12,6 @@ import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.ArgumentReader;
-import org.spongepowered.api.event.EventContextKey;
 import org.spongepowered.api.event.EventContextKeys;
 
 import java.util.List;
@@ -34,14 +33,14 @@ public class RawSpongeCommand implements Command.Raw {
     public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
         CommandSender sender = Bonge.getInstance().convert(cause.audience());
         String cmdLabel = cause.context().get(EventContextKeys.COMMAND).orElse(this.commandState.getLabel());
-        String[] cmdArguments = arguments.parseString().split(" ");
-if(cmdArguments.length == 1){
-    if (cmdArguments[0].length() == 0){
-    cmdArguments = new String[0];
-    }
-}
+        String[] cmdArguments = arguments.input().split(" ");
+        if (cmdArguments.length == 1) {
+            if (cmdArguments[0].length() == 0) {
+                cmdArguments = new String[0];
+            }
+        }
         boolean bukkitResult = this.commandState.getCmd().execute(sender, cmdLabel, cmdArguments);
-        if(bukkitResult){
+        if (bukkitResult) {
             return CommandResult.success();
         }
         return CommandResult.empty();
@@ -51,8 +50,8 @@ if(cmdArguments.length == 1){
     public List<String> suggestions(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
         CommandSender sender = Bonge.getInstance().convert(cause.audience());
         String cmdLabel = cause.context().get(EventContextKeys.COMMAND).orElse(this.commandState.getLabel());
-        String[] cmdArguments = arguments.parseString().split(" ");
-        if(cmdArguments.length == 0){
+        String[] cmdArguments = arguments.input().split(" ");
+        if (cmdArguments.length == 0) {
             cmdArguments = new String[]{""};
         }
         return this.commandState.getCmd().tabComplete(sender, cmdLabel, cmdArguments);
@@ -61,7 +60,7 @@ if(cmdArguments.length == 1){
     @Override
     public boolean canExecute(CommandCause cause) {
         String permission = this.commandState.getCmd().getPermission();
-        if(permission == null){
+        if (permission == null) {
             return true;
         }
         return cause.hasPermission(permission);

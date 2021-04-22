@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.util.Ticks;
 
-public class BongeCreeper extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.Creeper> implements BongeAbstractMonster<org.spongepowered.api.entity.living.monster.Creeper>, Creeper {
+public class BongeCreeper extends BongeAbstractEntity<org.spongepowered.api.entity.living.monster.Creeper> implements IMonster<org.spongepowered.api.entity.living.monster.Creeper>, Creeper {
 
     public BongeCreeper(org.spongepowered.api.entity.living.monster.Creeper entity) {
         super(entity);

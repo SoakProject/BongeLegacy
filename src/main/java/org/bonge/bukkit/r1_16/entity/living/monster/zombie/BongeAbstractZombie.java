@@ -1,11 +1,11 @@
 package org.bonge.bukkit.r1_16.entity.living.monster.zombie;
 
-import org.bonge.bukkit.r1_16.entity.living.monster.BongeAbstractMonster;
+import org.bonge.bukkit.r1_16.entity.living.monster.IMonster;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.entity.Ageable;
 import org.spongepowered.api.data.Keys;
 
-public interface BongeAbstractZombie<Z extends org.spongepowered.api.entity.living.Monster> extends BongeAbstractMonster<Z>, Ageable {
+public interface BongeAbstractZombie<Z extends org.spongepowered.api.entity.living.Monster> extends IMonster<Z>, Ageable {
 
     @Override
     default int getAge() {
