@@ -23,6 +23,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.value.Value;
@@ -39,6 +40,16 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
 
     default EntityManager.KeyHashMap getData() {
         return ((BongeServer) Bukkit.getServer()).getEntityManager().getData(this);
+    }
+
+    @Override
+    default void sendMessage(@Nullable UUID uuid, @NotNull String s) {
+
+    }
+
+    @Override
+    default void sendMessage(@Nullable UUID uuid, @NotNull String[] strings) {
+
     }
 
     @Override
@@ -172,12 +183,12 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
     }
 
     @Override
-    default Server getServer() {
+    default @NotNull Server getServer() {
         return Bukkit.getServer();
     }
 
     @Override
-    default String getName() {
+    default @NotNull String getName() {
         Value.Mutable<Component> name = this.getSpongeValue().displayName();
         return Bonge.getInstance().convert(name.get());
     }
@@ -204,7 +215,7 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
 
     @Override
     @Deprecated
-    default boolean setPassenger(Entity entity) {
+    default boolean setPassenger(@NotNull Entity entity) {
         List<Entity> entities = this.getPassengers();
         entities.clear();
         return entities.add(entity);
@@ -479,7 +490,7 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
     }
 
     @Override
-    default PermissionAttachment addAttachment(@NotNull Plugin plugin) {
+    default @NotNull PermissionAttachment addAttachment(@NotNull Plugin plugin) {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -501,12 +512,11 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
 
     @Override
     default void recalculatePermissions() {
-        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     default @NotNull Set<PermissionAttachmentInfo> getEffectivePermissions() {
-        throw new NotImplementedException("Not got to yet");
+        return Collections.emptySet();
     }
 
     @Override

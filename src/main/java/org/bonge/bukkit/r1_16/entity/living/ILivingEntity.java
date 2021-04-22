@@ -397,8 +397,7 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
 
     @Override
     default double getHealth() {
-        throw new NotImplementedException("Not got to yet");
-
+        return this.getSpongeValue().get(Keys.HEALTH).orElseThrow(() -> new IllegalStateException("Entity does not have health"));
     }
 
     @Override
@@ -409,7 +408,7 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
 
     @Override
     default double getMaxHealth() {
-        throw new NotImplementedException("Not got to yet");
+        return this.getSpongeValue().get(Keys.MAX_HEALTH).orElseThrow(() -> new IllegalStateException("Entity does not have health"));
 
     }
 

@@ -1,12 +1,19 @@
 package org.bonge.bukkit.r1_16.command;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bonge.Bonge;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.ArgumentReader;
+import org.spongepowered.api.event.EventContextKey;
+import org.spongepowered.api.event.EventContextKeys;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,31 +32,59 @@ public class RawSpongeCommand implements Command.Raw {
 
     @Override
     public CommandResult process(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
-        return null;
+        CommandSender sender = Bonge.getInstance().convert(cause.audience());
+        String cmdLabel = cause.context().get(EventContextKeys.COMMAND).orElse(this.commandState.getLabel());
+        String[] cmdArguments = arguments.parseString().split(" ");
+if(cmdArguments.length == 1){
+    if (cmdArguments[0].length() == 0){
+    cmdArguments = new String[0];
+    }
+}
+        boolean bukkitResult = this.commandState.getCmd().execute(sender, cmdLabel, cmdArguments);
+        if(bukkitResult){
+            return CommandResult.success();
+        }
+        return CommandResult.empty();
     }
 
     @Override
     public List<String> suggestions(CommandCause cause, ArgumentReader.Mutable arguments) throws CommandException {
-        return null;
+        CommandSender sender = Bonge.getInstance().convert(cause.audience());
+        String cmdLabel = cause.context().get(EventContextKeys.COMMAND).orElse(this.commandState.getLabel());
+        String[] cmdArguments = arguments.parseString().split(" ");
+        if(cmdArguments.length == 0){
+            cmdArguments = new String[]{""};
+        }
+        return this.commandState.getCmd().tabComplete(sender, cmdLabel, cmdArguments);
     }
 
     @Override
     public boolean canExecute(CommandCause cause) {
-        return false;
+        String permission = this.commandState.getCmd().getPermission();
+        if(permission == null){
+            return true;
+        }
+        return cause.hasPermission(permission);
     }
 
     @Override
     public Optional<Component> shortDescription(CommandCause cause) {
-        return Optional.empty();
+        String description = this.commandState.getCmd().getDescription();
+        @NonNull TextComponent component = LegacyComponentSerializer.legacySection().deserialize(description);
+        return Optional.of(component);
     }
 
     @Override
     public Optional<Component> extendedDescription(CommandCause cause) {
-        return Optional.empty();
+        String description = this.commandState.getCmd().getDescription();
+        @NonNull TextComponent component = LegacyComponentSerializer.legacySection().deserialize(description);
+        return Optional.of(component);
     }
 
     @Override
     public Component usage(CommandCause cause) {
-        return null;
+        String usage = this.commandState.getCmd().getUsage();
+        @NonNull TextComponent component = LegacyComponentSerializer.legacySection().deserialize(usage);
+        return component;
     }
 }

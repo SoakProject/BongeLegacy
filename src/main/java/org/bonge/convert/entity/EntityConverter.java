@@ -2,6 +2,7 @@ package org.bonge.convert.entity;
 
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
+import org.bonge.bukkit.r1_16.entity.ForgeEntity;
 import org.bonge.bukkit.r1_16.entity.living.animal.*;
 import org.bonge.bukkit.r1_16.entity.living.animal.horse.BongeHorse;
 import org.bonge.bukkit.r1_16.entity.living.animal.horse.Llama.BongeTraderLlama;
@@ -17,9 +18,12 @@ import org.bonge.bukkit.r1_16.entity.living.other.bat.BongeBat;
 import org.bonge.bukkit.r1_16.entity.living.other.squid.BongeSquid;
 import org.bonge.bukkit.r1_16.entity.living.other.trader.BongeVillager;
 import org.bonge.bukkit.r1_16.entity.other.item.BongeItem;
+import org.bonge.bukkit.r1_16.entity.vehicle.minecart.BongeMinecartChest;
 import org.bonge.convert.Converter;
 import org.bukkit.entity.Entity;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.entity.living.animal.Cat;
+import org.spongepowered.api.entity.living.animal.Fox;
 import org.spongepowered.api.entity.living.animal.Wolf;
 import org.spongepowered.api.entity.living.animal.cow.Cow;
 import org.spongepowered.api.entity.living.animal.horse.Horse;
@@ -30,10 +34,16 @@ import org.spongepowered.api.entity.living.monster.spider.CaveSpider;
 import org.spongepowered.api.entity.living.monster.spider.Spider;
 import org.spongepowered.api.entity.living.monster.zombie.Zombie;
 import org.spongepowered.api.entity.living.trader.Villager;
+import org.spongepowered.api.entity.vehicle.minecart.carrier.ChestMinecart;
+import org.spongepowered.api.registry.RegistryTypes;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EntityConverter implements Converter<Entity, org.spongepowered.api.entity.Entity> {
+
+    static Set<String> FAILED_TO_CONVERT = new HashSet<>();
 
     @Override
     public Class<org.spongepowered.api.entity.Entity> getSpongeClass() {
@@ -115,6 +125,19 @@ public class EntityConverter implements Converter<Entity, org.spongepowered.api.
         if (entity instanceof Cat) {
             return new BongeCat((Cat) entity);
         }
-        throw new IOException("Unknown entity of " + PlainComponentSerializer.plain().serialize(entity.type().asComponent()));
+        if(entity instanceof ChestMinecart){
+            return new BongeMinecartChest((ChestMinecart) entity);
+        }
+        if(entity instanceof Fox){
+            return new BongeFox((Fox) entity);
+        }
+
+        String entityId = entity.type().findKey(RegistryTypes.ENTITY_TYPE).map(ResourceKey::asString).orElse(PlainComponentSerializer.plain().serialize(entity.type().asComponent()));
+
+        if(!FAILED_TO_CONVERT.contains(entityId)){
+            System.err.println("Could not convert entity: '" + entityId + "' using forge adapter for this entity.");
+            FAILED_TO_CONVERT.add(entityId);
+        }
+        return new ForgeEntity<>(entity);
     }
 }

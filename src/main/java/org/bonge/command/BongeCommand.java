@@ -3,6 +3,7 @@ package org.bonge.command;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.array.utils.ArrayUtils;
 import org.bonge.bukkit.r1_16.server.BongeServer;
@@ -39,7 +40,7 @@ public class BongeCommand {
             Subject src = args.subject();
             if (!opFlag.isPresent()) {
                 ((BongeServer) Bukkit.getServer()).getPluginManager().getBongePlugins().stream().filter(l -> l instanceof JavaPluginLoader).forEach(l -> {
-                    args.sendMessage(Identity.nil(), Component.text((((JavaPluginLoader) l).getYaml().getFullName())));
+                    args.sendMessage(Identity.nil(), Component.text((((JavaPluginLoader) l).getYaml().getFullName())).color(NamedTextColor.WHITE));
                     ((JavaPluginLoader) l).getClasses().forEach(c -> args.sendMessage(Identity.nil(), Component.text(" - " + c.getName())));
                 });
                 return CommandResult.success();
@@ -51,14 +52,14 @@ public class BongeCommand {
                         .filter(m -> m.getParameterCount() == 1)
                         .filter(m -> m.getParameters()[0].getType().isAssignableFrom(e.getEvent()))
                         .forEach(m -> {
-                            args.sendMessage(Identity.nil(), Component.text("- " + m.getName() + " | " + m.getParameters()[0].getType().getSimpleName() + " | " + e.getHolder().getName() + " | " + m.getDeclaringClass().getSimpleName()));
+                            args.sendMessage(Identity.nil(), Component.text("- " + m.getName() + " | " + m.getParameters()[0].getType().getSimpleName() + " | " + e.getHolder().getName() + " | " + m.getDeclaringClass().getSimpleName()).color(NamedTextColor.WHITE));
                         }));
                 return CommandResult.success();
             }
             if (flag.equalsIgnoreCase("fired-events")) {
                 List<Class<?>> list = ((BongePluginManager) Bukkit.getServer().getPluginManager()).getFiredEvents();
                 for (int A = list.size() - 5; A < list.size(); A++) {
-                    args.sendMessage(Identity.nil(), Component.text("- " + list.get(A).getSimpleName()));
+                    args.sendMessage(Identity.nil(), Component.text("- " + list.get(A).getSimpleName()).color(NamedTextColor.WHITE));
                 }
                 return CommandResult.success();
             }
@@ -82,7 +83,7 @@ public class BongeCommand {
                                             .text("Command: " + c.getName() + ": ")
                                             .color(TextColor.color(11)),
                                     Component
-                                            .text(c.getDescription()))));
+                                            .text(c.getDescription()).color(NamedTextColor.WHITE))));
             return CommandResult.success();
         }
     }
@@ -92,10 +93,10 @@ public class BongeCommand {
         @Override
         public CommandResult execute(CommandContext args) throws CommandException {
             if (BongeLaunch.isBukkitAPILoaded()) {
-                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(Bukkit.getServer().getVersion())));
+                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(Bukkit.getServer().getVersion()).color(NamedTextColor.WHITE)));
             } else {
-                args.sendMessage(Identity.nil(), Component.text("warning: The Bukkit API has not been loaded, make sure it is downloaded and then restart the server to use Bukkit plugins"));
-                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(BongeLaunch.PLUGIN_VERSION + "(" + BongeLaunch.IMPLEMENTATION_VERSION + ")")));
+                args.sendMessage(Identity.nil(), Component.text("warning: The Bukkit API has not been loaded, make sure it is downloaded and then restart the server to use Bukkit plugins").color(NamedTextColor.WHITE));
+                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(BongeLaunch.PLUGIN_VERSION + "(" + BongeLaunch.IMPLEMENTATION_VERSION + ")")).color(NamedTextColor.WHITE));
             }
             return CommandResult.success();
         }

@@ -15,7 +15,7 @@ import org.spongepowered.api.service.permission.Subject;
 
 import java.io.IOException;
 
-public class CommandSourceConverter implements Converter<CommandSender, Subject> {
+public class CommandSubjectSourceConverter implements Converter<CommandSender, Subject> {
     @Override
     public Class<Subject> getSpongeClass() {
         return Subject.class;

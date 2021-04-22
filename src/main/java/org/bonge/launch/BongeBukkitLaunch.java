@@ -7,7 +7,7 @@ import org.bonge.config.BongeConfig;
 import org.bonge.convert.block.BlockTypeConverter;
 import org.bonge.convert.bossbar.ColorConverter;
 import org.bonge.convert.bossbar.StyleConverter;
-import org.bonge.convert.command.CommandSourceConverter;
+import org.bonge.convert.command.CommandSubjectSourceConverter;
 import org.bonge.convert.entity.EntityConverter;
 import org.bonge.convert.entity.EntityTypeConverter;
 import org.bonge.convert.entity.GameModeConverter;
@@ -79,7 +79,7 @@ public class BongeBukkitLaunch {
         Bonge.getInstance().register(new StyleConverter());
         Bonge.getInstance().register(new DisplaySlotConverter());
         Bonge.getInstance().register(new ProjectileSourceConverter());
-        Bonge.getInstance().register(new CommandSourceConverter());
+        Bonge.getInstance().register(new CommandSubjectSourceConverter());
         Bonge.getInstance().register(new ItemTypeConverter());
         Bonge.getInstance().register(new ItemStackConverter());
         Bonge.getInstance().register(new ItemStackSnapshotConverter());

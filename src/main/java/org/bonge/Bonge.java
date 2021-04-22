@@ -1,6 +1,7 @@
 package org.bonge;
 
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bonge.bukkit.r1_16.block.data.BongeAbstractBlockData;
@@ -11,6 +12,7 @@ import org.bonge.bukkit.r1_16.inventory.chest.CustomChestInventory;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.convert.Converter;
 import org.bonge.convert.block.AxisConverter;
+import org.bonge.convert.command.CommandAudienceSourceConverter;
 import org.bonge.convert.inventory.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.convert.world.DirectionConverter;
@@ -20,6 +22,7 @@ import org.bonge.convert.world.vector.Vector3iConverter;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.block.BlockState;
@@ -61,6 +64,7 @@ public class Bonge {
     public static final TextConverter TEXT = instance.register(new TextConverter());
     public static final InventoryConvert INVENTORY = instance.register(new InventoryConvert());
     public static final AxisConverter AXIS = instance.register(new AxisConverter());
+    public static final CommandAudienceSourceConverter COMMAND_AUDIENCE = instance.register(new CommandAudienceSourceConverter());
 
     public <B, S> Set<Converter<B, S>> getConverts(Class<B> bClass, Class<S> sClass) {
         return (Set<Converter<B, S>>) (Object) this.getConverts().stream().filter(c -> c.getBukkitClass().isAssignableFrom(bClass) && c.getSpongeClass().isAssignableFrom(sClass)).collect(Collectors.toSet());
@@ -215,6 +219,22 @@ public class Bonge {
 
     public Vector3d convertDouble(Vector vector) {
         return VECTOR_3D.from(vector);
+    }
+
+    public Audience convertAudience(CommandSender sender) {
+        try {
+            return COMMAND_AUDIENCE.from(sender);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public CommandSender convert(Audience audience){
+        try {
+            return COMMAND_AUDIENCE.to(audience);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     //END OF COMMON CONVERTS

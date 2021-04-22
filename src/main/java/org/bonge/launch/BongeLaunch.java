@@ -63,19 +63,15 @@ public final class BongeLaunch {
     public void onRegisterPluginCommand(RegisterCommandEvent<Command.Raw> event) {
         BongeServer server = (BongeServer) Bukkit.getServer();
         BongePluginManager pluginManager = server.getPluginManager();
+        BongeCommandManager commandManager = server.getCommandManager();
         org.bukkit.plugin.Plugin[] plugins = pluginManager.initPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
         Stream.of(plugins)
                 .filter(plugin -> plugin instanceof JavaPlugin)
                 .map(plugin -> (JavaPlugin) plugin)
                 .forEach(plugin -> pluginManager.bootCommands(plugin).forEach(command -> {
-                    String[] aliases = command.getAliases().stream().toArray(new IntFunction<String[]>() {
-                        @Override
-                        public String[] apply(int value) {
-                            return new String[value];
-                        }
-                    });
-
+                    String[] aliases = command.getAliases().toArray(new String[0]);
                     event.register(this.container, new RawSpongeCommand(command), command.getLabel(), aliases);
+                    commandManager.register(command);
                 }));
         this.commandEvent = event;
     }
@@ -119,10 +115,6 @@ public final class BongeLaunch {
             return;
         }
         BongeBukkitLaunch.onLoad(this);
-        BongeCommandManager cmdManager = ((BongeServer) Bukkit.getServer()).getCommandManager();
-        if (this.commandEvent != null) {
-            cmdManager.registerWithSponge(this.commandEvent);
-        }
         BongeBukkitLaunch.onEnable();
     }
 

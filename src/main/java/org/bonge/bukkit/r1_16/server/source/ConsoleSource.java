@@ -45,13 +45,13 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(@Nullable UUID sender, @NotNull String message) {
-        throw new NotImplementedException("yet to look at");
+        sendMessage(message);
 
     }
 
     @Override
     public void sendMessage(@Nullable UUID sender, @NotNull String[] messages) {
-
+    sendMessage(messages);
     }
 
     @Override

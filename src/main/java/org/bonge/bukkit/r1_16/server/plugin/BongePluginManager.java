@@ -122,7 +122,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         plugins.forEach(p -> {
             BongeCommandManager cmdManager = ((BongeServer) Bukkit.getServer()).getCommandManager();
             JavaPlugin plugin = (JavaPlugin) p.getPlugin().get();
-            Set<PluginCommand> commands = bootCommands(plugin);
+            Set<PluginCommand> commands = cmdManager.getCommands(plugin);
             commands.forEach(cmdManager::register);
             plugin.getDescription().getPermissions().forEach(this::addPermission);
             String api = plugin.getDescription().getAPIVersion();

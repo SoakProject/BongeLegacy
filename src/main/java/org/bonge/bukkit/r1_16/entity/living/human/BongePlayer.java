@@ -70,7 +70,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
 
     @Override
     @Deprecated
-    public Player.Spigot spigot() {
+    public Player.@NotNull Spigot spigot() {
         throw new NotImplementedException("yet to look at");
     }
 
@@ -1176,7 +1176,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
-    public boolean isPermissionSet(Permission permission) {
+    public boolean isPermissionSet(@NotNull Permission permission) {
         return this.isPermissionSet(permission.getName());
     }
 

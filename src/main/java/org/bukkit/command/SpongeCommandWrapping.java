@@ -19,7 +19,7 @@ public class SpongeCommandWrapping implements CommandExecutor {
 
     public SpongeCommandWrapping(CommandState state) {
         this.state = state;
-        this.commandArguments = Parameter.remainingJoinedStrings().suggestions((context, input) -> {
+        this.commandArguments = Parameter.remainingJoinedStrings().key("args").suggestions((context, input) -> {
             Collection<? extends String> args = context.all(SpongeCommandWrapping.this.commandArguments);
 
             CommandSender sender;
