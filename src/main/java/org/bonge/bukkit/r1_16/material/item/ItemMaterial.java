@@ -184,4 +184,17 @@ public class ItemMaterial implements BongeMaterial.Item {
         Optional<Block> opMaterial = this.toBlock();
         return opMaterial.map(block -> block.createBlockData(data)).orElse(null);
     }
+
+    @Override
+    public int hashCode() {
+        return ("Item:" + this.name).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof ItemMaterial)){
+            return false;
+        }
+        return this.hashCode() == obj.hashCode();
+    }
 }

@@ -186,4 +186,17 @@ public class BlockMaterial implements BongeMaterial.Block {
         Optional<Double> opProp = this.spongeValue.get(Keys.BLAST_RESISTANCE);
         return opProp.map(Double::floatValue).orElse(0F);
     }
+
+    @Override
+    public int hashCode() {
+        return ("Block:" + this.name).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof BlockMaterial)){
+            return false;
+        }
+        return this.hashCode() == obj.hashCode();
+    }
 }

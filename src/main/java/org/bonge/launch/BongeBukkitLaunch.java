@@ -1,6 +1,7 @@
 package org.bonge.launch;
 
 import org.bonge.Bonge;
+import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.bukkit.r1_16.server.BongeServer;
 import org.bonge.bukkit.r1_16.server.plugin.BongePluginManager;
 import org.bonge.config.BongeConfig;
@@ -64,7 +65,9 @@ public class BongeBukkitLaunch {
                     try {
                         f.setAccessible(true);
                         Object bMaterial = f.get(null);
-                        Bonge.getInstance().register(((Material) bMaterial).getWrapper());
+                        BongeMaterial material = ((Material) bMaterial).getWrapper();
+                        material.toBlock().ifPresent(block -> Bonge.getInstance().register(block));
+                        material.toItem().ifPresent(block -> Bonge.getInstance().register(block));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }

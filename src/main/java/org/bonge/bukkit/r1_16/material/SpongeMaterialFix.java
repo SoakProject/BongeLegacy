@@ -3,13 +3,15 @@ package org.bonge.bukkit.r1_16.material;
 import org.bonge.bukkit.r1_16.material.block.BlockMaterial;
 import org.bonge.bukkit.r1_16.material.item.ItemMaterial;
 import org.bukkit.Material;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 
 import java.util.Optional;
 
 public enum SpongeMaterialFix {
 
-    CAKE((BlockMaterial) Material.CAKE.getWrapper(), new ItemMaterial(ItemTypes.CAKE.get(), "CAKE"));
+    CAKE((BlockMaterial) Material.CAKE.getWrapper(), new ItemMaterial(ItemTypes.CAKE.get(), "CAKE")),
+    AIR((BlockMaterial) Material.AIR.getWrapper(), new ItemMaterial(ItemTypes.CAKE.get(), Material.AIR.name()));
 
     private final BlockMaterial block;
     private final ItemMaterial item;

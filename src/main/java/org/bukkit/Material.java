@@ -1,6 +1,7 @@
 package org.bukkit;
 
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.bukkit.r1_16.material.UnknownMaterial;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Material implements Keyed {
@@ -1266,7 +1268,7 @@ public final class Material implements Keyed {
             }
             Optional<BongeMaterial.Item> opItem = m.material.toItem();
             return opItem.map(item -> item.getSpongeItemType().equals(type)).orElse(false);
-        }).orElseThrow(() -> new IllegalStateException("Sponge itemtype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered"));
+        }).orElseThrow(() -> new IllegalStateException("Sponge itemtype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " + ArrayUtils.toString(",", Material::name, Stream.of(values()).filter(Material::isItem).collect(Collectors.toList()))));
 
     }
 
@@ -1277,7 +1279,7 @@ public final class Material implements Keyed {
             }
             Optional<BongeMaterial.Block> opBlock = m.material.toBlock();
             return opBlock.map(block -> block.getSpongeBlockType().equals(type)).orElse(false);
-        }).orElseThrow(() -> new IllegalStateException("Sponge blocktype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered"));
+        }).orElseThrow(() -> new IllegalStateException("Sponge blocktype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered?"));
     }
 
     public static Optional<Material> valueOf(Predicate<Material> material) {

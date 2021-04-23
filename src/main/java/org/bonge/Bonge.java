@@ -260,8 +260,8 @@ public class Bonge {
         return converter;
     }
 
-    public Bonge register(BongeMaterial... materials) {
-        this.materials.addAll(Arrays.asList(materials));
+    public Bonge register(BongeMaterial materials) {
+        this.materials.add(materials);
         return this;
     }
 
