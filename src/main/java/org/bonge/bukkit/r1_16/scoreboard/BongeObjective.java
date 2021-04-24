@@ -1,6 +1,8 @@
 package org.bonge.bukkit.r1_16.scoreboard;
 
+import net.kyori.adventure.text.Component;
 import org.bonge.Bonge;
+import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.*;
@@ -72,17 +74,18 @@ public class BongeObjective extends BongeWrapper<org.spongepowered.api.scoreboar
 
     @Override
     public @NotNull RenderType getRenderType() throws IllegalStateException {
-        return null;
+        throw new NotImplementedException("Objective.getRenderType() - Not got to yet");
     }
 
     @Override
-    public Score getScore(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
+    public @NotNull Score getScore(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException {
         return this.getScore(player.getName());
     }
 
     @Override
-    public Score getScore(String entry) throws IllegalArgumentException, IllegalStateException {
-        org.spongepowered.api.scoreboard.Score score = this.spongeValue.scoreOrCreate(Bonge.getInstance().convertText(entry));
+    public @NotNull Score getScore(@NotNull String entry) throws IllegalArgumentException, IllegalStateException {
+        Component component = Bonge.getInstance().convertText(entry);
+        org.spongepowered.api.scoreboard.Score score = this.spongeValue.findOrCreateScore(component);
         return new BongeScore(score, this);
 
     }

@@ -189,14 +189,19 @@ public class BlockMaterial implements BongeMaterial.Block {
 
     @Override
     public int hashCode() {
-        return ("Block:" + this.name).hashCode();
+        return (toString()).hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof BlockMaterial)){
+        if (!(obj instanceof BlockMaterial)) {
             return false;
         }
         return this.hashCode() == obj.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Block:" + this.name;
     }
 }

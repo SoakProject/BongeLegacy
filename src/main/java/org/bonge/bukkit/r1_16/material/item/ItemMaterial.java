@@ -187,14 +187,19 @@ public class ItemMaterial implements BongeMaterial.Item {
 
     @Override
     public int hashCode() {
-        return ("Item:" + this.name).hashCode();
+        return (toString()).hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof ItemMaterial)){
+        if (!(obj instanceof ItemMaterial)) {
             return false;
         }
         return this.hashCode() == obj.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Item:" + this.name;
     }
 }
