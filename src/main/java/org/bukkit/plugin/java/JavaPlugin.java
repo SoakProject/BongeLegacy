@@ -96,7 +96,7 @@ public abstract class JavaPlugin extends PluginBase {
 
     @Override
     public void saveResource(@NotNull String resourcePath, boolean replace) {
-        if (resourcePath == null || resourcePath.equals("")) {
+        if (resourcePath.equals("")) {
             throw new IllegalStateException("Unknown resource path");
         }
         resourcePath = resourcePath.replaceAll(Pattern.quote("\\"), "/");
@@ -110,7 +110,7 @@ public abstract class JavaPlugin extends PluginBase {
         try {
             if ((outputFile.exists() && replace) || !outputFile.exists()) {
                 if (!outputFile.exists()) {
-                    outputFile.getParentFile().createNewFile();
+                    outputFile.getParentFile().mkdirs();
                     outputFile.createNewFile();
                 }
                 FileOutputStream fos = new FileOutputStream(outputFile);
@@ -121,7 +121,6 @@ public abstract class JavaPlugin extends PluginBase {
                 fos.flush();
                 fos.close();
                 stream.close();
-                return;
             }
         } catch (IOException e) {
             throw new IllegalStateException("Could not save '" + outputFile.getAbsolutePath() + "'", e);

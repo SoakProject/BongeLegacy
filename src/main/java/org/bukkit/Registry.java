@@ -1,16 +1,11 @@
 package org.bukkit;
 
-import org.array.utils.ArrayUtils;
-import org.bonge.Bonge;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.registry.GameRegistry;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public interface Registry<T extends Keyed> extends Iterable<T> {
 
@@ -55,7 +50,7 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
         }
     }
 
-    final class AdventureRegistry<T extends Keyed, S extends net.kyori.adventure.key.Keyed> implements Registry<T> {
+    /*final class AdventureRegistry<T extends Keyed, S extends net.kyori.adventure.key.Keyed> implements Registry<T> {
 
         private Class<S> sponge;
         private Class<T> bukkit;
@@ -77,6 +72,8 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
 
         @Override
         public T get(NamespacedKey key) {
+            Sponge.server().re
+
             net.kyori.adventure.key.Keyed type = this.function.apply(Sponge.registry()).value(key.toString()).orElse(null);
             if (type == null) {
                 return null;
@@ -102,7 +99,7 @@ public interface Registry<T extends Keyed> extends Iterable<T> {
                 }
             }, collection).iterator();
         }
-    }
+    }*/
 
     T get(NamespacedKey key);
 

@@ -5,16 +5,17 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class BongeTag<K extends Keyed> implements Tag<K> {
 
     private final Set<K> materials = new HashSet<>();
     private final NamespacedKey key;
     private final String extra;
+
+    public BongeTag(NamespacedKey key, String extra, K material){
+        this(key, extra, Collections.singletonList(material));
+    }
 
     public BongeTag(NamespacedKey key, String extra, K... materials){
         this(key, extra, Arrays.asList(materials));

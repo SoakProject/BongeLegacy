@@ -17,6 +17,7 @@ import org.bonge.convert.inventory.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.convert.world.DirectionConverter;
 import org.bonge.convert.world.LocationConverter;
+import org.bonge.convert.world.WorldConverter;
 import org.bonge.convert.world.vector.Vector3dConverter;
 import org.bonge.convert.world.vector.Vector3iConverter;
 import org.bukkit.Axis;
@@ -65,6 +66,7 @@ public class Bonge {
     public static final InventoryConvert INVENTORY = instance.register(new InventoryConvert());
     public static final AxisConverter AXIS = instance.register(new AxisConverter());
     public static final CommandAudienceSourceConverter COMMAND_AUDIENCE = instance.register(new CommandAudienceSourceConverter());
+    public static final WorldConverter WORLD = instance.register(new WorldConverter());
 
     public <B, S> Set<Converter<B, S>> getConverts(Class<B> bClass, Class<S> sClass) {
         return (Set<Converter<B, S>>) (Object) this.getConverts().stream().filter(c -> c.getBukkitClass().isAssignableFrom(bClass) && c.getSpongeClass().isAssignableFrom(sClass)).collect(Collectors.toSet());
@@ -117,6 +119,18 @@ public class Bonge {
     }
 
     //START OF COMMON CONVERTS
+
+    public org.bukkit.World convert(World<?, ?> world) {
+        return WORLD.to(world);
+    }
+
+    public World<?, ?> convert(org.bukkit.World world) {
+        try {
+            return WORLD.from(world);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public Axis convert(org.spongepowered.api.util.Axis axis) {
         return AXIS.to(axis);
@@ -229,7 +243,7 @@ public class Bonge {
         }
     }
 
-    public CommandSender convert(Audience audience){
+    public CommandSender convert(Audience audience) {
         try {
             return COMMAND_AUDIENCE.to(audience);
         } catch (IOException e) {

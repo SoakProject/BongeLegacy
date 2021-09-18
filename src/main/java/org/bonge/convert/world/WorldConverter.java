@@ -6,10 +6,10 @@ import org.bukkit.World;
 
 import java.io.IOException;
 
-public class WorldConverter implements Converter<World, org.spongepowered.api.world.World> {
+public class WorldConverter implements Converter<World, org.spongepowered.api.world.World<?, ?>> {
     @Override
-    public Class<org.spongepowered.api.world.World> getSpongeClass() {
-        return org.spongepowered.api.world.World.class;
+    public Class<org.spongepowered.api.world.World<?, ?>> getSpongeClass() {
+        return (Class<org.spongepowered.api.world.World<?, ?>>) (Object) org.spongepowered.api.world.World.class;
     }
 
     @Override
@@ -18,15 +18,15 @@ public class WorldConverter implements Converter<World, org.spongepowered.api.wo
     }
 
     @Override
-    public org.spongepowered.api.world.World from(World value) throws IOException {
-        if(value instanceof BongeWorld){
-            return ((BongeWorld)value).getSpongeValue();
+    public org.spongepowered.api.world.World<?, ?> from(World value) throws IOException {
+        if (value instanceof BongeWorld) {
+            return ((BongeWorld) value).getSpongeValue();
         }
         throw new IOException("Unknown world class");
     }
 
     @Override
-    public World to(org.spongepowered.api.world.World value) {
+    public World to(org.spongepowered.api.world.World<?, ?> value) {
         return new BongeWorld(value);
     }
 }

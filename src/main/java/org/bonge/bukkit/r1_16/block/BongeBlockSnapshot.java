@@ -2,6 +2,8 @@ package org.bonge.bukkit.r1_16.block;
 
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.block.data.BongeAbstractBlockData;
+import org.bonge.bukkit.r1_16.block.state.BongeBasicBlockState;
+import org.bonge.bukkit.r1_16.block.state.BongeBlockState;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.*;
 import org.bukkit.block.*;
@@ -15,24 +17,36 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.ResourceKey;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.entity.BlockEntity;
 import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class BongeBlockSnapshot implements Block {
 
-    private BlockSnapshot snapshot;
+    private final BlockSnapshot snapshot;
+    private final BlockEntity entity;
 
-    public BongeBlockSnapshot(BlockSnapshot snapshot) {
-        this.snapshot = snapshot;
+    public BongeBlockSnapshot(ServerLocation location) {
+        this(location.createSnapshot(), location.blockEntity().orElse(null));
     }
 
-    public boolean isPreferredTool(ItemStack stack) {
+    public BongeBlockSnapshot(@NotNull BlockSnapshot snapshot, @Nullable BlockEntity entity) {
+        this.snapshot = snapshot;
+        this.entity = entity;
+    }
+
+    @Override
+    public boolean isPreferredTool(@NotNull ItemStack stack) {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -53,8 +67,8 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public @NotNull Block getRelative(int modX, int modY, int modZ) {
-        ServerLocation loc = this.snapshot.location().get().add(modX, modY, modZ);
-        return new BongeBlockSnapshot(loc.createSnapshot());
+        ServerLocation loc = this.snapshot.location().orElseThrow(() -> new IllegalStateException("Couldn't get location of block")).add(modX, modY, modZ);
+        return new BongeBlockSnapshot(loc.createSnapshot(), this.entity == null ? null : this.entity.copy());
 
     }
 
@@ -97,7 +111,10 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public @NotNull World getWorld() {
-        throw new NotImplementedException("BlockSnapshot.getWorld() Not got to yet");
+        ResourceKey key = this.snapshot.world();
+        Optional<ServerWorld> opWorld = Sponge.server().worldManager().world(key);
+        ServerWorld world = opWorld.orElseThrow(() -> new IllegalStateException("Could not get world with key of " + key.asString()));
+        return Bonge.getInstance().convert(world);
     }
 
     @Override
@@ -160,6 +177,16 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public @NotNull BlockState getState() {
+        if (this.entity == null) {
+            return new BongeBasicBlockState(this);
+        }
+        try {
+            BongeBlockState.of(this.entity);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         throw new NotImplementedException("BlockSnapshot.getState() Not got to yet");
     }
 
@@ -234,7 +261,7 @@ public class BongeBlockSnapshot implements Block {
     }
 
     @Override
-    public boolean breakNaturally(@NotNull ItemStack tool) {
+    public boolean breakNaturally(@Nullable ItemStack tool) {
         throw new NotImplementedException("BlockSnapshot.breakNaturally(ItemStack) Not got to yet");
     }
 
@@ -249,7 +276,7 @@ public class BongeBlockSnapshot implements Block {
     }
 
     @Override
-    public @NotNull Collection<ItemStack> getDrops(@NotNull ItemStack tool) {
+    public @NotNull Collection<ItemStack> getDrops(@Nullable ItemStack tool) {
         throw new NotImplementedException("BlockSnapshot.getDrops(ItemStack) Not got to yet");
     }
 

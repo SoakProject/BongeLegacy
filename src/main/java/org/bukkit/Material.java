@@ -1131,6 +1131,7 @@ public final class Material implements Keyed {
         return this.material.getData();
     }
 
+    @Deprecated
     public MaterialData getNewData(final byte raw) {
         return this.material.getNewData(raw);
     }
@@ -1268,8 +1269,14 @@ public final class Material implements Keyed {
             }
             Optional<BongeMaterial.Item> opItem = m.material.toItem();
             return opItem.map(item -> item.getSpongeItemType().equals(type)).orElse(false);
-        }).orElseThrow(() -> new IllegalStateException("Sponge itemtype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " + ArrayUtils.toString(",", Material::name, Stream.of(values()).filter(Material::isItem).collect(Collectors.toList()))));
-
+        }).orElseThrow(() -> new IllegalStateException(
+                "Sponge itemtype of " +
+                        PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") +
+                        " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " +
+                        ArrayUtils.toString(",", Material::name,
+                                Stream.of(values())
+                                        .filter(Material::isItem)
+                                        .collect(Collectors.toList()))));
     }
 
     public static @NotNull Material valueOf(BlockType type) {

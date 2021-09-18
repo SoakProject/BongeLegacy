@@ -44,8 +44,8 @@ public class BlockListener {
         try {
             Block block = Bonge.getInstance().convert(Location.class, piston.location()).getBlock();
             BlockFace face = Bonge.getInstance().convert(BlockFace.class, piston.get(Keys.DIRECTION));
-            BlockPistonEvent bEvent = null;
-            if (piston.get(Keys.IS_EXTENDED).get()) {
+            BlockPistonEvent bEvent;
+            if (piston.get(Keys.IS_EXTENDED).orElse(false)) {
                 bEvent = new BlockPistonExtendEvent(block, blocks, face);
             } else {
                 bEvent = new BlockPistonRetractEvent(block, blocks, face);
@@ -88,7 +88,7 @@ public class BlockListener {
         if (event.transactions().size() == 1) {
             BlockSnapshot block = event.transactions().get(0).original();
             Player bPlayer = BongePlayer.getPlayer(player);
-            BlockBreakEvent bukkitEvent = new BlockBreakEvent(new BongeBlockSnapshot(block), bPlayer);
+            BlockBreakEvent bukkitEvent = new BlockBreakEvent(new BongeBlockSnapshot(block, null), bPlayer);
             Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);
             event.setCancelled(bukkitEvent.isCancelled());
         }
@@ -101,7 +101,7 @@ public class BlockListener {
 
         String[] lines = new String[4];
         for (int A = 0; A < lines.length; A++) {
-            lines[A] = Bonge.getInstance().convert(event.originalText().get(A));
+            lines[A] = Bonge.getInstance().convert(event.text().get(A));
         }
         SignChangeEvent bukkitEvent = new SignChangeEvent(block, bPlayer, lines);
         Bukkit.getServer().getPluginManager().callEvent(bukkitEvent);

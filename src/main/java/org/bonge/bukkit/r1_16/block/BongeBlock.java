@@ -46,11 +46,11 @@ import java.util.Optional;
 
 public class BongeBlock extends BongeWrapper<Location<? extends World, ? extends Location<?, ?>>> implements Block {
 
-    public BongeBlock(Location<? extends World, ? extends Location<?, ?>> value) {
+    public BongeBlock(Location<? extends World<?, ?>, ? extends Location<?, ?>> value) {
         super(value);
     }
 
-    public boolean isPreferredTool(ItemStack stack) {
+    public boolean isPreferredTool(@NotNull ItemStack stack) {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -198,11 +198,11 @@ public class BongeBlock extends BongeWrapper<Location<? extends World, ? extends
         if (!opTile.isPresent()) {
             return new BongeBasicBlockState(this);
         }
-        Optional<BongeBlockState<BlockEntity>> opState = null;
+        Optional<BongeBlockState<BlockEntity>> opState;
         try {
             opState = BongeBlockState.of(opTile.get());
         } catch (IOException e) {
-            new IllegalStateException("Found the conversion, however could not supply a Snapshot version of the Inventory", e);
+            throw new IllegalStateException("Found the conversion, however could not supply a Snapshot version of the Inventory", e);
         }
         if (opState.isPresent()) {
             return opState.get();

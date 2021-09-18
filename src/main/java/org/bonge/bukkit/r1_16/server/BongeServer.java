@@ -93,42 +93,122 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
         this.spongeValue = server;
         if (this.tags.isEmpty()) {
             List<BongeTag<? extends Keyed>> list = Arrays.asList(
-                    new BongeTag<>(NamespacedKey.minecraft("wool"), Tag.REGISTRY_BLOCKS, Material.BLACK_WOOL, Material.BLUE_WOOL),
-                    new BongeTag<>(NamespacedKey.minecraft("planks"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("stone_bricks"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_buttons"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("buttons"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("carpets"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_doors"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_stairs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_slabs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_pressure_plates"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wooden_trapdoors"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("doors"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("saplings"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("dark_oak_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("oak_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("birch_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("acacia_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("jungle_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("spruce_logs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("banners"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("sand"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("stairs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("slabs"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("anvil"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("rails"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("coral_blocks"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("corals"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("wall_corals"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("leaves"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("trapdoors"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("flower_pots"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("enderman_holdable"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("ice"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("valid_spawn"), Tag.REGISTRY_BLOCKS),
-                    new BongeTag<>(NamespacedKey.minecraft("impermeable"), Tag.REGISTRY_BLOCKS)
+                    new BongeTag<>(NamespacedKey.minecraft("wool"),
+                            Tag.REGISTRY_BLOCKS,
+                            Material.BLACK_WOOL,
+                            Material.BLUE_WOOL,
+                            Material.BROWN_WOOL),
+                    new BongeTag<>(NamespacedKey.minecraft("planks"),
+                            Tag.REGISTRY_BLOCKS,
+                            Material.ACACIA_PLANKS,
+                            Material.BIRCH_PLANKS,
+                            Material.CRIMSON_PLANKS,
+                            Material.OAK_PLANKS,
+                            Material.JUNGLE_PLANKS,
+                            Material.SPRUCE_PLANKS,
+                            Material.WARPED_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("stone_bricks"),
+                            Tag.REGISTRY_BLOCKS,
+                            Material.STONE_BRICKS),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_buttons"), Tag.REGISTRY_BLOCKS, Material.ACACIA_BUTTON),
+                    new BongeTag<>(NamespacedKey.minecraft("buttons"), Tag.REGISTRY_BLOCKS, Material.STONE_BUTTON),
+                    new BongeTag<>(NamespacedKey.minecraft("carpets"), Tag.REGISTRY_BLOCKS, Material.BLACK_CARPET),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_doors"), Tag.REGISTRY_BLOCKS, Material.ACACIA_DOOR),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_stairs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_STAIRS),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_fences"), Tag.REGISTRY_BLOCKS, Material.ACACIA_FENCE),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_slabs"), Tag.REGISTRY_BLOCKS, Material.SEA_LANTERN),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_pressure_plates"), Tag.REGISTRY_BLOCKS, Material.ACACIA_PRESSURE_PLATE),
+                    new BongeTag<>(NamespacedKey.minecraft("pressure_plates"), Tag.REGISTRY_BLOCKS, Material.ACACIA_PRESSURE_PLATE),
+                    new BongeTag<>(NamespacedKey.minecraft("stone_pressure_plates"), Tag.REGISTRY_BLOCKS, Material.STONE_PRESSURE_PLATE),
+                    new BongeTag<>(NamespacedKey.minecraft("beds"), Tag.REGISTRY_BLOCKS, Material.BLACK_BED),
+                    new BongeTag<>(NamespacedKey.minecraft("fences"), Tag.REGISTRY_BLOCKS, Material.ACACIA_FENCE),
+                    new BongeTag<>(NamespacedKey.minecraft("tall_flowers"), Tag.REGISTRY_BLOCKS, Material.SUGAR_CANE),
+                    new BongeTag<>(NamespacedKey.minecraft("flowers"), Tag.REGISTRY_BLOCKS, Material.SUGAR_CANE),
+                    new BongeTag<>(NamespacedKey.minecraft("piglin_repellents"), Tag.REGISTRY_BLOCKS, Material.GOLD_NUGGET),
+                    new BongeTag<>(NamespacedKey.minecraft("gold_ores"), Tag.REGISTRY_BLOCKS, Material.GOLD_ORE, Material.NETHER_GOLD_ORE),
+                    new BongeTag<>(NamespacedKey.minecraft("non_flammable_wood"), Tag.REGISTRY_BLOCKS, Material.WARPED_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("wooden_trapdoors"), Tag.REGISTRY_BLOCKS, Material.ACACIA_TRAPDOOR),
+                    new BongeTag<>(NamespacedKey.minecraft("doors"), Tag.REGISTRY_BLOCKS, Material.ACACIA_DOOR),
+                    new BongeTag<>(NamespacedKey.minecraft("saplings"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SAPLING),
+                    new BongeTag<>(NamespacedKey.minecraft("logs_that_burn"), Tag.REGISTRY_BLOCKS, Material.ACACIA_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("logs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("dark_oak_logs"), Tag.REGISTRY_BLOCKS, Material.DARK_OAK_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("oak_logs"), Tag.REGISTRY_BLOCKS, Material.OAK_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("birch_logs"), Tag.REGISTRY_BLOCKS, Material.BIRCH_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("acacia_logs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("jungle_logs"), Tag.REGISTRY_BLOCKS, Material.JUNGLE_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("spruce_logs"), Tag.REGISTRY_BLOCKS, Material.SPRUCE_LOG),
+                    new BongeTag<>(NamespacedKey.minecraft("crimson_stems"), Tag.REGISTRY_BLOCKS, Material.CRIMSON_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("warped_stems"), Tag.REGISTRY_BLOCKS, Material.CRIMSON_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("banners"), Tag.REGISTRY_BLOCKS, Material.BLACK_BANNER),
+                    new BongeTag<>(NamespacedKey.minecraft("sand"), Tag.REGISTRY_BLOCKS, Material.SAND),
+                    new BongeTag<>(NamespacedKey.minecraft("stairs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_STAIRS),
+                    new BongeTag<>(NamespacedKey.minecraft("slabs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SLAB),
+                    new BongeTag<>(NamespacedKey.minecraft("walls"), Tag.REGISTRY_BLOCKS, Material.BRICK_WALL),
+                    new BongeTag<>(NamespacedKey.minecraft("anvil"), Tag.REGISTRY_BLOCKS, Material.ANVIL, Material.CHIPPED_ANVIL, Material.DAMAGED_ANVIL),
+                    new BongeTag<>(NamespacedKey.minecraft("rails"), Tag.REGISTRY_BLOCKS, Material.RAIL, Material.ACTIVATOR_RAIL, Material.DETECTOR_RAIL, Material.POWERED_RAIL),
+                    new BongeTag<>(NamespacedKey.minecraft("coral_blocks"), Tag.REGISTRY_BLOCKS, Material.BRAIN_CORAL_BLOCK),
+                    new BongeTag<>(NamespacedKey.minecraft("corals"), Tag.REGISTRY_BLOCKS, Material.BRAIN_CORAL),
+                    new BongeTag<>(NamespacedKey.minecraft("wall_corals"), Tag.REGISTRY_BLOCKS, Material.BUBBLE_CORAL_WALL_FAN),
+                    new BongeTag<>(NamespacedKey.minecraft("leaves"), Tag.REGISTRY_BLOCKS, Material.ACACIA_LEAVES),
+                    new BongeTag<>(NamespacedKey.minecraft("trapdoors"), Tag.REGISTRY_BLOCKS, Material.ACACIA_TRAPDOOR),
+                    new BongeTag<>(NamespacedKey.minecraft("flower_pots"), Tag.REGISTRY_BLOCKS, Material.FLOWER_POT),
+                    new BongeTag<>(NamespacedKey.minecraft("enderman_holdable"), Tag.REGISTRY_BLOCKS, Material.GRASS_BLOCK),
+                    new BongeTag<>(NamespacedKey.minecraft("ice"), Tag.REGISTRY_BLOCKS, Material.ICE),
+                    new BongeTag<>(NamespacedKey.minecraft("small_flowers"), Tag.REGISTRY_BLOCKS, Material.CHORUS_FLOWER),
+                    new BongeTag<>(NamespacedKey.minecraft("impermeable"), Tag.REGISTRY_BLOCKS, Material.ACACIA_PLANKS),
+                    new BongeTag<>(NamespacedKey.minecraft("underwater_bonemeals"), Tag.REGISTRY_BLOCKS, Material.SEAGRASS),
+                    new BongeTag<>(NamespacedKey.minecraft("coral_plants"), Tag.REGISTRY_BLOCKS, Material.BRAIN_CORAL),
+                    new BongeTag<>(NamespacedKey.minecraft("corals"), Tag.REGISTRY_BLOCKS, Material.BRAIN_CORAL),
+                    new BongeTag<>(NamespacedKey.minecraft("bamboo_plantable_on"), Tag.REGISTRY_BLOCKS, Material.BAMBOO_SAPLING),
+                    new BongeTag<>(NamespacedKey.minecraft("standing_signs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SIGN),
+                    new BongeTag<>(NamespacedKey.minecraft("wall_signs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SIGN),
+                    new BongeTag<>(NamespacedKey.minecraft("signs"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SIGN),
+                    new BongeTag<>(NamespacedKey.minecraft("dragon_immune"), Tag.REGISTRY_BLOCKS, Material.DRAGON_EGG),
+                    new BongeTag<>(NamespacedKey.minecraft("wither_immune"), Tag.REGISTRY_BLOCKS, Material.DRAGON_EGG),
+                    new BongeTag<>(NamespacedKey.minecraft("wither_summon_base_blocks"), Tag.REGISTRY_BLOCKS, Material.WITHER_SKELETON_SKULL),
+                    new BongeTag<>(NamespacedKey.minecraft("beehives"), Tag.REGISTRY_BLOCKS, Material.BEEHIVE),
+                    new BongeTag<>(NamespacedKey.minecraft("crops"), Tag.REGISTRY_BLOCKS, Material.SUGAR_CANE),
+                    new BongeTag<>(NamespacedKey.minecraft("bee_growables"), Tag.REGISTRY_BLOCKS, Material.SUGAR_CANE),
+                    new BongeTag<>(NamespacedKey.minecraft("portals"), Tag.REGISTRY_BLOCKS, Material.NETHER_PORTAL, Material.END_PORTAL),
+                    new BongeTag<>(NamespacedKey.minecraft("fire"), Tag.REGISTRY_BLOCKS, Material.FIRE),
+                    new BongeTag<>(NamespacedKey.minecraft("nylium"), Tag.REGISTRY_BLOCKS, Material.CRIMSON_NYLIUM),
+                    new BongeTag<>(NamespacedKey.minecraft("wart_blocks"), Tag.REGISTRY_BLOCKS, Material.NETHER_WART),
+                    new BongeTag<>(NamespacedKey.minecraft("beacon_base_blocks"), Tag.REGISTRY_BLOCKS, Material.IRON_BLOCK),
+                    new BongeTag<>(NamespacedKey.minecraft("soul_speed_blocks"), Tag.REGISTRY_BLOCKS, Material.SOUL_SAND),
+                    new BongeTag<>(NamespacedKey.minecraft("wall_post_override"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SLAB),
+                    new BongeTag<>(NamespacedKey.minecraft("climbable"), Tag.REGISTRY_BLOCKS, Material.LADDER),
+                    new BongeTag<>(NamespacedKey.minecraft("shulker_boxes"), Tag.REGISTRY_BLOCKS, Material.BLACK_SHULKER_BOX),
+                    new BongeTag<>(NamespacedKey.minecraft("hoglin_repellents"), Tag.REGISTRY_BLOCKS, Material.WATER),
+                    new BongeTag<>(NamespacedKey.minecraft("soul_fire_base_blocks"), Tag.REGISTRY_BLOCKS, Material.NETHERRACK),
+                    new BongeTag<>(NamespacedKey.minecraft("strider_warm_blocks"), Tag.REGISTRY_BLOCKS, Material.NETHERRACK),
+                    new BongeTag<>(NamespacedKey.minecraft("campfires"), Tag.REGISTRY_BLOCKS, Material.CAMPFIRE),
+                    new BongeTag<>(NamespacedKey.minecraft("guarded_by_piglins"), Tag.REGISTRY_BLOCKS, Material.CHEST),
+                    new BongeTag<>(NamespacedKey.minecraft("prevent_mob_spawning_inside"), Tag.REGISTRY_BLOCKS, Material.ACACIA_SIGN),
+                    new BongeTag<>(NamespacedKey.minecraft("fence_gates"), Tag.REGISTRY_BLOCKS, Material.ACACIA_FENCE_GATE),
+                    new BongeTag<>(NamespacedKey.minecraft("unstable_bottom_center"), Tag.REGISTRY_BLOCKS, Material.DIRT),
+                    new BongeTag<>(NamespacedKey.minecraft("infiniburn_overworld"), Tag.REGISTRY_BLOCKS, Material.NETHERRACK),
+                    new BongeTag<>(NamespacedKey.minecraft("infiniburn_nether"), Tag.REGISTRY_BLOCKS, Material.NETHERRACK),
+                    new BongeTag<>(NamespacedKey.minecraft("infiniburn_end"), Tag.REGISTRY_BLOCKS, Material.NETHERRACK),
+                    new BongeTag<>(NamespacedKey.minecraft("piglin_loved"), Tag.REGISTRY_ITEMS, Material.GOLD_NUGGET),
+                    new BongeTag<>(NamespacedKey.minecraft("banners"), Tag.REGISTRY_ITEMS, Material.BLACK_BANNER),
+                    new BongeTag<>(NamespacedKey.minecraft("boats"), Tag.REGISTRY_ITEMS, Material.BIRCH_BOAT),
+                    new BongeTag<>(NamespacedKey.minecraft("fishes"), Tag.REGISTRY_ITEMS, Material.COD),
+                    new BongeTag<>(NamespacedKey.minecraft("music_discs"), Tag.REGISTRY_ITEMS, Material.MUSIC_DISC_CHIRP),
+                    new BongeTag<>(NamespacedKey.minecraft("creeper_drop_music_discs"), Tag.REGISTRY_ITEMS, Material.MUSIC_DISC_13),
+                    new BongeTag<>(NamespacedKey.minecraft("piglin_loved"), Tag.REGISTRY_ITEMS, Material.MUSIC_DISC_13),
+                    new BongeTag<>(NamespacedKey.minecraft("coals"), Tag.REGISTRY_ITEMS, Material.COAL),
+                    new BongeTag<>(NamespacedKey.minecraft("arrows"), Tag.REGISTRY_ITEMS, Material.ARROW),
+                    new BongeTag<>(NamespacedKey.minecraft("lectern_books"), Tag.REGISTRY_ITEMS, Material.KNOWLEDGE_BOOK),
+                    new BongeTag<>(NamespacedKey.minecraft("beacon_payment_items"), Tag.REGISTRY_ITEMS, Material.GOLDEN_SWORD),
+                    new BongeTag<>(NamespacedKey.minecraft("stone_tool_materials"), Tag.REGISTRY_ITEMS, Material.STONE_AXE),
+                    new BongeTag<>(NamespacedKey.minecraft("furnace_materials"), Tag.REGISTRY_ITEMS, Material.COAL),
+                    new BongeTag<>(NamespacedKey.minecraft("lava"), Tag.REGISTRY_FLUIDS, Material.LAVA),
+                    new BongeTag<>(NamespacedKey.minecraft("water"), Tag.REGISTRY_FLUIDS, Material.WATER),
+
+
+                    new BongeTag<>(NamespacedKey.minecraft("valid_spawn"), Tag.REGISTRY_BLOCKS, Material.DIRT),
+                    new BongeTag<>(NamespacedKey.minecraft("impermeable"), Tag.REGISTRY_BLOCKS, Material.DIRT)
             );
             this.tags.addAll(list);
         }
@@ -799,23 +879,28 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     @Override
     public <T extends Keyed> Tag<T> getTag(@NotNull String s, @NotNull NamespacedKey namespacedKey, @NotNull Class<T> aClass) {
         //return new BongeTag<>(namespacedKey, s);
-        for (Tag<T> value : this.getTags(s, aClass)) {
+        for (Tag<T> value : this.getTags(namespacedKey.toString(), aClass)) {
             if (value.getKey().equals(namespacedKey)) {
                 return value;
             }
         }
-        throw new IllegalStateException("Unknown Tag namespace of " + namespacedKey.toString() + " in extra: " + s);
+        throw new IllegalStateException("Unknown Tag namespace of " + namespacedKey + " in extra: " + s);
     }
 
     @Override
     public @NotNull <T extends Keyed> Iterable<Tag<T>> getTags(@NotNull String registry, @NotNull Class<T> clazz) {
-        return this.tags.stream().filter(t -> t.getExtra().equalsIgnoreCase(registry)).filter(t -> {
-            if (t.getValues().isEmpty()) {
-                System.err.println(t.getKey() + " (Tag) does not have any values assigned to it, ignoring");
-                return false;
-            }
-            return clazz.isInstance(t.getValues().iterator().next());
-        }).map(tag -> (BongeTag<T>) tag).collect(Collectors.toSet());
+        return this.tags.stream()
+                .filter(t -> t.getKey().toString().equalsIgnoreCase(registry))
+                .filter(t -> {
+                    try {
+                        @NotNull Set<T> values = (Set<T>) t.getValues();
+                        return true;
+                    } catch (ClassCastException e) {
+                        return false;
+                    }
+                })
+                .map(t -> (BongeTag<T>) t)
+                .collect(Collectors.toSet());
     }
 
     @Override

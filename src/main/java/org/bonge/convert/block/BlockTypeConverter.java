@@ -1,8 +1,6 @@
 package org.bonge.convert.block;
 
-import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
-import org.bonge.bukkit.r1_16.material.block.BlockMaterial;
 import org.bonge.convert.Converter;
 import org.bukkit.Material;
 import org.spongepowered.api.block.BlockType;
@@ -23,26 +21,15 @@ public class BlockTypeConverter implements Converter<Material, BlockType> {
 
     @Override
     public BlockType from(Material value) throws IOException {
-        Optional<BongeMaterial> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(t -> t.isBlock())
-                .filter(t -> t.toBlock().get().getSpongeBlockType().equals(value))
-                .findAny();
-        if(opType.isPresent()){
-            return opType.get().toBlock().get().getSpongeBlockType();
+        Optional<BongeMaterial.Block> opBlock = value.getWrapper().toBlock();
+        if (!opBlock.isPresent()) {
+            throw new IOException("Cannot convert material " + value.name() + " to block. No Block variant found");
         }
-        throw new IOException("Unknown material converter for " + value.name());
+        return opBlock.get().getSpongeBlockType();
     }
 
     @Override
-    public Material to(BlockType value) throws IOException{
-        Optional<BlockMaterial> opType = Bonge.getInstance().getMaterials().stream()
-                .filter(BongeMaterial::isBlock)
-                .map(m -> (BlockMaterial)m)
-                .filter(t -> t.toBlock().get().getSpongeBlockType().equals(value))
-                .findAny();
-        if(opType.isPresent()){
-            return Material.valueOf(opType.get());
-        }
-        throw new IOException("Unknown material converter for " + value.toString());
+    public Material to(BlockType value) throws IOException {
+        return Material.valueOf(value);
     }
 }

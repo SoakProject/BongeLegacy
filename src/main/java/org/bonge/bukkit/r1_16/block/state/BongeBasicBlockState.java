@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.block.state;
 
-import org.bonge.bukkit.r1_16.block.BongeBlock;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -12,34 +11,36 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class BongeBasicBlockState implements BlockState {
 
-    private BongeBlock block;
+    private final Block block;
 
-    public BongeBasicBlockState(BongeBlock block){
+    public BongeBasicBlockState(Block block) {
         this.block = block;
     }
 
     @Override
-    public Block getBlock() {
+    public @NotNull Block getBlock() {
         return this.block;
     }
 
     @Override
-    public MaterialData getData() {
+    @Deprecated
+    public @NotNull MaterialData getData() {
         throw new NotImplementedException("Method BlockState.getData() should only be called from legacy plugins which Bonge does not support");
     }
 
     @Override
-    public BlockData getBlockData() {
+    public @NotNull BlockData getBlockData() {
         return this.block.getBlockData();
     }
 
     @Override
-    public Material getType() {
+    public @NotNull Material getType() {
         return this.block.getType();
     }
 
@@ -49,7 +50,7 @@ public class BongeBasicBlockState implements BlockState {
     }
 
     @Override
-    public World getWorld() {
+    public @NotNull World getWorld() {
         return this.block.getWorld();
     }
 
@@ -69,7 +70,7 @@ public class BongeBasicBlockState implements BlockState {
     }
 
     @Override
-    public Location getLocation() {
+    public @NotNull Location getLocation() {
         return this.block.getLocation();
     }
 
@@ -79,22 +80,23 @@ public class BongeBasicBlockState implements BlockState {
     }
 
     @Override
-    public Chunk getChunk() {
+    public @NotNull Chunk getChunk() {
         return this.block.getChunk();
     }
 
     @Override
-    public void setData(MaterialData data) {
+    @Deprecated
+    public void setData(@NotNull MaterialData data) {
         throw new NotImplementedException("Method BlockState.setData(MaterialData) should only be called from legacy plugins which Bonge does not support");
     }
 
     @Override
-    public void setBlockData(BlockData data) {
+    public void setBlockData(@NotNull BlockData data) {
         this.block.setBlockData(data);
     }
 
     @Override
-    public void setType(Material type) {
+    public void setType(@NotNull Material type) {
         this.block.setType(type);
     }
 
@@ -131,23 +133,23 @@ public class BongeBasicBlockState implements BlockState {
     }
 
     @Override
-    public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
+    public void setMetadata(@NotNull String metadataKey, @NotNull MetadataValue newMetadataValue) {
         throw new NotImplementedException("Method BlockState.setMetadata(String, MetadataValue) has not yet been looked at");
 
     }
 
     @Override
-    public List<MetadataValue> getMetadata(String metadataKey) {
+    public @NotNull List<MetadataValue> getMetadata(@NotNull String metadataKey) {
         throw new NotImplementedException("Method BlockState.getMetadata(String) has not yet been looked at");
     }
 
     @Override
-    public boolean hasMetadata(String metadataKey) {
+    public boolean hasMetadata(@NotNull String metadataKey) {
         return false;
     }
 
     @Override
-    public void removeMetadata(String metadataKey, Plugin owningPlugin) {
+    public void removeMetadata(@NotNull String metadataKey, @NotNull Plugin owningPlugin) {
         throw new NotImplementedException("Method BlockState.removeMetadata(String, Plugin) has not yet been looked at");
     }
 }
