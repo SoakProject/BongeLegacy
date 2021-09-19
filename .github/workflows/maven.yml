@@ -26,6 +26,8 @@ jobs:
         java-version: 1.8
     - name: Build Bukkit with Maven
       run: mvn package --file ./BongeBukkit/pom.xml
+    - name:
+      run: mkdir "target/classes"
     - name: Copy Bukkit to target
       run: cp -R "BongeBukkit/target/classes" "target/classes"
     - name: Build with Maven
