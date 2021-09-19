@@ -3,7 +3,6 @@ package org.bukkit.material;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.SandstoneType;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 
 @Deprecated

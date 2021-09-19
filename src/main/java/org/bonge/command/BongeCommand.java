@@ -38,10 +38,15 @@ public class BongeCommand {
             Optional<String> opFlag = args.one(FLAG);
             Subject src = args.subject();
             if (!opFlag.isPresent()) {
-                ((BongeServer) Bukkit.getServer()).getPluginManager().getBongePlugins().stream().filter(l -> l instanceof JavaPluginLoader).forEach(l -> {
-                    args.sendMessage(Identity.nil(), Component.text((((JavaPluginLoader) l).getYaml().getFullName())).color(NamedTextColor.WHITE));
-                    ((JavaPluginLoader) l).getClasses().forEach(c -> args.sendMessage(Identity.nil(), Component.text(" - " + c.getName())));
-                });
+                ((BongeServer) Bukkit.getServer())
+                        .getPluginManager()
+                        .getBongePlugins()
+                        .stream()
+                        .filter(l -> ((Object) l) instanceof JavaPluginLoader)
+                        .forEach(l -> {
+                            args.sendMessage(Identity.nil(), Component.text((((JavaPluginLoader) (Object) l).getYaml().getFullName())).color(NamedTextColor.WHITE));
+                            ((JavaPluginLoader) (Object) l).getClasses().forEach(c -> args.sendMessage(Identity.nil(), Component.text(" - " + c.getName())));
+                        });
                 return CommandResult.success();
             }
             String flag = opFlag.get();

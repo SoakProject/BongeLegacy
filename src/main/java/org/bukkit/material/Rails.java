@@ -3,7 +3,6 @@ package org.bukkit.material;
 import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.RailDirection;

@@ -1,12 +1,12 @@
 package org.bukkit.inventory;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.inventory.item.BongeItemFactory;
 import org.bonge.bukkit.r1_16.inventory.item.holder.ItemHolder;
 import org.bonge.bukkit.r1_16.inventory.item.holder.ItemStackHolder;
 import org.bonge.bukkit.r1_16.inventory.item.holder.ItemStackSnapshotHolder;
 import org.bonge.bukkit.r1_16.inventory.item.meta.AbstractItemMeta;
+import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Utility;

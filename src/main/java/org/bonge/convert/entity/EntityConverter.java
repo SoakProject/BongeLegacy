@@ -1,6 +1,5 @@
 package org.bonge.convert.entity;
 
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_16.entity.ForgeEntity;
