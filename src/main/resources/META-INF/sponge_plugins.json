@@ -1,0 +1,22 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "1.0"
+  },
+  "license": "tbd",
+  "plugins": [
+    {
+      "id": "bonge",
+      "entrypoint": "org.bonge.launch.BongeLaunch",
+      "name": "Bonge",
+      "description": "Bukkit Emulator",
+      "version": "2.0.0",
+      "contributors": [
+        {
+          "name": "mosemister",
+          "description": "Lead Developer"
+        }
+      ]
+    }
+  ]
+}
