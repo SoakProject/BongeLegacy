@@ -25,11 +25,13 @@ public interface IAgable<S extends org.spongepowered.api.entity.living.Ageable> 
     }
 
     @Override
+    @Deprecated
     default void setAgeLock(boolean lock) {
         throw new NotImplementedException("yet to look at");
     }
 
     @Override
+    @Deprecated
     default boolean getAgeLock() {
         throw new NotImplementedException("yet to look at");
     }
@@ -50,11 +52,13 @@ public interface IAgable<S extends org.spongepowered.api.entity.living.Ageable> 
     }
 
     @Override
+    @Deprecated
     default boolean canBreed() {
         return this.getSpongeValue().get(Keys.CAN_BREED).get();
     }
 
     @Override
+    @Deprecated
     default void setBreed(boolean breed) {
         this.getSpongeValue().offer(Keys.CAN_BREED, breed);
     }

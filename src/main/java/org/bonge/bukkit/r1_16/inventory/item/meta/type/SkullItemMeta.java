@@ -53,6 +53,7 @@ public class SkullItemMeta extends AbstractItemMeta implements SkullMeta {
     }
 
     @Override
+    @Deprecated
     public boolean setOwner(@Nullable String owner) {
         throw new NotImplementedException("SkullItemMeta.setOwner(String) not looked at yet");
     }
@@ -74,7 +75,7 @@ public class SkullItemMeta extends AbstractItemMeta implements SkullMeta {
     }
 
     @Override
-    public SkullItemMeta clone(){
+    public @NotNull SkullItemMeta clone(){
         return (SkullItemMeta) super.clone();
     }
 }

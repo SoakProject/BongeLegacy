@@ -1,7 +1,7 @@
 package org.bonge.bukkit.r1_16.material.item;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.bukkit.r1_16.material.SpongeMaterialFix;
 import org.bonge.bukkit.r1_16.material.block.BlockMaterial;
@@ -53,7 +53,7 @@ public class ItemMaterial implements BongeMaterial.Item {
         Optional<ResourceKey> opKey = this.spongeValue.findKey(RegistryTypes.ITEM_TYPE);
         if (!opKey.isPresent()) {
             Component component = this.spongeValue.asComponent();
-            String plain = PlainComponentSerializer.plain().serialize(component);
+            String plain = PlainTextComponentSerializer.plainText().serialize(component);
             throw new IllegalStateException("BlockType of " + plain + " does not have a ID");
         }
         return Objects.requireNonNull(NamespacedKey.fromString(opKey.get().asString()));
@@ -110,6 +110,7 @@ public class ItemMaterial implements BongeMaterial.Item {
     }
 
     @Override
+    @Deprecated
     public boolean isTransparent() {
         Optional<Block> opBlock = this.toBlock();
         return opBlock.map(BongeMaterial::isTransparent).orElse(false);

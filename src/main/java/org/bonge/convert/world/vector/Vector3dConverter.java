@@ -22,6 +22,6 @@ public class Vector3dConverter implements Converter<Vector, Vector3d> {
 
     @Override
     public Vector to(Vector3d value) {
-        return new Vector(value.getX(), value.getY(), value.getZ());
+        return new Vector(value.x(), value.y(), value.z());
     }
 }

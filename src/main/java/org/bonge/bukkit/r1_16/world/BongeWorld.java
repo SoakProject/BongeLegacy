@@ -37,6 +37,7 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.util.MinecraftDayTime;
 import org.spongepowered.api.util.Ticks;
+import org.spongepowered.api.world.chunk.WorldChunk;
 import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.api.world.weather.WeatherTypes;
@@ -50,9 +51,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<? extends org.spongepowered.api.world.World, ? extends org.spongepowered.api.world.Location<?, ?>>> implements World {
+public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<? extends org.spongepowered.api.world.World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>>> implements World {
 
-    public BongeWorld(org.spongepowered.api.world.World<? extends org.spongepowered.api.world.World, ? extends org.spongepowered.api.world.Location<?, ?>> world){
+    public BongeWorld(org.spongepowered.api.world.World<? extends org.spongepowered.api.world.World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>> world) {
         super(world);
     }
 
@@ -62,7 +63,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     }
 
     @Override
-    public @NotNull Block getBlockAt(Location location) {
+    public @NotNull Block getBlockAt(@NotNull Location location) {
         return new BongeBlock(new BongeLocation(location).getSpongeLocation());
     }
 
@@ -74,7 +75,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public @NotNull Block getHighestBlockAt(@NotNull Location location) {
         Vector3i vector = this.getSpongeValue().highestPositionAt(Bonge.getInstance().convert(location).blockPosition());
-        return location.getWorld().getBlockAt(vector.getX(), vector.getY(), vector.getZ());
+        return location.getWorld().getBlockAt(vector.x(), vector.y(), vector.z());
     }
 
     @Override
@@ -111,23 +112,21 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull Chunk getChunkAt(int i, int i1) {
-        org.spongepowered.api.world.chunk.Chunk chunk = this.spongeValue.chunk(i, 0, i1);
+        WorldChunk chunk = this.spongeValue.chunk(i, 0, i1);
         try {
             return Bonge.getInstance().convert(Chunk.class, chunk);
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new IllegalStateException(e);
         }
     }
 
     @Override
     public @NotNull Chunk getChunkAt(@NotNull Location location) {
-        org.spongepowered.api.world.chunk.Chunk chunk = this.spongeValue.chunkAtBlock(new BongeLocation(location).getSpongeLocation().blockPosition());
+        WorldChunk chunk = this.spongeValue.chunkAtBlock(new BongeLocation(location).getSpongeLocation().blockPosition());
         try {
             return Bonge.getInstance().convert(Chunk.class, chunk);
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new IllegalStateException(e);
         }
     }
 
@@ -142,18 +141,18 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     }
 
     @Override
-    public Chunk[] getLoadedChunks() {
-        Iterable<org.spongepowered.api.world.chunk.Chunk> chunks = this.spongeValue.loadedChunks();
+    public @NotNull Chunk[] getLoadedChunks() {
+        Iterable<WorldChunk> chunks = this.spongeValue.loadedChunks();
         int count = 0;
-        Iterator<org.spongepowered.api.world.chunk.Chunk> iter = chunks.iterator();
-        while (iter.hasNext()){
+        Iterator<WorldChunk> iter = chunks.iterator();
+        while (iter.hasNext()) {
             iter.next();
             count++;
         }
-        Chunk[] bChunk = new Chunk[count];
+        BongeChunk[] bChunk = new BongeChunk[count];
         count = 0;
         iter = chunks.iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             bChunk[count] = new BongeChunk(iter.next());
             count++;
         }
@@ -197,8 +196,9 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean unloadChunk(int i, int i1) {
-        org.spongepowered.api.world.chunk.Chunk chunk = this.spongeValue.chunk(i, 0, i1);
-        return chunk.unloadChunk();
+        /*WorldChunk chunk = this.spongeValue.chunk(i, 0, i1);
+        return chunk.unloadChunk();*/
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -214,15 +214,15 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean regenerateChunk(int i, int i1) {
-        if(this.getSpongeValue() instanceof ServerWorld){
-            return ((ServerWorld) this.getSpongeValue()).regenerateChunk(i, 0, i1).isPresent();
+        if (this.getSpongeValue() instanceof ServerWorld) {
+            return ((ServerWorld) this.getSpongeValue()).chunkManager().regenerateChunk(i, 0, i1).getNow(false);
         }
         return false;
     }
 
     @Override
     public boolean refreshChunk(int i, int i1) {
-        if (!this.unloadChunk(i, i1)){
+        if (!this.unloadChunk(i, i1)) {
             return false;
         }
         this.loadChunk(i, i1);
@@ -272,10 +272,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull BongeItem dropItem(Location location, @NotNull ItemStack itemStack) {
-        org.spongepowered.api.entity.Item item = (org.spongepowered.api.entity.Item)this.spongeValue.createEntity(EntityTypes.ITEM.get(), new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        org.spongepowered.api.entity.Item item = this.spongeValue.createEntity(EntityTypes.ITEM.get(), new Vector3i(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         try {
             item.offer(Keys.ITEM_STACK_SNAPSHOT, Bonge.getInstance().convert(itemStack, ItemStackSnapshot.class));
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         this.spongeValue.spawnEntity(item);
         return new BongeItem(item);
@@ -308,15 +308,15 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public <T extends AbstractArrow> @NotNull T spawnArrow(@NotNull Location location, @NotNull Vector direction, float speed, float spread, @NotNull Class<T> clazz) {
         BongeAbstractArrowEntity<?> arrow;
-        if(clazz.isAssignableFrom(SpectralArrow.class)){
+        if (clazz.isAssignableFrom(SpectralArrow.class)) {
             throw new NotImplementedException("World.spawnArrow(Location, Vector, float, float, Class<T>) does not currently have support for SpecialArrow");
-        }else{
+        } else {
             arrow = new BongeTippedArrowEntity((org.spongepowered.api.entity.projectile.arrow.Arrow) this.spongeValue.createEntity(EntityTypes.ARROW.get(), new Vector3d(location.getX(), location.getY(), location.getZ())));
         }
         arrow.getSpongeValue().setRotation(new Vector3d(direction.getX(), direction.getY(), direction.getZ()));
         arrow.getSpongeValue().offer(Keys.VELOCITY, new Vector3d(direction.getX(), direction.getY(), direction.getZ()).mul(speed));
         //TODO SPREAD
-        return (T)arrow;
+        return (T) arrow;
     }
 
     @Override
@@ -333,8 +333,8 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public @NotNull Entity spawnEntity(@NotNull Location location, @NotNull EntityType entityType) {
         try {
-            org.spongepowered.api.world.Location<? extends org.spongepowered.api.world.World, ? extends org.spongepowered.api.world.Location<?, ?>> loc = Bonge.getInstance().convert(location, org.spongepowered.api.world.Location.class);
-            org.spongepowered.api.entity.Entity entity = this.spongeValue.createEntity(Bonge.getInstance().convert(entityType, org.spongepowered.api.entity.EntityType.class), loc.position());
+            org.spongepowered.api.world.Location<? extends org.spongepowered.api.world.World<?, ?>, ? extends org.spongepowered.api.world.Location<?, ?>> loc = Bonge.getInstance().convert(location);
+            org.spongepowered.api.entity.Entity entity = this.spongeValue.createEntity(Bonge.getInstance().convert(entityType), loc.position());
             this.spongeValue.spawnEntity(entity);
             return Bonge.getInstance().convert(Entity.class, entity);
         } catch (IOException e) {
@@ -354,10 +354,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull List<Entity> getEntities() {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return Collections.emptyList();
         }
-        ServerWorld sWorld = (ServerWorld)this.spongeValue;
+        ServerWorld sWorld = (ServerWorld) this.spongeValue;
         return ArrayUtils.convert(e -> {
             try {
                 return Bonge.getInstance().convert(Entity.class, e);
@@ -375,19 +375,19 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @SafeVarargs
     @Override
     public final <T extends Entity> @NotNull Collection<T> getEntitiesByClass(Class<T>... classes) {
-        return ArrayUtils.convert(e -> (T)e, this.getEntitiesByClasses(classes));
+        return ArrayUtils.convert(e -> (T) e, this.getEntitiesByClasses(classes));
     }
 
     @Override
     public <T extends Entity> @NotNull Collection<T> getEntitiesByClass(Class<T> aClass) {
-        return ArrayUtils.convert(e -> (T)e, this.getEntities().stream().filter(aClass::isInstance).collect(Collectors.toSet()));
+        return ArrayUtils.convert(e -> (T) e, this.getEntities().stream().filter(aClass::isInstance).collect(Collectors.toSet()));
     }
 
     @Override
     public @NotNull Collection<Entity> getEntitiesByClasses(Class<?>... classes) {
         return this.getEntities().stream().filter(e -> {
-            for(Class<?> clazz : classes){
-                if(clazz.isInstance(e)){
+            for (Class<?> clazz : classes) {
+                if (clazz.isInstance(e)) {
                     return true;
                 }
             }
@@ -407,7 +407,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull Collection<Entity> getNearbyEntities(@NotNull Location location, double x, double y, double z, @Nullable Predicate<Entity> filter) {
-        if(x == y && y == z){
+        if (x == y && y == z) {
             return ArrayUtils.convert((e) -> {
                 try {
                     return Bonge.getInstance().convert(Entity.class, e);
@@ -474,23 +474,23 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull String getName() {
-        if(this.spongeValue instanceof ServerWorld){
-            return ((ServerWorld)this.spongeValue).key().value();
+        if (this.spongeValue instanceof ServerWorld) {
+            return ((ServerWorld) this.spongeValue).key().value();
         }
         return this.spongeValue.context().getValue();
     }
 
     @Override
     public @NotNull UUID getUID() {
-        if(this.spongeValue instanceof ServerWorld){
-            return ((ServerWorld)this.spongeValue).uniqueId();
+        if (this.spongeValue instanceof ServerWorld) {
+            return ((ServerWorld) this.spongeValue).uniqueId();
         }
         throw new IllegalStateException("World UUID is not present in client mode");
     }
 
     @Override
     public @NotNull Location getSpawnLocation() {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             return Bonge.getInstance().convert(this.spongeValue.location(((ServerWorld) this.spongeValue).properties().spawnPosition()));
         }
         throw new NotImplementedException("World.getSpawnLocation() doesn't work on client");
@@ -508,7 +508,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean setSpawnLocation(int i, int i1, int i2) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return false;
         }
         ((ServerWorld) this.spongeValue).properties().setSpawnPosition(new Vector3i(i, i1, i2));
@@ -517,7 +517,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public long getTime() {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             return ((ServerWorld) this.spongeValue).properties().dayTime().asTicks().ticks();
         }
         return 0;
@@ -525,14 +525,14 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setTime(long l) {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             ((ServerWorld) this.spongeValue).properties().setDayTime(MinecraftDayTime.of(Sponge.server(), Ticks.of(l)));
         }
     }
 
     @Override
     public long getFullTime() {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             return ((ServerWorld) this.spongeValue).properties().gameTime().asTicks().ticks();
         }
         return 0;
@@ -540,7 +540,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setFullTime(long l) {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             ((ServerWorld) this.spongeValue).properties().setDayTime(MinecraftDayTime.of(Sponge.server(), Ticks.of(l)));
         }
     }
@@ -557,7 +557,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setStorm(boolean b) {
-        ((ServerWorld)this.spongeValue).setWeather(b ? WeatherTypes.THUNDER.get() : WeatherTypes.CLEAR.get());
+        ((ServerWorld) this.spongeValue).setWeather(b ? WeatherTypes.THUNDER.get() : WeatherTypes.CLEAR.get());
     }
 
     @Override
@@ -567,10 +567,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setWeatherDuration(int i) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return;
         }
-        ((ServerWorld)this.spongeValue).setWeather(this.spongeValue.weather().type(), Ticks.of(i));
+        ((ServerWorld) this.spongeValue).setWeather(this.spongeValue.weather().type(), Ticks.of(i));
     }
 
     @Override
@@ -590,10 +590,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setThunderDuration(int i) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             throw new NotImplementedException("Weather is not supported on Client");
         }
-        ((ServerWorld)this.spongeValue).setWeather(WeatherTypes.THUNDER.get(), Ticks.of(i));
+        ((ServerWorld) this.spongeValue).setWeather(WeatherTypes.THUNDER.get(), Ticks.of(i));
     }
 
     @Override
@@ -623,7 +623,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return false;
         }
         ServerWorld world = (ServerWorld) this.spongeValue;
@@ -634,14 +634,14 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean createExplosion(double x, double y, double z, float power, boolean setFire, boolean breakBlocks, @Nullable Entity source) {
-        if(source == null){
+        if (source == null) {
             return createExplosion(x, y, z, power, setFire, breakBlocks);
         }
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return false;
         }
         ServerWorld world = (ServerWorld) this.spongeValue;
-        Explosion exp = Explosion.builder().sourceExplosive((Explosive) ((ILivingEntity<Living>)source).getSpongeValue()).canCauseFire(setFire).shouldBreakBlocks(breakBlocks).radius(power).location(this.spongeValue.location(x, y, z).onServer().orElseThrow(() -> new IllegalStateException("Requires server"))).build();
+        Explosion exp = Explosion.builder().sourceExplosive((Explosive) ((ILivingEntity<Living>) source).getSpongeValue()).canCauseFire(setFire).shouldBreakBlocks(breakBlocks).radius(power).location(this.spongeValue.location(x, y, z).onServer().orElseThrow(() -> new IllegalStateException("Requires server"))).build();
         world.triggerExplosion(exp);
         return true;
     }
@@ -678,7 +678,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean getPVP() {
-        if(this.spongeValue instanceof ServerWorld){
+        if (this.spongeValue instanceof ServerWorld) {
             return ((ServerWorld) this.spongeValue).properties().pvp();
         }
         return true;
@@ -686,7 +686,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setPVP(boolean b) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return;
         }
         ServerWorld sWorld = (ServerWorld) this.spongeValue;
@@ -700,11 +700,11 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void save() {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return;
         }
         try {
-            ((ServerWorld)this.spongeValue).save();
+            ((ServerWorld) this.spongeValue).save();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -741,7 +741,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
         }
     }
 
-    public FallingBlock spawnFallingBlock(Location loc, BlockState state){
+    public FallingBlock spawnFallingBlock(Location loc, BlockState state) {
         org.spongepowered.api.entity.FallingBlock block = this.spongeValue.createEntity(EntityTypes.FALLING_BLOCK.get(), new Vector3d(loc.getX(), loc.getY(), loc.getZ()));
         block.offer(Keys.BLOCK_STATE, state);
         try {
@@ -851,7 +851,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public int getMaxHeight() {
-        return this.spongeValue.blockMax().getY();
+        return this.spongeValue.max().y();
     }
 
     @Override
@@ -883,10 +883,10 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public void setDifficulty(@NotNull Difficulty difficulty) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return;
         }
-        ServerWorld world = (ServerWorld)this.spongeValue;
+        ServerWorld world = (ServerWorld) this.spongeValue;
         try {
             world.properties().setDifficulty(Bonge.getInstance().convert(difficulty, org.spongepowered.api.world.difficulty.Difficulty.class));
         } catch (IOException e) {
@@ -906,7 +906,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull File getWorldFolder() {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             //TODO find out default world name
             return new File("saves/");
         }
@@ -915,7 +915,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     }
 
     @Override
-    public WorldType getWorldType(){
+    public WorldType getWorldType() {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -1016,7 +1016,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     }
 
     @Override
-    public int getWaterAnimalSpawnLimit(){
+    public int getWaterAnimalSpawnLimit() {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -1072,14 +1072,14 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public String[] getGameRules() {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return new String[0];
         }
         ServerWorld world = (ServerWorld) this.spongeValue;
         Map<org.spongepowered.api.world.gamerule.GameRule<?>, ?> map = world.properties().gameRules();
         String[] rules = new String[map.size()];
         List<Map.Entry<org.spongepowered.api.world.gamerule.GameRule<?>, ?>> sRules = new ArrayList<>(map.entrySet());
-        for(int A = 0; A < sRules.size(); A++){
+        for (int A = 0; A < sRules.size(); A++) {
             rules[A] = sRules.get(A).getKey().name() + ":" + sRules.get(A).getValue().toString();
         }
         return rules;
@@ -1087,14 +1087,14 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public String getGameRuleValue(String s) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return null;
         }
         ServerWorld world = (ServerWorld) this.spongeValue;
         try {
             org.spongepowered.api.world.gamerule.GameRule<?> rule = Bonge.getInstance().convert(s, org.spongepowered.api.world.gamerule.GameRule.class);
             Object sRule = world.properties().gameRules().get(rule);
-            if(sRule == null){
+            if (sRule == null) {
                 return null;
             }
             return sRule.toString();
@@ -1106,21 +1106,21 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public boolean setGameRuleValue(@NotNull String s, @NotNull String s1) {
-        if(!(this.spongeValue instanceof ServerWorld)){
+        if (!(this.spongeValue instanceof ServerWorld)) {
             return false;
         }
         ServerWorld world = (ServerWorld) this.spongeValue;
-        if(!isGameRule(s)){
+        if (!isGameRule(s)) {
             return false;
         }
         try {
             org.spongepowered.api.world.gamerule.GameRule<?> rule = Bonge.getInstance().convert(s, org.spongepowered.api.world.gamerule.GameRule.class);
             Object def = rule.defaultValue();
-            if(def instanceof Boolean){
+            if (def instanceof Boolean) {
                 world.properties().setGameRule((org.spongepowered.api.world.gamerule.GameRule<? super Boolean>) rule, Boolean.parseBoolean(s1));
-            }else if(def instanceof Integer){
+            } else if (def instanceof Integer) {
                 world.properties().setGameRule((org.spongepowered.api.world.gamerule.GameRule<? super Integer>) rule, Integer.parseInt(s1));
-            }else{
+            } else {
                 throw new NotImplementedException("World.setGameRuleValue(String, String) Cannot work out value parse for gamerule '" + rule.name() + "' with valuetype of '" + def.getClass().getName() + "'");
             }
         } catch (IOException e) {
@@ -1245,11 +1245,6 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     public Location locateNearestStructure(@NotNull Location location, @NotNull StructureType structureType, int i, boolean b) {
         throw new NotImplementedException("Not got to yet");
 
-    }
-
-    @Override
-    public int getViewDistance() {
-        throw new NotImplementedException("Not got to yet");
     }
 
     @Override

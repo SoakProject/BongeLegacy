@@ -58,9 +58,9 @@ public class BongeHorse extends BongeAbstractEntity<org.spongepowered.api.entity
     }
 
     @Override
+    @Deprecated
     public void setCarryingChest(boolean b) {
         throw new NotImplementedException("deprecated code");
-
     }
 
     @NotNull

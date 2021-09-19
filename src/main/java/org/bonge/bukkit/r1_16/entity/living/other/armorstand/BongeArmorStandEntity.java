@@ -28,6 +28,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public @NotNull ItemStack getItemInHand() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.itemInHand(HandTypes.MAIN_HAND);
         try {
@@ -38,6 +39,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public void setItemInHand(ItemStack item) {
         org.spongepowered.api.item.inventory.ItemStack is;
         try {
@@ -49,6 +51,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public @NotNull ItemStack getBoots() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.feet();
         try {
@@ -59,6 +62,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public void setBoots(ItemStack item) {
         org.spongepowered.api.item.inventory.ItemStack is;
         try {
@@ -70,6 +74,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public @NotNull ItemStack getLeggings() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.legs();
         try {
@@ -80,6 +85,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public void setLeggings(ItemStack item) {
         org.spongepowered.api.item.inventory.ItemStack is;
         try {
@@ -91,6 +97,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public @NotNull ItemStack getChestplate() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.chest();
         try {
@@ -101,6 +108,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public void setChestplate(ItemStack item) {
         org.spongepowered.api.item.inventory.ItemStack is;
         try {
@@ -112,6 +120,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public @NotNull ItemStack getHelmet() {
         org.spongepowered.api.item.inventory.ItemStack stack = this.spongeValue.head();
         try {
@@ -122,6 +131,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     }
 
     @Override
+    @Deprecated
     public void setHelmet(ItemStack item) {
         org.spongepowered.api.item.inventory.ItemStack is;
         try {

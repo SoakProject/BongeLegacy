@@ -9,15 +9,14 @@ import org.array.utils.ArrayUtils;
 import org.bonge.bukkit.r1_16.server.BongeServer;
 import org.bonge.bukkit.r1_16.server.plugin.BongePluginManager;
 import org.bonge.command.argument.PluginArgument;
-import org.bonge.launch.BongeLaunch;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.service.permission.Subject;
@@ -91,13 +90,9 @@ public class BongeCommand {
     private static class InfoCMD implements CommandExecutor {
 
         @Override
-        public CommandResult execute(CommandContext args) throws CommandException {
-            if (BongeLaunch.isBukkitAPILoaded()) {
-                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(Bukkit.getServer().getVersion()).color(NamedTextColor.WHITE)));
-            } else {
-                args.sendMessage(Identity.nil(), Component.text("warning: The Bukkit API has not been loaded, make sure it is downloaded and then restart the server to use Bukkit plugins").color(NamedTextColor.WHITE));
-                args.sendMessage(Identity.nil(), Component.join(Component.text("version: "), Component.text(BongeLaunch.PLUGIN_VERSION + "(" + BongeLaunch.IMPLEMENTATION_VERSION + ")")).color(NamedTextColor.WHITE));
-            }
+        public CommandResult execute(CommandContext args) {
+            @NotNull TextComponent component = Component.text("version: ").append(Component.text(Bukkit.getServer().getVersion()).color(NamedTextColor.WHITE));
+            args.sendMessage(Identity.nil(), component);
             return CommandResult.success();
         }
     }
@@ -105,7 +100,7 @@ public class BongeCommand {
     private static class PluginsCMD implements CommandExecutor {
 
         @Override
-        public CommandResult execute(CommandContext args) throws CommandException {
+        public CommandResult execute(CommandContext args) {
             Optional<Plugin> opPlugin = args.one(PLUGIN_OPTIONAL);
             if (opPlugin.isPresent()) {
                 String api = opPlugin.get().getDescription().getAPIVersion();

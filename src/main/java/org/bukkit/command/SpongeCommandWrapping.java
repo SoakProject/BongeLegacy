@@ -4,6 +4,7 @@ import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.command.CommandState;
 import org.bonge.bukkit.r1_16.command.RawSpongeCommand;
 import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -11,6 +12,8 @@ import org.spongepowered.api.command.parameter.Parameter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SpongeCommandWrapping implements CommandExecutor {
 
@@ -19,16 +22,16 @@ public class SpongeCommandWrapping implements CommandExecutor {
 
     public SpongeCommandWrapping(CommandState state) {
         this.state = state;
-        this.commandArguments = Parameter.remainingJoinedStrings().key("args").addParser((context, input) -> {
+        this.commandArguments = Parameter.remainingJoinedStrings().key("args").completer((context, input) -> {
             Collection<? extends String> args = context.all(SpongeCommandWrapping.this.commandArguments);
-
             CommandSender sender;
             try {
                 sender = Bonge.getInstance().convert(CommandSender.class, context.subject());
             } catch (IOException e) {
                 throw new IllegalArgumentException(e);
             }
-            return SpongeCommandWrapping.this.state.getCmd().tabComplete(sender, SpongeCommandWrapping.this.state.getLabel(), args.toArray(new String[0]));
+            List<String> suggestions = SpongeCommandWrapping.this.state.getCmd().tabComplete(sender, SpongeCommandWrapping.this.state.getLabel(), args.toArray(new String[0]));
+            return suggestions.stream().map(CommandCompletion::of).collect(Collectors.toList());
         }).optional().build();
     }
 

@@ -17,13 +17,13 @@ public class BongeEnderman extends BongeAbstractEntity<org.spongepowered.api.ent
 
     @Override
     @Deprecated
-    public MaterialData getCarriedMaterial() {
+    public @NotNull MaterialData getCarriedMaterial() {
         throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     @Deprecated
-    public void setCarriedMaterial(MaterialData material) {
+    public void setCarriedMaterial(@NotNull MaterialData material) {
         throw new NotImplementedException("Not got to yet");
     }
 
@@ -53,7 +53,7 @@ public class BongeEnderman extends BongeAbstractEntity<org.spongepowered.api.ent
     }
 
     @Override
-    public EntityType getType() {
+    public @NotNull EntityType getType() {
         return EntityType.ENDERMAN;
     }
 }

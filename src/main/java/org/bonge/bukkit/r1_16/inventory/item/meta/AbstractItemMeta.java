@@ -27,12 +27,14 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     protected ItemHolder stack;
 
-    public AbstractItemMeta(ItemHolder stack){
+    public AbstractItemMeta(ItemHolder stack) {
         this.stack = stack;
     }
 
     public abstract ItemMetaBuilder<? extends AbstractItemMeta> createBuilder();
+
     public abstract ItemHolder deserialize(Map<String, Object> map);
+
     public abstract void setHolder(ItemHolder holder);
 
     public ItemHolder getHolder() {
@@ -55,6 +57,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
+    @Deprecated
     public void setVersion(int version) {
         throw new NotImplementedException("ItemMeta.setVersion(int) not got to yet");
     }
@@ -73,7 +76,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     @Override
     public @NotNull String getDisplayName() {
         Optional<Component> opName = this.stack.get(Keys.DISPLAY_NAME);
-        return opName.map(text -> Bonge.getInstance().convert(text)).orElse(null);
+        return Bonge.getInstance().convert(opName.orElse(this.stack.getType().getSpongeItemType().asComponent()));
     }
 
     @Override
@@ -157,7 +160,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public boolean addEnchant(@NotNull Enchantment ench, int level, boolean ignoreLevelRestriction) {
-        if(!ignoreLevelRestriction && level > ench.getMaxLevel()){
+        if (!ignoreLevelRestriction && level > ench.getMaxLevel()) {
             return false;
         }
         EnchantmentType enchantment;
@@ -281,11 +284,11 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public void setDamage(int damage) {
-        this.stack.offer(Keys.ATTACK_DAMAGE, (double)damage);
+        this.stack.offer(Keys.ATTACK_DAMAGE, (double) damage);
     }
 
     @Override
-    public AbstractItemMeta clone(){
+    public AbstractItemMeta clone() {
         return this.createBuilder().build(this.stack.copy());
     }
 

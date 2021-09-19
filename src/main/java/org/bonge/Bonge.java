@@ -3,7 +3,7 @@ package org.bonge;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bonge.bukkit.r1_16.block.data.BongeAbstractBlockData;
 import org.bonge.bukkit.r1_16.block.data.IBongeBlockData;
 import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
@@ -14,6 +14,7 @@ import org.bonge.convert.Converter;
 import org.bonge.convert.block.AxisConverter;
 import org.bonge.convert.command.CommandAudienceSourceConverter;
 import org.bonge.convert.entity.EntityConverter;
+import org.bonge.convert.entity.EntityTypeConverter;
 import org.bonge.convert.inventory.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.convert.world.DirectionConverter;
@@ -25,6 +26,7 @@ import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.block.BlockState;
@@ -70,6 +72,7 @@ public class Bonge {
     public static final CommandAudienceSourceConverter COMMAND_AUDIENCE = instance.register(new CommandAudienceSourceConverter());
     public static final WorldConverter WORLD = instance.register(new WorldConverter());
     public static final EntityConverter ENTITY = instance.register(new EntityConverter());
+    public static final EntityTypeConverter ENTITY_TYPE = instance.register(new EntityTypeConverter());
 
     public <B, S> Set<Converter<B, S>> getConverts(Class<B> bClass, Class<S> sClass) {
         return (Set<Converter<B, S>>) (Object) this.getConverts().stream().filter(c -> c.getBukkitClass().isAssignableFrom(bClass) && c.getSpongeClass().isAssignableFrom(sClass)).collect(Collectors.toSet());
@@ -135,6 +138,14 @@ public class Bonge {
         }
     }
 
+    public EntityType convert(org.spongepowered.api.entity.EntityType<?> type) throws IOException {
+        return ENTITY_TYPE.to(type);
+    }
+
+    public org.spongepowered.api.entity.EntityType<?> convert(EntityType type) throws IOException {
+        return ENTITY_TYPE.from(type);
+    }
+
     public Axis convert(org.spongepowered.api.util.Axis axis) {
         return AXIS.to(axis);
     }
@@ -163,7 +174,7 @@ public class Bonge {
     }
 
     public BongeMaterial.Item convert(ItemType type) {
-        return Material.valueOf(type).getWrapper().toItem().orElseThrow(() -> new IllegalStateException("Item of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted from Sponge to Bukkit"));
+        return Material.valueOf(type).getWrapper().toItem().orElseThrow(() -> new IllegalStateException("Item of " + PlainTextComponentSerializer.plainText().serializeOr(type.asComponent(), "Unknown") + " cannot be converted from Sponge to Bukkit"));
     }
 
     public Optional<ItemType> convertItem(Material material) {
@@ -173,7 +184,7 @@ public class Bonge {
     }
 
     public BongeMaterial.Block convert(BlockType type) {
-        return Material.valueOf(type).getWrapper().toBlock().orElseThrow(() -> new IllegalStateException("Block of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted from Sponge to Bukkit"));
+        return Material.valueOf(type).getWrapper().toBlock().orElseThrow(() -> new IllegalStateException("Block of " + PlainTextComponentSerializer.plainText().serializeOr(type.asComponent(), "Unknown") + " cannot be converted from Sponge to Bukkit"));
     }
 
     public Optional<BlockType> convertBlock(Material material) {

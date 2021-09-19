@@ -17,11 +17,10 @@ import org.spongepowered.api.command.Command;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.*;
 import org.spongepowered.plugin.PluginContainer;
-import org.spongepowered.plugin.jvm.Plugin;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.IntFunction;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -38,9 +37,6 @@ public final class BongeLaunch {
     private RegisterCommandEvent<Command.Raw> commandEvent;
 
     private BongeConfig config;
-    private boolean isBukkitAPILoaded = true;
-    private boolean isSpigotAPILoaded;
-    private boolean isPaperAPILoaded;
 
     private static BongeLaunch instance;
 
@@ -48,7 +44,7 @@ public final class BongeLaunch {
     public BongeLaunch(final PluginContainer container) {
         instance = this;
         this.container = container;
-        this.logger = container.getLogger();
+        this.logger = container.logger();
         System.out.println("Bonge Launch");
     }
 
@@ -79,7 +75,6 @@ public final class BongeLaunch {
     @Listener
     public void onConstruct(ConstructPluginEvent event) {
         System.out.println("Bonge construct plugin event");
-        this.isBukkitAPILoaded = true;
         BongeServer server = new BongeServer();
         Bukkit.setServer(server);
         File file = new File("config/bonge/config.json");
@@ -99,9 +94,6 @@ public final class BongeLaunch {
 
     @Listener
     public void onStartingServer(StartingEngineEvent<Server> event) {
-        if (!this.isBukkitAPILoaded) {
-            return;
-        }
         BongeServer server = (BongeServer) Bukkit.getServer();
         server.setSpongeServer(Sponge.server());
         BongeBukkitLaunch.onInit();
@@ -111,9 +103,6 @@ public final class BongeLaunch {
     @Listener
     public void onStartedServer(StartedEngineEvent<Server> event) {
         System.out.println("Bonge starting server");
-        if (!this.isBukkitAPILoaded) {
-            return;
-        }
         BongeBukkitLaunch.onLoad(this);
         BongeBukkitLaunch.onEnable();
     }
@@ -157,16 +146,5 @@ public final class BongeLaunch {
         return getInstance().container;
     }
 
-    public static boolean isBukkitAPILoaded() {
-        return getInstance().isBukkitAPILoaded;
-    }
-
-    public static boolean isSpigotAPILoaded() {
-        return getInstance().isSpigotAPILoaded;
-    }
-
-    public static boolean isPaperAPILoaded() {
-        return getInstance().isPaperAPILoaded;
-    }
 
 }

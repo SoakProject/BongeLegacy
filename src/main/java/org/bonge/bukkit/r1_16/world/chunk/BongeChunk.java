@@ -27,6 +27,14 @@ public class BongeChunk implements Chunk {
     private final Vector3i location;
     private final BongeWorld world;
 
+    public BongeChunk(@NotNull Chunk chunk) {
+        this(new Vector3i(chunk.getX(), 0, chunk.getZ()), (BongeWorld) chunk.getWorld());
+    }
+
+    public BongeChunk(@NotNull WorldChunk chunk) {
+        this(chunk.chunkPosition(), (BongeWorld) Bonge.getInstance().convert(chunk.world()));
+    }
+
     public BongeChunk(@NotNull Vector3i location, @NotNull BongeWorld world) {
         this.location = location;
         this.world = world;

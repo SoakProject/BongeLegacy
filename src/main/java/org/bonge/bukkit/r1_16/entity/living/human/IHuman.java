@@ -75,6 +75,7 @@ public interface IHuman<T extends org.spongepowered.api.entity.living.Humanoid> 
     }
 
     @Override
+    @Deprecated
     default @NotNull ItemStack getItemInHand() {
         org.spongepowered.api.item.inventory.ItemStack item = this.getSpongeValue().itemInHand(HandTypes.MAIN_HAND);
         try {
@@ -85,6 +86,7 @@ public interface IHuman<T extends org.spongepowered.api.entity.living.Humanoid> 
     }
 
     @Override
+    @Deprecated
     default void setItemInHand(@Nullable ItemStack item) {
         throw new NotImplementedException("yet to look at");
 
@@ -199,31 +201,35 @@ public interface IHuman<T extends org.spongepowered.api.entity.living.Humanoid> 
     }
 
     @Override
+    @Deprecated
     default @Nullable Entity getShoulderEntityLeft() {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
+    @Deprecated
     default void setShoulderEntityLeft(@Nullable Entity entity) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
+    @Deprecated
     default @Nullable Entity getShoulderEntityRight() {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
+    @Deprecated
     default void setShoulderEntityRight(@Nullable Entity entity) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default String getName() {
+    default @NotNull String getName() {
         return ILivingEntity.super.getName();
     }
 }

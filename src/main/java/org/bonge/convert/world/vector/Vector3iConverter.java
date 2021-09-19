@@ -22,6 +22,6 @@ public class Vector3iConverter implements Converter<Vector, Vector3i> {
 
     @Override
     public Vector to(Vector3i value) {
-        return new Vector(value.getX(), value.getY(), value.getZ());
+        return new Vector(value.x(), value.y(), value.z());
     }
 }

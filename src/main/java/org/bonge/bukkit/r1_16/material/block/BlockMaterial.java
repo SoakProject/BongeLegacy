@@ -106,6 +106,7 @@ public class BlockMaterial implements BongeMaterial.Block {
     }
 
     @Override
+    @Deprecated
     public MaterialData getNewData(byte raw) {
         return MaterialData.getData(this.spongeValue.defaultState());
     }
@@ -133,6 +134,7 @@ public class BlockMaterial implements BongeMaterial.Block {
     }
 
     @Override
+    @Deprecated
     public boolean isTransparent() {
         return false;
     }

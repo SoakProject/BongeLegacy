@@ -22,7 +22,7 @@ public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar
     }
 
     @Override
-    public String getTitle() {
+    public @NotNull String getTitle() {
         return Bonge.getInstance().convert(this.spongeValue.name());
     }
 
@@ -69,37 +69,37 @@ public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar
 
     @Override
     public void removeFlag(@NotNull BarFlag flag) {
-
+        throw new NotImplementedException("Not implemented yet");
     }
 
     @Override
     public void addFlag(@NotNull BarFlag flag) {
-
+        throw new NotImplementedException("Not implemented yet");
     }
 
     @Override
     public boolean hasFlag(@NotNull BarFlag flag) {
-        return false;
+        throw new NotImplementedException("Not implemented yet");
     }
 
     @Override
     public void setProgress(double progress) {
-        this.spongeValue.percent((float)progress);
+        this.spongeValue.progress((float) progress);
     }
 
     @Override
     public double getProgress() {
-        return this.spongeValue.percent();
+        return this.spongeValue.progress();
     }
 
     @Override
     public void addPlayer(@NotNull Player player) {
-        ((BongePlayer)player).getSpongeValue().showBossBar(this.spongeValue);
+        ((BongePlayer) player).getSpongeValue().showBossBar(this.spongeValue);
     }
 
     @Override
     public void removePlayer(@NotNull Player player) {
-        ((BongePlayer)player).getSpongeValue().hideBossBar(this.spongeValue);
+        ((BongePlayer) player).getSpongeValue().hideBossBar(this.spongeValue);
     }
 
     @Override
@@ -125,10 +125,12 @@ public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar
     }
 
     @Override
+    @Deprecated
     public void show() {
     }
 
     @Override
+    @Deprecated
     public void hide() {
 
     }

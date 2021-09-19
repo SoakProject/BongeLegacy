@@ -49,6 +49,7 @@ public class UnknownMaterial implements BongeMaterial {
     }
 
     @Override
+    @Deprecated
     public MaterialData getNewData(byte raw) {
         return new MaterialData(Material.UNKNOWN, raw);
     }

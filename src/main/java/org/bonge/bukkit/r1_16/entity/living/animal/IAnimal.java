@@ -25,21 +25,25 @@ import java.util.UUID;
 public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.Animal> extends IAgable<T>, Animals {
 
     @Override
+    @Deprecated
     default boolean canBreed() {
         return IAgable.super.canBreed();
     }
 
     @Override
+    @Deprecated
     default void setBreed(boolean breed) {
         IAgable.super.setBreed(breed);
     }
 
     @Override
+    @Deprecated
     default boolean getAgeLock() {
         return IAgable.super.getAgeLock();
     }
 
     @Override
+    @Deprecated
     default void setAgeLock(boolean lock) {
         IAgable.super.setAgeLock(lock);
     }
@@ -63,20 +67,20 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
     }
 
     @Override
-    default Block getTargetBlock(Set<Material> transparent, int maxDistance) {
+    default @NotNull Block getTargetBlock(Set<Material> transparent, int maxDistance) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) {
+    default @NotNull List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
     default int getRemainingAir() {
-        return this.getSpongeValue().get(Keys.REMAINING_AIR).get();
+        return this.getSpongeValue().get(Keys.REMAINING_AIR).orElse(20);
     }
 
     @Override
@@ -86,7 +90,7 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
 
     @Override
     default int getMaximumAir() {
-        return this.getSpongeValue().get(Keys.MAX_AIR).get();
+        return this.getSpongeValue().get(Keys.MAX_AIR).orElse(20);
     }
 
     @Override
@@ -137,49 +141,48 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
     }
 
     @Override
-    default boolean addPotionEffect(PotionEffect effect) {
+    default boolean addPotionEffect(@NotNull PotionEffect effect) {
+        throw new NotImplementedException("yet to look at");
+    }
+
+    @Override
+    default boolean addPotionEffect(@NotNull PotionEffect effect, boolean force) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default boolean addPotionEffect(PotionEffect effect, boolean force) {
+    default boolean addPotionEffects(@NotNull Collection<PotionEffect> effects) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default boolean addPotionEffects(Collection<PotionEffect> effects) {
+    default boolean hasPotionEffect(@NotNull PotionEffectType type) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default boolean hasPotionEffect(PotionEffectType type) {
+    default PotionEffect getPotionEffect(@NotNull PotionEffectType type) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default PotionEffect getPotionEffect(PotionEffectType type) {
+    default void removePotionEffect(@NotNull PotionEffectType type) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default void removePotionEffect(PotionEffectType type) {
+    default @NotNull Collection<PotionEffect> getActivePotionEffects() {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default Collection<PotionEffect> getActivePotionEffects() {
-        throw new NotImplementedException("yet to look at");
-
-    }
-
-    @Override
-    default boolean hasLineOfSight(Entity other) {
+    default boolean hasLineOfSight(@NotNull Entity other) {
         throw new NotImplementedException("yet to look at");
 
     }
@@ -221,7 +224,7 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
     }
 
     @Override
-    default Entity getLeashHolder() throws IllegalStateException {
+    default @NotNull Entity getLeashHolder() throws IllegalStateException {
         throw new NotImplementedException("yet to look at");
 
     }
@@ -287,7 +290,7 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
     }
 
     @Override
-    default AttributeInstance getAttribute(Attribute attribute) {
+    default AttributeInstance getAttribute(@NotNull Attribute attribute) {
         throw new NotImplementedException("yet to look at");
 
     }
@@ -335,13 +338,13 @@ public interface IAnimal<T extends org.spongepowered.api.entity.living.animal.An
     }
 
     @Override
-    default <P extends Projectile> P launchProjectile(Class<? extends P> projectile) {
+    default <P extends Projectile> @NotNull P launchProjectile(@NotNull Class<? extends P> projectile) {
         throw new NotImplementedException("yet to look at");
 
     }
 
     @Override
-    default <P extends Projectile> P launchProjectile(Class<? extends P> projectile, Vector velocity) {
+    default <P extends Projectile> @NotNull P launchProjectile(@NotNull Class<? extends P> projectile, Vector velocity) {
         throw new NotImplementedException("yet to look at");
 
     }

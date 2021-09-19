@@ -155,11 +155,13 @@ public abstract class BongeBlockState<T extends BlockEntity> extends BongeWrappe
     }
 
     @Override
+    @Deprecated
     public byte getRawData() {
         throw new NotImplementedException("Method BlockState.setRawData() has not yet been looked at");
     }
 
     @Override
+    @Deprecated
     public void setRawData(byte data) {
         throw new NotImplementedException("Method BlockState.setRawData(byte) has not yet been looked at");
     }

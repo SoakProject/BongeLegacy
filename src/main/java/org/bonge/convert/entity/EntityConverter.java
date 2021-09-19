@@ -1,6 +1,7 @@
 package org.bonge.convert.entity;
 
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bonge.bukkit.r1_16.entity.BongeAbstractEntity;
 import org.bonge.bukkit.r1_16.entity.ForgeEntity;
 import org.bonge.bukkit.r1_16.entity.living.animal.*;
@@ -132,7 +133,7 @@ public class EntityConverter implements Converter<Entity, org.spongepowered.api.
             return new BongeFox((Fox) entity);
         }
 
-        String entityId = entity.type().findKey(RegistryTypes.ENTITY_TYPE).map(ResourceKey::asString).orElse(PlainComponentSerializer.plain().serialize(entity.type().asComponent()));
+        String entityId = entity.type().findKey(RegistryTypes.ENTITY_TYPE).map(ResourceKey::asString).orElse(PlainTextComponentSerializer.plainText().serialize(entity.type().asComponent()));
 
         if(!FAILED_TO_CONVERT.contains(entityId)){
             System.err.println("Could not convert entity: '" + entityId + "' using forge adapter for this entity.");

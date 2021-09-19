@@ -60,7 +60,8 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
         this(type, amount, damage, null);
     }
 
-    public ItemStack(@NotNull Material type, final int amount, final short damage, @Deprecated @Nullable final Byte ignore) {
+    @Deprecated
+    public ItemStack(@NotNull Material type, final int amount, final short damage, @Nullable final Byte ignore) {
         Optional<ItemType> opType = Bonge.getInstance().convertItem(type);
         if (!opType.isPresent()) {
             throw new IllegalArgumentException("Material is not an Item");
@@ -110,6 +111,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
 
     @Deprecated
     public void setData(@Nullable MaterialData data) {
+        throw new NotImplementedException("ItemStack.getDurability() is legacy code");
     }
 
     @Deprecated

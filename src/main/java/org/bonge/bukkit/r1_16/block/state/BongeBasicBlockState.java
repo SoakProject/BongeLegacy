@@ -116,12 +116,14 @@ public class BongeBasicBlockState implements BlockState {
     }
 
     @Override
+    @Deprecated
     public byte getRawData() {
         throw new NotImplementedException("Method BlockState.getRawData() has not yet been looked at");
 
     }
 
     @Override
+    @Deprecated
     public void setRawData(byte data) {
         throw new NotImplementedException("Method BlockState.setRawData() has not yet been looked at");
 

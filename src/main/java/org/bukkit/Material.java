@@ -1,6 +1,6 @@
 package org.bukkit;
 
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
@@ -1271,7 +1271,7 @@ public final class Material implements Keyed {
             return opItem.map(item -> item.getSpongeItemType().equals(type)).orElse(false);
         }).orElseThrow(() -> new IllegalStateException(
                 "Sponge itemtype of " +
-                        PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") +
+                        PlainTextComponentSerializer.plainText().serializeOr(type.asComponent(), "Unknown") +
                         " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " +
                         ArrayUtils.toString(",", Material::name,
                                 Stream.of(values())
@@ -1286,7 +1286,7 @@ public final class Material implements Keyed {
             }
             Optional<BongeMaterial.Block> opBlock = m.material.toBlock();
             return opBlock.map(block -> block.getSpongeBlockType().equals(type)).orElse(false);
-        }).orElseThrow(() -> new IllegalStateException("Sponge blocktype of " + PlainComponentSerializer.plain().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered?"));
+        }).orElseThrow(() -> new IllegalStateException("Sponge blocktype of " + PlainTextComponentSerializer.plainText().serializeOr(type.asComponent(), "Unknown") + " cannot be converted to Bukkit, is it registered?"));
     }
 
     public static Optional<Material> valueOf(Predicate<Material> material) {

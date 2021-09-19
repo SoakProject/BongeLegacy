@@ -92,6 +92,7 @@ public interface IMinecart<M extends org.spongepowered.api.entity.vehicle.mineca
 
     @NotNull
     @Override
+    @Deprecated
     default MaterialData getDisplayBlock() {
         throw new NotImplementedException("Deprecated");
     }
@@ -113,7 +114,7 @@ public interface IMinecart<M extends org.spongepowered.api.entity.vehicle.mineca
     @NotNull
     @Override
     default BlockData getDisplayBlockData() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override

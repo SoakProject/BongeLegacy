@@ -11,11 +11,13 @@ public interface BongeSwitch extends IBongeBlockData, Switch, BongeDirectional, 
 
     @Override
     @NotNull
+    @Deprecated
     default Face getFace() {
         throw new NotImplementedException("Switch.getFace() Not got to yet");
     }
 
     @Override
+    @Deprecated
     default void setFace(@NotNull Face face) {
         throw new NotImplementedException("Switch.setFace(Switch.Face) Not got to yet");
     }

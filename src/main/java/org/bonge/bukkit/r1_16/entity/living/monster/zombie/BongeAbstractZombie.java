@@ -18,11 +18,13 @@ public interface BongeAbstractZombie<Z extends org.spongepowered.api.entity.livi
     }
 
     @Override
+    @Deprecated
     default void setAgeLock(boolean lock) {
         throw new NotImplementedException("yet to look at");
     }
 
     @Override
+    @Deprecated
     default boolean getAgeLock() {
         throw new NotImplementedException("yet to look at");
     }
@@ -43,11 +45,13 @@ public interface BongeAbstractZombie<Z extends org.spongepowered.api.entity.livi
     }
 
     @Override
+    @Deprecated
     default boolean canBreed() {
         return this.getSpongeValue().get(Keys.CAN_BREED).orElseThrow(() -> new IllegalStateException("Not ageable"));
     }
 
     @Override
+    @Deprecated
     default void setBreed(boolean breed) {
         this.getSpongeValue().offer(Keys.CAN_BREED, breed);
     }

@@ -21,21 +21,25 @@ public class BongeVillager extends BongeAbstractEntity<org.spongepowered.api.ent
     }
 
     @Override
+    @Deprecated
     public void setAgeLock(boolean lock) {
         IAgable.super.setAgeLock(lock);
     }
 
     @Override
+    @Deprecated
     public void setBreed(boolean breed) {
         IAgable.super.setBreed(breed);
     }
 
     @Override
+    @Deprecated
     public boolean canBreed() {
         return IAgable.super.canBreed();
     }
 
     @Override
+    @Deprecated
     public boolean getAgeLock() {
         return IAgable.super.getAgeLock();
     }

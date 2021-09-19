@@ -69,6 +69,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public boolean isOnGround() {
         return super.isOnGround();
     }
@@ -284,6 +285,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void playNote(@NotNull Location loc, byte instrument, byte note) {
         throw new NotImplementedException("Not got to yet");
     }
@@ -334,6 +336,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void playEffect(@NotNull Location loc, @NotNull Effect effect, int data) {
         throw new NotImplementedException("Not got to yet");
     }
@@ -361,6 +364,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public boolean sendChunkChange(@NotNull Location loc, int sx, int sy, int sz, @NotNull byte[] data) {
         throw new NotImplementedException("yet to look at");
     }
@@ -1088,7 +1092,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return IHuman.super.getName();
     }
 
@@ -1155,11 +1159,13 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public boolean isOp() {
         return this.hasPermission(Permissions.BONGE_OP);
     }
 
     @Override
+    @Deprecated
     public void setOp(boolean value) {
         if (!(this.spongeValue instanceof ServerPlayer)) {
             return;

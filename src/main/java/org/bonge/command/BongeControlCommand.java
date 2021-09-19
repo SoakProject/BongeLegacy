@@ -37,7 +37,7 @@ public class BongeControlCommand {
         @Override
         public CommandResult execute(CommandContext context) {
             ((BongeScheduler)Bukkit.getScheduler()).getTasks().forEach(t -> context.sendMessage(Identity.nil(), Component.text("- Id: " + t.getTaskId() + " | Plugin: " + t.getOwner().getName() + " | async: " + !t.isSync() + " | Class: " + t.getTask().name())));
-            return CommandResult.empty();
+            return CommandResult.builder().build();
         }
     }
 

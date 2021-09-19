@@ -18,11 +18,13 @@ public class BongeVillagerZombie extends BongeAbstractEntity<org.spongepowered.a
     }
 
     @Override
+    @Deprecated
     public boolean isBaby() {
         return !this.getSpongeValue().get(Keys.IS_ADULT).get();
     }
 
     @Override
+    @Deprecated
     public void setBaby(boolean flag) {
         this.getSpongeValue().offer(Keys.IS_ADULT, !flag);
     }

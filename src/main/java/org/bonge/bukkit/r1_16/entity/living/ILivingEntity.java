@@ -230,6 +230,7 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
     }
 
     @Override
+    @Deprecated
     default boolean addPotionEffect(@NotNull PotionEffect effect, boolean force) {
         throw new NotImplementedException("Not got to yet");
 
@@ -407,21 +408,23 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
     }
 
     @Override
+    @Deprecated
     default double getMaxHealth() {
         return this.getSpongeValue().get(Keys.MAX_HEALTH).orElseThrow(() -> new IllegalStateException("Entity does not have health"));
 
     }
 
     @Override
+    @Deprecated
     default void setMaxHealth(double health) {
         throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
+    @Deprecated
     default void resetMaxHealth() {
         throw new NotImplementedException("Not got to yet");
-
     }
 
     @NotNull
