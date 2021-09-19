@@ -69,12 +69,6 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
-    @Deprecated
-    public Player.@NotNull Spigot spigot() {
-        throw new NotImplementedException("yet to look at");
-    }
-
-    @Override
     public boolean isOnGround() {
         return super.isOnGround();
     }
@@ -237,7 +231,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
             }
             return false;
         }
-        return !result.equals(CommandResult.empty());
+        return !result.equals(CommandResult.success());
     }
 
     @Override
@@ -389,6 +383,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void updateInventory() {
 
     }
@@ -729,6 +724,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void hidePlayer(@NotNull Player player) {
         throw new NotImplementedException("yet to look at");
 
@@ -740,6 +736,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void showPlayer(@NotNull Player player) {
         throw new NotImplementedException("yet to look at");
     }
@@ -785,6 +782,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void setTexturePack(@NotNull String url) {
         this.setResourcePack(url);
     }
@@ -867,6 +865,7 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     }
 
     @Override
+    @Deprecated
     public void sendTitle(@Nullable String title, @Nullable String subtitle) {
         sendTitle(title, subtitle, -1, -1, -1);
     }
@@ -970,6 +969,11 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
     public int getClientViewDistance() {
         throw new NotImplementedException("yet to look at");
 
+    }
+
+    @Override
+    public int getPing() {
+        throw new NotImplementedException("not got to yet");
     }
 
     @Override

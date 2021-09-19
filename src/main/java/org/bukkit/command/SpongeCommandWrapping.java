@@ -19,7 +19,7 @@ public class SpongeCommandWrapping implements CommandExecutor {
 
     public SpongeCommandWrapping(CommandState state) {
         this.state = state;
-        this.commandArguments = Parameter.remainingJoinedStrings().key("args").suggestions((context, input) -> {
+        this.commandArguments = Parameter.remainingJoinedStrings().key("args").addParser((context, input) -> {
             Collection<? extends String> args = context.all(SpongeCommandWrapping.this.commandArguments);
 
             CommandSender sender;
@@ -46,7 +46,7 @@ public class SpongeCommandWrapping implements CommandExecutor {
             CommandSender source2 = Bonge.getInstance().convert(CommandSender.class, context.subject());
             String[] split = context.all(this.commandArguments).toArray(new String[0]);
             boolean result = this.state.getCmd().execute(source2, this.state.getLabel(), split);
-            return result ? CommandResult.success() : CommandResult.empty();
+            return result ? CommandResult.success() : CommandResult.builder().build();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         } catch (Throwable e) {

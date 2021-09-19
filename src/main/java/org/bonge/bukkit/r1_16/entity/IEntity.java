@@ -57,13 +57,6 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
         return this.getSpongeValue().location().block().type().equals(BlockTypes.WATER.get());
     }
 
-    @NotNull
-    @Override
-    @Deprecated
-    default Spigot spigot() {
-        throw new NotImplementedException("Entity.Spigot() - Not got to yet");
-    }
-
     @Override
     default @NotNull Location getLocation() {
         Location loc = this.getData().get(EntityManager.LOCATION);
@@ -450,7 +443,7 @@ public interface IEntity<E extends org.spongepowered.api.entity.Entity> extends 
 
     @Override
     default void setRotation(float yaw, float pitch) {
-        this.getSpongeValue().setRotation(new Vector3d(yaw, pitch, this.getSpongeValue().rotation().getZ()));
+        this.getSpongeValue().setRotation(new Vector3d(yaw, pitch, this.getSpongeValue().rotation().z()));
     }
 
     @Override

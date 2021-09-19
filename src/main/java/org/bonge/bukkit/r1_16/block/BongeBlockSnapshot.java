@@ -81,7 +81,7 @@ public class BongeBlockSnapshot implements Block {
     public @NotNull Block getRelative(@NotNull BlockFace face, int distance) {
         Vector3i vector3i = new Vector3i(face.getModX(), face.getModY(), face.getModZ());
         vector3i = vector3i.mul(distance);
-        return this.getRelative(vector3i.getX(), vector3i.getY(), vector3i.getZ());
+        return this.getRelative(vector3i.x(), vector3i.y(), vector3i.z());
     }
 
     @Override
@@ -119,18 +119,18 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public int getX() {
-        return this.snapshot.position().getX();
+        return this.snapshot.position().x();
     }
 
     @Override
     public int getY() {
-        return this.snapshot.position().getY();
+        return this.snapshot.position().y();
 
     }
 
     @Override
     public int getZ() {
-        return this.snapshot.position().getZ();
+        return this.snapshot.position().z();
 
     }
 

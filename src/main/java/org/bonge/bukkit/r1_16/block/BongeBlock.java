@@ -161,8 +161,7 @@ public class BongeBlock extends BongeWrapper<Location<? extends World, ? extends
     @NotNull
     @Override
     public Chunk getChunk() {
-        org.spongepowered.api.world.chunk.Chunk chunk = this.spongeValue.world().chunk(this.spongeValue.chunkPosition());
-        return new BongeChunk(chunk);
+        return new BongeChunk(this.spongeValue.chunkPosition(), new BongeWorld(this.spongeValue.world()));
     }
 
     @Override

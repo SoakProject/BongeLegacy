@@ -25,7 +25,7 @@ public class BongeControlCommand {
             Optional<BongeTaskData> opTask = ((BongeScheduler)Bukkit.getScheduler()).getTasks().stream().filter(d -> d.getTaskId() == taskId).findAny();
             if(!opTask.isPresent()){
                 context.sendMessage(Identity.nil(), Component.text("Unknown task id to kill"));
-                return CommandResult.empty();
+                return CommandResult.builder().build();
             }
             opTask.get().cancel();
             return CommandResult.success();

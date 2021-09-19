@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.service.permission.Subject;
@@ -107,7 +108,7 @@ public class BongeCommandManager implements CommandMap {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return !result.equals(CommandResult.empty());
+        return !result.equals(CommandResult.builder().build());
     }
 
     @Override
@@ -137,7 +138,7 @@ public class BongeCommandManager implements CommandMap {
         try {
             Subject subject = Bonge.getInstance().convert(sender, Subject.class);
 
-            return Sponge.server().commandManager().suggest(subject, ((Audience) subject), cmdLine);
+            return Sponge.server().commandManager().complete(subject, ((Audience) subject), cmdLine).stream().map(CommandCompletion::completion).collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

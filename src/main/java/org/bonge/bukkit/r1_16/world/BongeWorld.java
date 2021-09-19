@@ -1252,13 +1252,6 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
         throw new NotImplementedException("Not got to yet");
     }
 
-    @NotNull
-    @Override
-    @Deprecated
-    public Spigot spigot() {
-        throw new NotImplementedException("Not got to yet");
-    }
-
     @Override
     public @Nullable Raid locateNearestRaid(@NotNull Location location, int radius) {
         throw new NotImplementedException("Not got to yet");

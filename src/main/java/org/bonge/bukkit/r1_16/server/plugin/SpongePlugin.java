@@ -25,7 +25,7 @@ public class SpongePlugin implements Plugin {
     }
     @Override
     public File getDataFolder() {
-        return new File("config/" + this.plugin.getMetadata().getId());
+        return new File("config/" + this.plugin.metadata().id());
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class RconCommandSource extends BongeWrapper<RconConnection> implements RemoteConsoleCommandSender {
 
-    public RconCommandSource(RconConnection source){
+    public RconCommandSource(RconConnection source) {
         super(source);
     }
 
@@ -30,7 +30,7 @@ public class RconCommandSource extends BongeWrapper<RconConnection> implements R
 
     @Override
     public void sendMessage(String[] messages) {
-        for(String message : messages){
+        for (String message : messages) {
             this.sendMessage(message);
         }
     }
@@ -55,12 +55,6 @@ public class RconCommandSource extends BongeWrapper<RconConnection> implements R
     @Override
     public String getName() {
         return this.spongeValue.friendlyIdentifier().orElse("RCON");
-    }
-
-    @NotNull
-    @Override
-    public Spigot spigot() {
-        throw new NotImplementedException("yet to look at");
     }
 
     @Override

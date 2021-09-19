@@ -13,6 +13,7 @@ import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.convert.Converter;
 import org.bonge.convert.block.AxisConverter;
 import org.bonge.convert.command.CommandAudienceSourceConverter;
+import org.bonge.convert.entity.EntityConverter;
 import org.bonge.convert.inventory.InventoryConvert;
 import org.bonge.convert.text.TextConverter;
 import org.bonge.convert.world.DirectionConverter;
@@ -28,6 +29,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ContainerTypes;
@@ -53,8 +55,8 @@ public class Bonge {
 
     private final Set<Converter<?, ?>> converts = new HashSet<>();
     private final Set<BongeMaterial> materials = new HashSet<>();
-    private Map<Predicate<BlockState>, Class<IBongeBlockData>> blockData = new HashMap<>();
-    private Map<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>> blockCreator = new HashMap<>();
+    private final Map<Predicate<BlockState>, Class<IBongeBlockData>> blockData = new HashMap<>();
+    private final Map<Predicate<BlockState>, Function<BlockState, BongeAbstractBlockData>> blockCreator = new HashMap<>();
 
     private static final Bonge instance = new Bonge();
 
@@ -67,6 +69,7 @@ public class Bonge {
     public static final AxisConverter AXIS = instance.register(new AxisConverter());
     public static final CommandAudienceSourceConverter COMMAND_AUDIENCE = instance.register(new CommandAudienceSourceConverter());
     public static final WorldConverter WORLD = instance.register(new WorldConverter());
+    public static final EntityConverter ENTITY = instance.register(new EntityConverter());
 
     public <B, S> Set<Converter<B, S>> getConverts(Class<B> bClass, Class<S> sClass) {
         return (Set<Converter<B, S>>) (Object) this.getConverts().stream().filter(c -> c.getBukkitClass().isAssignableFrom(bClass) && c.getSpongeClass().isAssignableFrom(sClass)).collect(Collectors.toSet());
@@ -177,6 +180,10 @@ public class Bonge {
         BongeMaterial material1 = material.getWrapper();
         Optional<BongeMaterial.Block> opBlock = material1.toBlock();
         return opBlock.map(BongeMaterial.Block::getSpongeBlockType);
+    }
+
+    public org.bukkit.entity.Entity convert(Entity entity) throws IOException {
+        return ENTITY.to(entity);
     }
 
     public String convert(Component text) {

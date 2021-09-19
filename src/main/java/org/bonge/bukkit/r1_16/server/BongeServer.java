@@ -56,6 +56,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -577,14 +579,19 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull OfflinePlayer getOfflinePlayer(@NotNull String s) {
-        Optional<User> opUser = this.getSpongeValue().userManager().find(s);
-        return Objects.requireNonNull(opUser.map(BongeOfflinePlayer::new).orElse(null));
+        CompletableFuture<Optional<User>> future = this.getSpongeValue().userManager().load(s);
+        Optional<User> opUser = future.getNow(Optional.empty());
+        return opUser.map(BongeOfflinePlayer::new).orElseThrow(() -> new NotImplementedException("Couldnt find offline user with that name"));
     }
 
     @Override
     public @NotNull OfflinePlayer getOfflinePlayer(@NotNull UUID uuid) {
-        Optional<User> opUser = this.getSpongeValue().userManager().find(uuid);
-        return Objects.requireNonNull(opUser.map(BongeOfflinePlayer::new).orElse(null));
+        CompletableFuture<User> future = this.getSpongeValue().userManager().loadOrCreate(uuid);
+        try {
+            return new BongeOfflinePlayer(future.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("Bukkits inefficiencies got in the way", e);
+        }
     }
 
     @Override
@@ -614,11 +621,21 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull Set<OfflinePlayer> getOperators() {
-        Set<OfflinePlayer> players = new HashSet<>();
-        this.getSpongeValue().userManager().all().stream().filter(p -> this.getSpongeValue().userManager().find(p).isPresent()).filter(p -> this.getSpongeValue().userManager().find(p).orElseThrow(() -> new IllegalStateException("Could not find offline player of " + p)).hasPermission(Permissions.BONGE_OP)).forEach(p -> {
-            players.add(new BongeOfflinePlayer(this.getSpongeValue().userManager().find(p).orElseThrow(() -> new IllegalStateException("Could not find player of " + p))));
-        });
-        return players;
+        return this
+                .getSpongeValue()
+                .userManager()
+                .streamAll()
+                .map(p -> {
+                    try {
+                        return this.getSpongeValue().userManager().loadOrCreate(p.uuid()).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .filter(p -> p.hasPermission(Permissions.BONGE_OP))
+                .map(BongeOfflinePlayer::new)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -655,9 +672,20 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public OfflinePlayer[] getOfflinePlayers() {
-        Set<OfflinePlayer> set = new HashSet<>();
-        this.getSpongeValue().userManager().all().forEach(u -> this.getSpongeValue().userManager().find(u).ifPresent(user -> set.add(new BongeOfflinePlayer(user))));
-        return set.toArray(new OfflinePlayer[0]);
+        return this
+                .getSpongeValue()
+                .userManager()
+                .streamAll()
+                .map(u -> {
+                    try {
+                        return this.getSpongeValue().userManager().loadOrCreate(u.uuid()).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(BongeOfflinePlayer::new)
+                .toArray(BongeOfflinePlayer[]::new);
     }
 
     @Override
@@ -917,14 +945,6 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
     @Deprecated
     public @NotNull UnsafeValues getUnsafe() {
         return new BongeUnsafeValues();
-    }
-
-    @NotNull
-    @Override
-    @Deprecated
-    public Spigot spigot() {
-        throw new NotImplementedException("Server.spigot() Not got to yet");
-
     }
 
     @Override

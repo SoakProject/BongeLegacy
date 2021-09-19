@@ -63,7 +63,7 @@ public class BongeCommand {
                 }
                 return CommandResult.success();
             }
-            return CommandResult.empty();
+            return CommandResult.builder().build();
         }
     }
 

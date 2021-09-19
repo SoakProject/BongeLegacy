@@ -135,7 +135,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getBodyPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.CHEST.get());
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getLeftArmPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.LEFT_ARM.get());
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override
@@ -167,7 +167,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getRightArmPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.RIGHT_ARM);
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override
@@ -183,7 +183,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getLeftLegPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.LEFT_LEG);
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override
@@ -199,7 +199,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getRightLegPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.RIGHT_LEG);
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override
@@ -215,7 +215,7 @@ public class BongeArmorStandEntity extends BongeAbstractEntity<org.spongepowered
     @Override
     public @NotNull EulerAngle getHeadPose() {
         Vector3d vector3d = this.spongeValue.get(Keys.BODY_ROTATIONS).get().get(BodyParts.HEAD);
-        return new EulerAngle(vector3d.getX(), vector3d.getY(), vector3d.getZ());
+        return new EulerAngle(vector3d.x(), vector3d.y(), vector3d.z());
     }
 
     @Override

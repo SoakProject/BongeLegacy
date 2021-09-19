@@ -23,11 +23,11 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     private final SystemSubject subject;
 
-    public ConsoleSource(){
+    public ConsoleSource() {
         this(Sponge.systemSubject());
     }
 
-    public ConsoleSource(SystemSubject subject){
+    public ConsoleSource(SystemSubject subject) {
         this.subject = subject;
     }
 
@@ -38,7 +38,7 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
-        for(String message : messages){
+        for (String message : messages) {
             this.sendMessage(message);
         }
     }
@@ -51,7 +51,7 @@ public class ConsoleSource implements ConsoleCommandSender {
 
     @Override
     public void sendMessage(@Nullable UUID sender, @NotNull String[] messages) {
-    sendMessage(messages);
+        sendMessage(messages);
     }
 
     @Override
@@ -62,13 +62,6 @@ public class ConsoleSource implements ConsoleCommandSender {
     @Override
     public @NotNull String getName() {
         return "Console";
-    }
-
-    @NotNull
-    @Override
-    @Deprecated
-    public Spigot spigot() {
-        throw new NotImplementedException("yet to look at");
     }
 
     @Override

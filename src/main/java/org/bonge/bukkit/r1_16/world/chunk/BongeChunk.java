@@ -1,10 +1,8 @@
 package org.bonge.bukkit.r1_16.world.chunk;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_16.block.BongeBlock;
 import org.bonge.bukkit.r1_16.world.BongeWorld;
 import org.bonge.util.exception.NotImplementedException;
-import org.bonge.wrapper.BongeWrapper;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.World;
@@ -15,95 +13,90 @@ import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.api.util.AABB;
+import org.spongepowered.api.util.Ticks;
+import org.spongepowered.api.world.chunk.WorldChunk;
+import org.spongepowered.math.vector.Vector3i;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.chunk.Chunk> implements Chunk {
+public class BongeChunk implements Chunk {
 
-    public BongeChunk(org.spongepowered.api.world.chunk.Chunk value) {
-        super(value);
+    private final Vector3i location;
+    private final BongeWorld world;
+
+    public BongeChunk(@NotNull Vector3i location, @NotNull BongeWorld world) {
+        this.location = location;
+        this.world = world;
     }
 
     @Override
     public int getX() {
-        return this.spongeValue.chunkPosition().getX();
+        return this.location.x();
     }
 
     @Override
     public int getZ() {
-        return this.spongeValue.chunkPosition().getZ();
+        return this.location.y();
     }
 
     @Override
     public @NotNull World getWorld() {
-        return new BongeWorld(this.spongeValue.world());
+        return this.world;
     }
 
     @Override
     public @NotNull Block getBlock(int x, int y, int z) {
-        return new BongeBlock(this.spongeValue.world().location(this.spongeValue.blockMin().add(x, y, z)));
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public @NotNull ChunkSnapshot getChunkSnapshot() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public @NotNull ChunkSnapshot getChunkSnapshot(boolean includeMaxblocky, boolean includeBiome, boolean includeBiomeTempRain) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public Entity[] getEntities() {
-        if(!(this.spongeValue.world() instanceof ServerWorld)){
-            return new Entity[0];
-        }
-        Collection<org.spongepowered.api.entity.Entity> sEntities = ((ServerWorld)this.spongeValue.world()).entities().stream().filter(e -> this.spongeValue.containsBlock(e.blockPosition())).collect(Collectors.toSet());
-        Entity[] entities = new Entity[sEntities.size()];
-        int count = 0;
-        for (org.spongepowered.api.entity.Entity sEntity : sEntities) {
+        WorldChunk chunk = this.world.getSpongeValue().chunk(this.location.x(), 0, this.location.y());
+        Collection<? extends org.spongepowered.api.entity.Entity> sEntities = chunk.entities(AABB.of(chunk.min(), chunk.max()));
+        return sEntities.stream().map(sEntity -> {
             try {
-                entities[count] = Bonge.getInstance().convert(Entity.class, sEntity);
-                count++;
-            }catch (IOException e){
+                return Bonge.getInstance().convert(sEntity);
+            } catch (IOException e) {
                 e.printStackTrace();
+                return null;
             }
-        }
-        return entities;
+        }).filter(Objects::nonNull).toArray(Entity[]::new);
     }
 
     @Override
     public BlockState[] getTileEntities() {
-        List<BlockState> array = new ArrayList<>();
-        this.spongeValue.blockEntities().forEach(t -> {
-            try {
-                array.add(Bonge.getInstance().convert(BlockState.class, t));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        return array.toArray(new BlockState[0]);
+        throw new NotImplementedException("Not got to yet");
+        /*WorldChunk chunk = this.world.getSpongeValue().chunk(this.location.x(), 0, this.location.y());
+        Collection<? extends BlockEntity> blockEntity = chunk.blockEntities();
+        return blockEntity.stream().map(entity -> Bonge.getInstance().convert(entity)).toArray(Object[]::new);*/
     }
 
     @Override
     public boolean isLoaded() {
-        return this.spongeValue.world().isChunkLoaded(this.spongeValue.chunkPosition(), true);
+        return this.world.getSpongeValue().isChunkLoaded(this.location.x(), 0, this.location.y(), true);
     }
 
     @Override
     public boolean load(boolean generate) {
-        return this.spongeValue.loadChunk(generate);
+        return this.world.getSpongeValue().loadChunk(this.location, generate).isPresent();
     }
 
     @Override
     public boolean load() {
-        return this.spongeValue.loadChunk(false);
+        return this.world.getSpongeValue().loadChunk(this.location, false).isPresent();
     }
 
     @Override
@@ -113,12 +106,12 @@ public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.chunk.C
 
     @Override
     public boolean unload() {
-        return this.spongeValue.unloadChunk();
+        throw new NotImplementedException("Not implemented yet");
     }
 
     @Override
     public boolean isSlimeChunk() {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -148,17 +141,19 @@ public class BongeChunk extends BongeWrapper<org.spongepowered.api.world.chunk.C
 
     @Override
     public long getInhabitedTime() {
-        return this.spongeValue.inhabitedTime();
+        WorldChunk chunk = this.world.getSpongeValue().chunk(this.location);
+        return chunk.inhabitedTime().ticks();
     }
 
     @Override
     public void setInhabitedTime(long ticks) {
-        this.spongeValue.setInhabitedTime(ticks);
+        WorldChunk chunk = this.world.getSpongeValue().chunk(this.location);
+        chunk.setInhabitedTime(Ticks.of(ticks));
     }
 
     @Override
     public boolean contains(@NotNull BlockData block) {
-        return false;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @NotNull
