@@ -54,6 +54,10 @@
                                     <exclude>byte-buddy:META-INF/MANIFEST.MF</exclude>
                                     <exclude>commons-io:META-INF/MANIFEST.MF</exclude>
                                     <exclude>slf4j-api:META-INF/MANIFEST.MF</exclude>
+                                    <exclude>commons-io:META-INF/LICENSE.txt</exclude>
+                                    <exclude>commons-lang:LICENCE.txt</exclude>
+                                    <exclude>commons-io:META-INF/NOTICE.txt</exclude>
+                                    <exclude>commons-lang:NOTICE.txt</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
@@ -62,6 +66,14 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>sponge-repo</id>
+            <name>Sponge Maven Repository</name>
+            <url>https://repo.spongepowered.org/maven</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
