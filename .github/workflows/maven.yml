@@ -29,7 +29,7 @@ jobs:
     - name: Build with Maven 1
       run: mvn package
     - name: Copy Bukkit to target
-      run: cp -R "BongeBukkit/target/classes/*" "target/classes"
+      run: cp -R /BongeBukkit/target/classes/* /target/classes
     - name: Build with Maven
       run: mvn package
     - uses: actions/upload-artifact@v2
