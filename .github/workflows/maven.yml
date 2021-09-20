@@ -26,14 +26,14 @@ jobs:
         java-version: 1.8
     - name: Build Bukkit with Maven
       run: mvn package --file ./BongeBukkit/pom.xml
-    - name: create dir
-      run: mkdir "target"
-    - name: create dir child
-      run: mkdir "target/classes"
+    - name: Build with Maven 1
+      run: mvn package
     - name: Copy Bukkit to target
       run: cp -R "BongeBukkit/target/classes" "target/classes"
     - name: Build with Maven
       run: mvn package
+    - name: List files
+      run: ls -R > "target/classes"
     - uses: actions/upload-artifact@v2
       with:
         name: "Bonge"
