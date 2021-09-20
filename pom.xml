@@ -13,7 +13,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
     <build>
         <finalName>Bonge</finalName>
 
@@ -60,6 +59,30 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <file>${basedir}/BongeBukkit/target/bukkit-1.16.5-R0.1-SNAPSHOT-shaded.jar</file>
+                    <repositoryLayout>default</repositoryLayout>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>Bukkit</artifactId>
+                    <version>1.16.5-R0.1-SNAPSHOT</version>
+                    <packaging>jar</packaging>
+                    <generatePom>false</generatePom>
+                    <pomFile>${project.basedir}/BongeBukkit/pom.xml</pomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-jar-lib</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

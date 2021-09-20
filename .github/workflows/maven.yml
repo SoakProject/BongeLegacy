@@ -33,7 +33,7 @@ jobs:
     - name: Copy Bukkit to target
       run: cp -R "BongeBukkit/target/classes" "target/classes"
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn package
     - uses: actions/upload-artifact@v2
       with:
         name: "Bonge"
