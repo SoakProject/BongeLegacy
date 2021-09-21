@@ -45,6 +45,7 @@ public class BongeBukkitLaunch {
     }
 
     static void onLoad(BongeLaunch launch) {
+        //((BongePluginManager) Bukkit.getPluginManager()).initPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
         Bukkit.getPluginManager().loadPlugins(BongeLaunch.getConfig().getOrElse(BongeConfig.PATH_PLUGINS_FILE));
         //Sponge.getCommandManager().getStandardRegistrar().register(BongeLaunch.getContainer(), BongeControlCommand.createCommand(), "control", "bongecontrol");
         Sponge.eventManager().registerListeners(BongeLaunch.getContainer(), new BlockListener());
