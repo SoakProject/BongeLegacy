@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.scoreboard;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.scoreboard.criteria.Criterion;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,12 +62,12 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        return ArrayUtils.convert(new HashSet<>(), o -> new BongeObjective(o, BongeScoreboard.this), objectives);
+        return objectives.stream().map(o -> new BongeObjective(o, BongeScoreboard.this)).collect(Collectors.toSet());
     }
 
     @Override
     public @NotNull Set<Objective> getObjectives() {
-        return ArrayUtils.convert(new HashSet<>(), o -> new BongeObjective(o, this), this.spongeValue.objectives());
+        return this.spongeValue.objectives().stream().map(o -> new BongeObjective(o, this)).collect(Collectors.toSet());
     }
 
     @Override
@@ -91,48 +89,47 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public @NotNull Set<Score> getScores(@NotNull String entry) throws IllegalArgumentException {
-        return ArrayUtils.build(new HashSet<>(), (e, t) -> t.scores()
-                .values()
-                .stream()
-                .filter(s -> Bonge.getInstance().convert(s.name()).equals(entry))
-                .forEach(v -> e
-                        .add(new BongeScore(v, new BongeObjective(t, BongeScoreboard.this)))),
-                this.spongeValue.objectives());
+        return this.spongeValue.objectives().stream().flatMap(objective -> {
+            BongeObjective bongeObjective = new BongeObjective(objective, BongeScoreboard.this);
+            return objective.scores().values().stream().filter(score -> Bonge.getInstance().convert(score.name()).equals(entry)).map(score -> new BongeScore(score, bongeObjective));
+        }).collect(Collectors.toSet());
     }
 
     @Override
     public void resetScores(@NotNull OfflinePlayer player) throws IllegalArgumentException {
-
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public void resetScores(@NotNull String entry) throws IllegalArgumentException {
+        throw new NotImplementedException("Not got to yet");
 
     }
 
     @Override
     public Team getPlayerTeam(@NotNull OfflinePlayer player) throws IllegalArgumentException {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public Team getEntryTeam(@NotNull String entry) throws IllegalArgumentException {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public Team getTeam(@NotNull String teamName) throws IllegalArgumentException {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
     public @NotNull Set<Team> getTeams() {
-        return null;
+        throw new NotImplementedException("Not got to yet");
+
     }
 
     @Override
-    public @NotNull Team registerNewTeam(String name) throws IllegalArgumentException {
-        return null;
+    public @NotNull Team registerNewTeam(@NotNull String name) throws IllegalArgumentException {
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -142,7 +139,7 @@ public class BongeScoreboard extends BongeWrapper<org.spongepowered.api.scoreboa
 
     @Override
     public @NotNull Set<String> getEntries() {
-        return ArrayUtils.build(new HashSet<>(), (l, e) -> e.scores().values().forEach(s -> l.add(Bonge.getInstance().convert(s.name()))), this.spongeValue.objectives());
+        return this.spongeValue.objectives().stream().flatMap(objective -> objective.scores().values().stream().map(score -> Bonge.getInstance().convert(score.name()))).collect(Collectors.toSet());
     }
 
     @Override

@@ -86,12 +86,7 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public @NotNull Material getType() {
-        try {
-            return Bonge.getInstance().convert(this.snapshot.state().type(), Material.class);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-
+        return Material.valueOf(Bonge.getInstance().convert(this.snapshot.state().type()));
     }
 
     @Override
@@ -136,8 +131,12 @@ public class BongeBlockSnapshot implements Block {
 
     @Override
     public @NotNull Location getLocation() {
-        throw new NotImplementedException("BlockSnapshot.getLocation() Not got to yet");
-
+        Optional<ServerLocation> opLocation = this.snapshot.location();
+        if(opLocation.isPresent()){
+            return Bonge.getInstance().convert(opLocation.get());
+        }
+        Vector3i pos = this.snapshot.position();
+        return Bonge.LOCATION.to(this.snapshot.world(), pos);
     }
 
     @Override

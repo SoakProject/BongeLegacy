@@ -5,7 +5,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.array.utils.ArrayUtils;
 import org.bonge.bukkit.r1_16.server.BongeServer;
 import org.bonge.bukkit.r1_16.server.plugin.BongePluginManager;
 import org.bonge.command.argument.PluginArgument;
@@ -119,7 +118,7 @@ public class BongeCommand {
                 if (cmds == null) {
                     args.sendMessage(Identity.nil(), Component.text("Commands: None"));
                 } else {
-                    args.sendMessage(Identity.nil(), Component.text("Commands: " + ArrayUtils.toString(", ", n -> n, cmds.keySet())));
+                    args.sendMessage(Identity.nil(), Component.text("Commands: " + String.join(", ", cmds.keySet())));
                 }
                 return CommandResult.success();
             }

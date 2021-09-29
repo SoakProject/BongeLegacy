@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.inventory.chest;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
 import org.bonge.bukkit.r1_16.inventory.BongeInventory;
@@ -14,6 +13,7 @@ import org.spongepowered.api.item.inventory.type.ViewableInventory;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomChestInventory<I extends ViewableInventory> extends BongeInventory<I> {
 
@@ -23,7 +23,12 @@ public class CustomChestInventory<I extends ViewableInventory> extends BongeInve
 
     @Override
     public @NotNull List<HumanEntity> getViewers() {
-        return ArrayUtils.convert(s -> Bonge.getInstance().convert(s), this.spongeValue.viewers());
+        return this
+                .spongeValue
+                .viewers()
+                .stream()
+                .map(s -> Bonge.getInstance().convert(s))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -34,7 +39,7 @@ public class CustomChestInventory<I extends ViewableInventory> extends BongeInve
     @Override
     public @Nullable BongePlayer getHolder() {
         Set<ServerPlayer> players = this.spongeValue.viewers();
-        if(players.isEmpty()){
+        if (players.isEmpty()) {
             return null;
         }
         ServerPlayer player = players.iterator().next();
@@ -44,13 +49,13 @@ public class CustomChestInventory<I extends ViewableInventory> extends BongeInve
     @Override
     public @Nullable Location getLocation() {
         BongePlayer player = this.getHolder();
-        if(player == null){
+        if (player == null) {
             return null;
         }
         return player.getLocation();
     }
 
-    public static CustomChestInventory<ViewableInventory> of(ViewableInventory inv){
+    public static CustomChestInventory<ViewableInventory> of(ViewableInventory inv) {
         return new CustomChestInventory<>(inv);
     }
 }

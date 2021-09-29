@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.inventory.chest;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.inventory.BongeInventory;
 import org.bukkit.Location;
@@ -13,6 +12,7 @@ import org.spongepowered.api.item.inventory.type.BlockEntityInventory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BongeChestInventory extends BongeInventory<BlockEntityInventory<Chest>> {
 
@@ -22,7 +22,7 @@ public class BongeChestInventory extends BongeInventory<BlockEntityInventory<Che
 
     @Override
     public @NotNull List<HumanEntity> getViewers() {
-        return ArrayUtils.convert(e -> Bonge.getInstance().convert(e), this.spongeValue.viewers());
+        return this.spongeValue.viewers().stream().map(e -> Bonge.getInstance().convert(e)).collect(Collectors.toList());
     }
 
     @Override

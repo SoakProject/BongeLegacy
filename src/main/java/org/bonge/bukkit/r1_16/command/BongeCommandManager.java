@@ -3,6 +3,9 @@ package org.bonge.bukkit.r1_16.command;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bonge.Bonge;
+import org.bonge.bukkit.r1_16.command.state.CommandState;
+import org.bonge.bukkit.r1_16.command.state.PluginCommandState;
+import org.bonge.bukkit.r1_16.command.state.RawCommandState;
 import org.bonge.launch.BongeLaunch;
 import org.bukkit.Location;
 import org.bukkit.command.*;
@@ -72,7 +75,7 @@ public class BongeCommandManager implements CommandMap {
     }
 
     public void register(PluginCommand command) {
-        this.commands.add(new CommandState(command));
+        this.commands.add(new PluginCommandState(command));
     }
 
     @Override
@@ -82,12 +85,12 @@ public class BongeCommandManager implements CommandMap {
 
     @Override
     public boolean register(@NotNull String label, @NotNull String fallbackPrefix, @NotNull Command command) {
-        return this.commands.add(new CommandState(label, fallbackPrefix, command));
+        return this.commands.add(new RawCommandState(label, fallbackPrefix, command));
     }
 
     @Override
     public boolean register(@NotNull String fallbackPrefix, @NotNull Command command) {
-        return this.commands.add(new CommandState(command.getLabel(), fallbackPrefix, command));
+        return this.commands.add(new RawCommandState(command.getLabel(), fallbackPrefix, command));
     }
 
     @Override

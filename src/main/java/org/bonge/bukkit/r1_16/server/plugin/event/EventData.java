@@ -5,7 +5,6 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ public class EventData<T extends Event> {
             Method[] methods = listener.getClass().getMethods();
             List<Method> methodsList = Stream.of(methods)
                     .filter(m -> Stream.of(m.getAnnotations()).anyMatch(a -> a.annotationType().isAssignableFrom(EventHandler.class)))
-                    .filter(m -> m.getParameterCount() == 1)
+                    .filter(m -> m.getParameterCount()==1)
                     .filter(m -> m.getParameters()[0].getType().getName().equals(event.getClass().getName()))
                     .filter(m -> m.getAnnotation(EventHandler.class).priority().equals(this.pri))
                     .collect(Collectors.toList());
@@ -41,7 +40,7 @@ public class EventData<T extends Event> {
                     if (event instanceof Cancellable) {
                         isCancelled = ((Cancellable) event).isCancelled();
                     }
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                } catch (Throwable e) {
                     throw new EventException(e);
                 }
             }

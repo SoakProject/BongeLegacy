@@ -2,12 +2,14 @@ package org.bonge.bukkit.r1_16.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bonge.Bonge;
+import org.bonge.bukkit.r1_16.command.state.CommandState;
+import org.bonge.bukkit.r1_16.command.state.PluginCommandState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandCompletion;
@@ -24,11 +26,11 @@ public class RawSpongeCommand implements Command.Raw {
 
     private final CommandState commandState;
 
-    public RawSpongeCommand(PluginCommand command) {
-        this(new CommandState(command));
+    public RawSpongeCommand(@NotNull PluginCommand command) {
+        this(new PluginCommandState(command));
     }
 
-    public RawSpongeCommand(CommandState state) {
+    public RawSpongeCommand(@NotNull CommandState state) {
         this.commandState = state;
     }
 
@@ -42,11 +44,21 @@ public class RawSpongeCommand implements Command.Raw {
                 cmdArguments = new String[0];
             }
         }
-        boolean bukkitResult = this.commandState.getCmd().execute(sender, cmdLabel, cmdArguments);
-        if (bukkitResult) {
-            return CommandResult.success();
+        try {
+            boolean bukkitResult = this.commandState.getCmd().execute(sender, cmdLabel, cmdArguments);
+            if (bukkitResult) {
+                return CommandResult.success();
+            }
+        } catch (Throwable e) {
+            System.out.println("===============[Bonge]===============");
+            System.out.println("A error occur in the following plugin, its likely Bonge that is the issue, however could be the plugin itself.");
+            System.out.println("Plugin: " + this.commandState.getLabel());
+            System.out.println("CommandLauncher: " + this.commandState.getCmd().getClass().getSimpleName());
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("===============[]===============");
+            e.printStackTrace();
         }
-        return CommandResult.error(Component.text("[Bonge]").color(NamedTextColor.AQUA).append(Component.text(" Command failed to process").color(NamedTextColor.RED)));
+        return CommandResult.builder().build();
     }
 
     @Override

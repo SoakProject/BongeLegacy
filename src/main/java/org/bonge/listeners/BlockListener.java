@@ -1,7 +1,6 @@
 package org.bonge.listeners;
 
 import net.kyori.adventure.text.Component;
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.block.BongeBlock;
 import org.bonge.bukkit.r1_16.block.BongeBlockSnapshot;
@@ -23,6 +22,8 @@ import org.spongepowered.api.event.filter.cause.Root;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class BlockListener {
 
@@ -34,13 +35,13 @@ public class BlockListener {
             return;
         }
         Piston piston = (Piston) source;
-        List<Block> blocks = ArrayUtils.convert(t -> {
-            try {
-                return Bonge.getInstance().convert(Location.class, t.finalReplacement().location().get()).getBlock();
-            } catch (IOException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }, event.transactions());
+        List<Block> blocks = event
+                .transactions()
+                .stream()
+                .map(transaction -> transaction.finalReplacement().location())
+                .filter(Optional::isPresent)
+                .map(opLoc -> Bonge.getInstance().convert(opLoc.get()).getBlock())
+                .collect(Collectors.toList());
         try {
             Block block = Bonge.getInstance().convert(Location.class, piston.location()).getBlock();
             BlockFace face = Bonge.getInstance().convert(BlockFace.class, piston.get(Keys.DIRECTION));
@@ -53,7 +54,7 @@ public class BlockListener {
             Bukkit.getPluginManager().callEvent(bEvent);
             event.setCancelled(bEvent.isCancelled());
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 

@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.block.data;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.MultipleFacing;
@@ -9,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.util.Direction;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,11 +33,26 @@ public interface BongeMultipleFacing extends IBongeBlockData, MultipleFacing {
 
     @Override
     default @NotNull Set<BlockFace> getFaces() {
-        return ArrayUtils.convert(Collectors.toSet(), d -> Bonge.getInstance().convert(d), this.getSpongeValue().get(Keys.CONNECTED_DIRECTIONS).get());
+        return this
+                .getSpongeValue()
+                .get(Keys.CONNECTED_DIRECTIONS)
+                .map(directions -> directions
+                        .stream()
+                        .map(direction -> Bonge.getInstance().convert(direction))
+                        .collect(Collectors.toSet()))
+                .orElseGet(Collections::emptySet);
     }
 
     @Override
     default @NotNull Set<BlockFace> getAllowedFaces() {
-        return ArrayUtils.convert(Collectors.toSet(), d -> Bonge.getInstance().convert(d), this.getSpongeValue().getValue(Keys.CONNECTED_DIRECTIONS).get().all());
+        return this
+                .getSpongeValue()
+                .getValue(Keys.CONNECTED_DIRECTIONS)
+                .map(directions -> directions
+                        .all()
+                        .stream()
+                        .map(direction -> Bonge.getInstance().convert(direction))
+                        .collect(Collectors.toSet()))
+                .orElseGet(Collections::emptySet);
     }
 }

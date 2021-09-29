@@ -47,6 +47,7 @@ public class BongeScheduler implements BukkitScheduler {
             } catch (Throwable e) {
                 if (this.data != null) {
                     Bonge.createCrashFile(this.data.getOwner(), "scheduler", e);
+                    this.data.cancel();
                 }
                 throw e;
             }

@@ -1,6 +1,5 @@
 package org.bonge.listeners;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.entity.living.human.BongePlayer;
 import org.bukkit.Bukkit;
@@ -40,36 +39,37 @@ public class SourceListener {
     }*/
 
     @Listener
-    public void onCommand(ExecuteCommandEvent.Pre event){
+    public void onCommand(ExecuteCommandEvent.Pre event) {
         Optional<Subject> opSubject = event.context().get(EventContextKeys.SUBJECT);
-        if(!opSubject.isPresent()){
+        if (!opSubject.isPresent()) {
             //SHOULDNT FAIL BUT JUST INCASE
             return;
         }
         try {
             CommandSender sender = Bonge.getInstance().convert(CommandSender.class, opSubject.get());
-            if(sender instanceof BongePlayer) {
+            if (sender instanceof BongePlayer) {
                 BongePlayer player = (BongePlayer) sender;
                 List<String> list = new ArrayList<>();
                 list.add(event.command());
                 list.addAll(Arrays.asList(event.arguments().split(" ")));
                 PlayerCommandSendEvent pcse = new PlayerCommandSendEvent(player, list);
                 Bukkit.getPluginManager().callEvent(pcse);
-                if(list.isEmpty()){
+                if (list.isEmpty()) {
                     event.setCancelled(true);
                     return;
                 }
                 event.setCommand(list.get(0));
                 list.remove(0);
-                event.setArguments(ArrayUtils.toString(" ", t -> t, list));
-            }else{
+
+                event.setArguments(String.join(" ", list));
+            } else {
                 ServerCommandEvent bEvent = new ServerCommandEvent(sender, event.command() + " " + event.arguments());
                 Bukkit.getPluginManager().callEvent(bEvent);
                 event.setCancelled(bEvent.isCancelled());
                 List<String> list = new ArrayList<>(Arrays.asList(bEvent.getCommand().split(" ")));
                 event.setCommand(list.get(0));
                 list.remove(0);
-                event.setArguments(ArrayUtils.toString(" ", t -> t, list));
+                event.setArguments(String.join(" ", list));
             }
         } catch (IOException e) {
             e.printStackTrace();

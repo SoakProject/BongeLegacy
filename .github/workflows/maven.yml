@@ -36,8 +36,4 @@ jobs:
       with:
         name: "Bonge"
         path: "target/Bonge.jar"
-    - uses: actions/upload-artifact@v2
-      with:
-        name: "maven-target"
-        path: "target/*"
 

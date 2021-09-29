@@ -582,14 +582,12 @@ public class BongePlayer extends BongeAbstractEntity<org.spongepowered.api.entit
 
     @Override
     public int getTotalExperience() {
-        throw new NotImplementedException("yet to look at");
-
+        return this.getSpongeValue().get(Keys.EXPERIENCE).orElse(0);
     }
 
     @Override
     public void setTotalExperience(int exp) {
-        throw new NotImplementedException("yet to look at");
-
+        this.getSpongeValue().offer(Keys.EXPERIENCE, exp);
     }
 
     @Override

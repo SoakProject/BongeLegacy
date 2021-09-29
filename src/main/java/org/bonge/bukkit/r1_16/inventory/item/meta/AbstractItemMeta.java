@@ -2,7 +2,6 @@ package org.bonge.bukkit.r1_16.inventory.item.meta;
 
 import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.inventory.item.holder.ItemHolder;
 import org.bonge.util.exception.NotImplementedException;
@@ -22,6 +21,7 @@ import org.spongepowered.api.item.enchantment.EnchantmentType;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
@@ -106,13 +106,16 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
 
     @Override
     public List<String> getLore() {
-        return ArrayUtils.convert(e -> Bonge.getInstance().convert(e), this.stack.get(Keys.LORE).get());
+        return this.stack.get(Keys.LORE).map(e -> e.stream().map(lore -> Bonge.getInstance().convert(lore)).collect(Collectors.toList())).orElseGet(Collections::emptyList);
     }
 
     @Override
     public void setLore(List<String> lore) {
-        List<Component> list = ArrayUtils.convert(e -> Bonge.getInstance().convertText(e), lore);
-        this.stack.offer(Keys.LORE, list);
+        List<Component> components = (lore == null ? Collections.<String>emptyList() : lore)
+                .parallelStream()
+                .map(comp -> Bonge.getInstance().convertText(comp))
+                .collect(Collectors.toList());
+        this.stack.offer(Keys.LORE, components);
     }
 
     @Override
@@ -132,7 +135,7 @@ public abstract class AbstractItemMeta implements ItemMeta, Damageable {
     }
 
     @Override
-    public int getEnchantLevel(Enchantment ench) {
+    public int getEnchantLevel(@NotNull Enchantment ench) {
         EnchantmentType type;
         try {
             type = Bonge.getInstance().convert(ench, EnchantmentType.class);

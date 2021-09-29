@@ -1,7 +1,6 @@
 package org.bukkit;
 
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.material.BongeMaterial;
 import org.bonge.bukkit.r1_16.material.UnknownMaterial;
@@ -1216,12 +1215,17 @@ public final class Material implements Keyed {
     }
 
     @Override
+    public int hashCode() {
+        return this.name().hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Material)) {
             return false;
         }
         Material material = (Material) obj;
-        return material.name().equalsIgnoreCase(this.name());
+        return material.name().equals(this.name());
     }
 
     @Override
@@ -1272,11 +1276,11 @@ public final class Material implements Keyed {
         }).orElseThrow(() -> new IllegalStateException(
                 "Sponge itemtype of " +
                         PlainTextComponentSerializer.plainText().serializeOr(type.asComponent(), "Unknown") +
-                        " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " +
-                        ArrayUtils.toString(",", Material::name,
-                                Stream.of(values())
-                                        .filter(Material::isItem)
-                                        .collect(Collectors.toList()))));
+                        " cannot be converted to Bukkit, is it registered? The following ItemTypes are: " + Stream.of(values())
+                        .filter(Material::isItem)
+                        .map(Material::name)
+                        .collect(Collectors.joining(", "))
+        ));
     }
 
     public static @NotNull Material valueOf(BlockType type) {

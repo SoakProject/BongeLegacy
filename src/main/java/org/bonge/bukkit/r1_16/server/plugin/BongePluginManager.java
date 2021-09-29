@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.server.plugin;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.command.BongeCommandManager;
 import org.bonge.bukkit.r1_16.server.BongeServer;
@@ -33,6 +32,7 @@ import java.util.stream.Stream;
 public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
     private final Set<IBongePluginLoader> plugins = new HashSet<>();
+    private final Map<String, Plugin> lookupNames = new HashMap<>(); //this is used for plugins that hack Bukkit - Use this to check enabled plugins
     private final List<Class<?>> eventClasses = new ArrayList<>();
     private final Set<EventData<?>> datas = new HashSet<>();
     private final Set<Permission> permissions = new HashSet<>();
@@ -192,6 +192,7 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             this.plugins.add(loader);
             JavaPlugin plugin = loader.getOrLoadPlugin();
             plugin.setLoader(loader);
+            this.lookupNames.put(plugin.getName(), plugin);
             return plugin;
         } catch (InvalidDescriptionException e) {
             this.plugins.remove(loader);
@@ -224,17 +225,14 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
         if (files == null) {
             return new Plugin[0];
         }
-        List<File> list = new ArrayList<>();
-        List<File> pluginFiles = Arrays.asList(files);
-        list.addAll(pluginFiles);
-        this.loader = new BongeURLClassLoader(ArrayUtils.convert(URL.class, f -> {
+        this.loader = new BongeURLClassLoader(Stream.of(files).map(f -> {
             try {
                 return f.toURI().toURL();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return null;
             }
-        }, files));
+        }).filter(Objects::nonNull).toArray(URL[]::new));
 
         try {
             Class.forName("org.apache.commons.lang.Validate");
@@ -245,10 +243,9 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
 
         Plugin[] plugins = new Plugin[files.length];
         int pluginId = 0;
-        for (int A = 0; A < files.length; A++) {
+        for (File value : files) {
             try {
-                File pluginFile = files[A];
-                plugins[pluginId] = initPlugin(pluginFile);
+                plugins[pluginId] = initPlugin(value);
                 pluginId++;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -298,7 +295,17 @@ public class BongePluginManager implements org.bukkit.plugin.PluginManager {
             public void accept(EventData<?> eventData) {
                 try {
                     this.run(eventData);
-                } catch (EventException e) {
+                } catch (Throwable e) {
+                    System.err.println("=========================");
+                    System.err.println("A Bukkit plugin crashed.");
+                    System.err.println("Priority: " + eventData.getPriority().name());
+                    System.err.println("Event: " + eventData.getEvent().getSimpleName());
+                    System.err.println("Listener: " + eventData.getListener().getClass().getSimpleName());
+                    System.err.println("Plugin: " + eventData.getHolder().getName());
+                    System.err.println("Plugin Version: " + eventData.getHolder().getDescription().getVersion());
+                    System.err.println("Plugin target Minecraft: " + eventData.getHolder().getDescription().getAPIVersion());
+                    System.err.println("=========================");
+
                     Bonge.createCrashFile(eventData.getHolder(), "listener/" + event.getClass().getSimpleName(), e);
                     if (e.getCause() instanceof InvocationTargetException) {
                         InvocationTargetException c = (InvocationTargetException) e.getCause();

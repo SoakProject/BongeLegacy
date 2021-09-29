@@ -1,8 +1,8 @@
 package org.bukkit.command;
 
 import org.bonge.Bonge;
-import org.bonge.bukkit.r1_16.command.CommandState;
 import org.bonge.bukkit.r1_16.command.RawSpongeCommand;
+import org.bonge.bukkit.r1_16.command.state.CommandState;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.CommandExecutor;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 public class SpongeCommandWrapping implements CommandExecutor {
 
-    private CommandState state;
-    private Parameter.Value<String> commandArguments;
+    private final CommandState state;
+    private final Parameter.Value<String> commandArguments;
 
     public SpongeCommandWrapping(CommandState state) {
         this.state = state;

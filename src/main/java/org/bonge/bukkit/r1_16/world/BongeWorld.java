@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.world;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.block.BongeBlock;
 import org.bonge.bukkit.r1_16.entity.living.ILivingEntity;
@@ -358,13 +357,16 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
             return Collections.emptyList();
         }
         ServerWorld sWorld = (ServerWorld) this.spongeValue;
-        return ArrayUtils.convert(e -> {
-            try {
-                return Bonge.getInstance().convert(Entity.class, e);
-            } catch (IOException ioException) {
-                throw new IllegalArgumentException(ioException);
-            }
-        }, sWorld.entities());
+        return sWorld.entities().stream().map(entity -> {
+                    try {
+                        return Bonge.getInstance().convert(entity);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -375,12 +377,12 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @SafeVarargs
     @Override
     public final <T extends Entity> @NotNull Collection<T> getEntitiesByClass(Class<T>... classes) {
-        return ArrayUtils.convert(e -> (T) e, this.getEntitiesByClasses(classes));
+        return this.getEntitiesByClasses(classes).stream().map(entity -> (T) entity).collect(Collectors.toSet());
     }
 
     @Override
     public <T extends Entity> @NotNull Collection<T> getEntitiesByClass(Class<T> aClass) {
-        return ArrayUtils.convert(e -> (T) e, this.getEntities().stream().filter(aClass::isInstance).collect(Collectors.toSet()));
+        return this.getEntities().stream().filter(aClass::isInstance).map(entity -> (T) entity).collect(Collectors.toSet());
     }
 
     @Override
@@ -397,7 +399,7 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
 
     @Override
     public @NotNull List<Player> getPlayers() {
-        return ArrayUtils.convert(p -> Bonge.getInstance().convert(p), this.spongeValue.players());
+        return this.spongeValue.players().stream().map(player -> Bonge.getInstance().convert(player)).collect(Collectors.toList());
     }
 
     @Override
@@ -408,13 +410,17 @@ public class BongeWorld extends BongeWrapper<org.spongepowered.api.world.World<?
     @Override
     public @NotNull Collection<Entity> getNearbyEntities(@NotNull Location location, double x, double y, double z, @Nullable Predicate<Entity> filter) {
         if (x == y && y == z) {
-            return ArrayUtils.convert((e) -> {
-                try {
-                    return Bonge.getInstance().convert(Entity.class, e);
-                } catch (IOException ioException) {
-                    throw new IllegalArgumentException(ioException);
-                }
-            }, this.spongeValue.nearbyEntities(new Vector3d(location.getX(), location.getY(), location.getZ()), x));
+            return this.spongeValue.nearbyEntities(new Vector3d(location.getX(), location.getY(), location.getZ()), x)
+                    .stream()
+                    .map(entity -> {
+                        try {
+                            return Bonge.getInstance().convert(entity);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .collect(Collectors.toSet());
         }
         throw new NotImplementedException("Not got to yet");
     }

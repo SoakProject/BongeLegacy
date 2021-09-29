@@ -21,7 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.util.Ticks;
+import org.spongepowered.api.util.blockray.RayTrace;
+import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.math.vector.Vector3d;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -156,13 +160,13 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
 
     @Override
     default @NotNull Block getTargetBlock(@Nullable Set<Material> transparent, int maxDistance) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @NotNull
     @Override
     default List<Block> getLastTwoTargetBlocks(@Nullable Set<Material> transparent, int maxDistance) {
-        return null;
+        throw new NotImplementedException("Not got to yet");
     }
 
     @Override
@@ -442,7 +446,17 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
 
     @Override
     default @Nullable Block getTargetBlockExact(int maxDistance) {
-        throw new NotImplementedException("Not got to yet");
+        if (!(this.getSpongeValue().world() instanceof ServerWorld)) {
+            throw new NotImplementedException("Not got to yet");
+        }
+        return RayTrace
+                .block()
+                .limit(maxDistance)
+                .sourcePosition(this.getSpongeValue())
+                .sourceEyePosition(this.getSpongeValue())
+                .world((ServerWorld) this.getSpongeValue().world())
+                .direction(this.getSpongeValue())
+                .execute().map(result -> Bonge.getInstance().convert(result.selectedObject().location()).getBlock()).orElse(null);
 
     }
 
@@ -453,7 +467,28 @@ public interface ILivingEntity<T extends org.spongepowered.api.entity.living.Liv
 
     @Override
     default @Nullable RayTraceResult rayTraceBlocks(double maxDistance) {
-        throw new NotImplementedException("Not got to yet");
+        if (!(this.getSpongeValue().world() instanceof ServerWorld)) {
+            throw new NotImplementedException("Not got to yet");
+        }
+        org.spongepowered.api.util.blockray.RayTraceResult<org.spongepowered.api.entity.Entity> result = RayTrace
+                .entity()
+                .limit((int) maxDistance)
+                .sourcePosition(this.getSpongeValue())
+                .sourceEyePosition(this.getSpongeValue())
+                .world((ServerWorld) this.getSpongeValue().world())
+                .direction(this.getSpongeValue())
+                .execute()
+                .orElse(null);
+        if (result == null) {
+            return null;
+        }
+        Vector3d vector = result.hitPosition();
+        try {
+            return new RayTraceResult(new Vector(vector.x(), vector.y(), vector.z()), Bonge.getInstance().convert(result.selectedObject()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 

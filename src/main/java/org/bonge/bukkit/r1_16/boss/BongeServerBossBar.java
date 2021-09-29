@@ -13,9 +13,16 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.Sponge;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar.BossBar> implements BossBar {
+
+    private final Set<UUID> bossBarViewers = new HashSet<>();
+    private boolean isVisible;
 
     public BongeServerBossBar(net.kyori.adventure.bossbar.BossBar value) {
         super(value);
@@ -94,34 +101,56 @@ public class BongeServerBossBar extends BongeWrapper<net.kyori.adventure.bossbar
 
     @Override
     public void addPlayer(@NotNull Player player) {
-        ((BongePlayer) player).getSpongeValue().showBossBar(this.spongeValue);
+        this.bossBarViewers.add(player.getUniqueId());
+        if (this.isVisible) {
+            ((BongePlayer) player).getSpongeValue().showBossBar(this.spongeValue);
+        }
     }
 
     @Override
     public void removePlayer(@NotNull Player player) {
+        this.bossBarViewers.remove(player.getUniqueId());
         ((BongePlayer) player).getSpongeValue().hideBossBar(this.spongeValue);
     }
 
     @Override
     public void removeAll() {
+        this.bossBarViewers.clear();
         Sponge.server().onlinePlayers().forEach(p -> p.hideBossBar(this.spongeValue));
 
     }
 
     @Override
     public @NotNull List<Player> getPlayers() {
-        throw new NotImplementedException("ServerBossBar.getPlayers() Sponge has no alternative");
-        //return ArrayUtils.convert(BongePlayer::new, this.spongeValue.getPlayers());
+        return Sponge
+                .server()
+                .onlinePlayers()
+                .stream()
+                .filter(player -> this.bossBarViewers.contains(player.uniqueId()))
+                .map(player -> Bonge.getInstance().convert(player))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void setVisible(boolean visible) {
-        throw new NotImplementedException("ServerBossBar.setVisible(boolean) Sponge has no alternative");
+        this.isVisible = visible;
+        Sponge
+                .server()
+                .onlinePlayers()
+                .stream()
+                .filter(player -> this.bossBarViewers.contains(player.uniqueId()))
+                .forEach(p -> {
+                    if (visible) {
+                        p.showBossBar(this.spongeValue);
+                    } else {
+                        p.hideBossBar(this.spongeValue);
+                    }
+                });
     }
 
     @Override
     public boolean isVisible() {
-        throw new NotImplementedException("ServerBossBar.isVisble() Sponge has no alternative");
+        return this.isVisible;
     }
 
     @Override

@@ -1,22 +1,17 @@
-package org.bonge.bukkit.r1_16.command;
+package org.bonge.bukkit.r1_16.command.state;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.PluginCommand;
 
-public class CommandState {
+public class RawCommandState implements CommandState {
 
     private final Command cmd;
     private final String label;
     private final String pluginTag;
 
-    public CommandState(String label, String pluginTag, Command cmd) {
+    public RawCommandState(String label, String pluginTag, Command cmd) {
         this.cmd = cmd;
         this.label = label;
         this.pluginTag = pluginTag;
-    }
-
-    public CommandState(PluginCommand command){
-        this(command.getLabel(), command.getPlugin().getName().toLowerCase(), command);
     }
 
     public Command getCmd() {

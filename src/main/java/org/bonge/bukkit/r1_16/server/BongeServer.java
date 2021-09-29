@@ -1,6 +1,5 @@
 package org.bonge.bukkit.r1_16.server;
 
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.bukkit.r1_16.block.BongeTag;
 import org.bonge.bukkit.r1_16.block.data.BongeAbstractBlockData;
@@ -241,7 +240,7 @@ public class BongeServer extends BongeWrapper<org.spongepowered.api.Server> impl
 
     @Override
     public @NotNull Collection<? extends Player> getOnlinePlayers() {
-        return ArrayUtils.convert(BongePlayer::new, this.spongeValue.onlinePlayers());
+        return this.spongeValue.onlinePlayers().stream().map(player -> Bonge.getInstance().convert(player)).collect(Collectors.toSet());
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.bukkit.plugin.java;
 
 import org.bonge.bukkit.r1_16.server.plugin.loader.BongeURLClassLoader;
 import org.bonge.bukkit.r1_16.server.plugin.loader.IBongePluginLoader;
+import org.bonge.util.exception.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.event.Event;
@@ -10,6 +11,7 @@ import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +23,13 @@ import java.util.regex.Pattern;
 
 public class JavaPluginLoader implements IBongePluginLoader {
 
-    private File file;
+    private final File file;
     private JavaPlugin plugin;
     private Class<Plugin> pluginClass;
-    private Set<Class<?>> classes = new HashSet<>();
+    private final Set<Class<?>> classes = new HashSet<>();
     private boolean isEnabled;
     private PluginDescriptionFile descriptionFile;
-    private BongeURLClassLoader loader;
+    private final BongeURLClassLoader loader;
     public Server server = Bukkit.getServer();
 
     public JavaPluginLoader(File file, BongeURLClassLoader loader) {
@@ -74,7 +76,7 @@ public class JavaPluginLoader implements IBongePluginLoader {
 
     public JavaPlugin getOrLoadPlugin() throws IOException, InvocationTargetException, InstantiationException, InvalidDescriptionException {
         if (this.plugin == null) {
-            loadPlugin();
+            this.plugin = loadPlugin();
         }
         return this.plugin;
     }
@@ -83,7 +85,7 @@ public class JavaPluginLoader implements IBongePluginLoader {
         return this.file;
     }
 
-    private Plugin loadPlugin() throws IOException, InvocationTargetException, InstantiationException, InvalidDescriptionException {
+    private JavaPlugin loadPlugin() throws IOException, InvocationTargetException, InstantiationException, InvalidDescriptionException {
         JarFile jar = new JarFile(this.file);
         Enumeration<JarEntry> entries = jar.entries();
         while (entries.hasMoreElements()) {
@@ -102,7 +104,7 @@ public class JavaPluginLoader implements IBongePluginLoader {
             try {
                 Class<?> class1 = this.loader.loadClass(name);
                 this.classes.add(class1);
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
                 //throw new UnknownClassException(name, this.file, e);
             }
         }
@@ -130,14 +132,14 @@ public class JavaPluginLoader implements IBongePluginLoader {
 
     @Override
     @Deprecated
-    public Plugin loadPlugin(File file) {
-        return null;
+    public @NotNull Plugin loadPlugin(@NotNull File file) {
+        throw new NotImplementedException("Will never be implemented");
     }
 
     @Override
     @Deprecated
-    public PluginDescriptionFile getPluginDescription(File file) {
-        return null;
+    public @NotNull PluginDescriptionFile getPluginDescription(@NotNull File file) {
+        throw new NotImplementedException("Will never be implemented");
     }
 
     @Override
@@ -148,19 +150,20 @@ public class JavaPluginLoader implements IBongePluginLoader {
 
     @Override
     @Deprecated
-    public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, Plugin plugin) {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public void enablePlugin(Plugin plugin) {
+    public @NotNull Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(@NotNull Listener listener, @NotNull Plugin plugin) {
+        throw new NotImplementedException("Will never be implemented");
 
     }
 
     @Override
     @Deprecated
-    public void disablePlugin(Plugin plugin) {
+    public void enablePlugin(@NotNull Plugin plugin) {
+
+    }
+
+    @Override
+    @Deprecated
+    public void disablePlugin(@NotNull Plugin plugin) {
 
     }
 }

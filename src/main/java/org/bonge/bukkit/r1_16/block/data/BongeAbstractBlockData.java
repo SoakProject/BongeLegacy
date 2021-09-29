@@ -5,7 +5,6 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.array.utils.ArrayUtils;
 import org.bonge.Bonge;
 import org.bonge.util.exception.NotImplementedException;
 import org.bonge.wrapper.BongeWrapper;
@@ -47,7 +46,7 @@ public abstract class BongeAbstractBlockData extends BongeWrapper<org.spongepowe
     @Override
     public @NotNull String getAsString() {
         List<String> builder = this.spongeValue.statePropertyMap().entrySet().stream().map((entry) -> entry.getKey().name() + "=" + entry.getValue()).collect(Collectors.toList());
-        String properties = "[" + ArrayUtils.toString(", ", t -> t, builder) + "]";
+        String properties = "[" + String.join(", ", builder);
         if (properties.equals("[null]")) {
             properties = "";
         }
